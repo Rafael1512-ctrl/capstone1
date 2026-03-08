@@ -11,7 +11,7 @@ Route::get('/concert1', function () {
 })->name('concert1');
 
 Route::get('/landingconcert', function () {
-    return view('landingconcert');
+    return view('landing-concert');
 })->name('landingconcert');
 
 Route::get('/about', function () {
