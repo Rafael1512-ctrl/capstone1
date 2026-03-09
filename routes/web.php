@@ -3,20 +3,28 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('starter-template');
+    return view('landing-concert');
 });
-
-Route::get('/concert1', function () {
-    return view('concert1');
-})->name('concert1');
 
 Route::get('/landingconcert', function () {
     return view('landing-concert');
 })->name('landingconcert');
 
+Route::get('/concert1', function () {
+    return view('concert1');
+})->name('concert1');
+
 Route::get('/concert2', function () {
     return view('concert2');
 })->name('concert2');
+
+Route::get('/concert3', function () {
+    return view('concert3');
+})->name('concert3');
+
+Route::get('/concert4', function () {
+    return view('concert4');
+})->name('concert4');
 
 Route::get('/about', function () {
     return view('about');

@@ -47,7 +47,7 @@
         </div>
 
         <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="300">
-          <a href="#" class="work-thumb">
+          <a href="{{ route('concert3') }}" class="work-thumb">
             <div class="work-text">
               <h2>Taylor Swift</h2>
               <p>The Eras Tour - Exclusive Access</p>
@@ -57,7 +57,7 @@
         </div>
 
         <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="400">
-          <a href="#" class="work-thumb">
+          <a href="{{ route('concert4') }}" class="work-thumb">
             <div class="work-text">
               <h2>Arctic Monkeys</h2>
               <p>Live in Jakarta - 2023 Asia Tour</p>
