@@ -14,6 +14,10 @@ Route::get('/landingconcert', function () {
     return view('landing-concert');
 })->name('landingconcert');
 
+Route::get('/concert2', function () {
+    return view('concert2');
+})->name('concert2');
+
 Route::get('/about', function () {
     return view('about');
 })->name('about');

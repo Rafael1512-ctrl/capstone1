@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>EventCon</title>
-    <meta name="description" content="">
+    <title>Radiohead | A Heart-Shaped Void World Tour</title>
+    <meta name="description" content="Radiohead Live in Jakarta - Experience the magic of their soundscapes.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- <link rel="manifest" href="site.webmanifest"> -->
@@ -26,6 +26,69 @@
 
     <link rel="stylesheet" href="{{ asset('concert-assets/css/style.css') }}">
     <!-- <link rel="stylesheet" href="{{ asset('concert-assets/css/responsive.css') }}"> -->
+    <style>
+        .slider_bg_1 {
+            background-image: url("https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&q=80&w=1974&ixlib=rb-4.0.3");
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Radiohead Unique Glitch Effect */
+        .glitch-text {
+            position: relative;
+            color: white;
+            mix-blend-mode: exclusion;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: -2px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 5s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: -2px 0 #00fff9, 2px 2px #ff00c1;
+            animation: glitch-anim2 1s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% {
+                clip: rect(31px, 9999px, 94px, 0);
+            }
+
+            20% {
+                clip: rect(62px, 9999px, 42px, 0);
+            }
+
+            40% {
+                clip: rect(16px, 9999px, 78px, 0);
+            }
+
+            60% {
+                clip: rect(60px, 9999px, 84px, 0);
+            }
+
+            80% {
+                clip: rect(89px, 9999px, 86px, 0);
+            }
+
+            100% {
+                clip: rect(50px, 9999px, 20px, 0);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -43,7 +106,8 @@
                             <div class="col-xl-3 col-lg-3">
                                 <div class="logo">
                                     <a href="{{ route('concert1') }}">
-                                        <img src="{{ asset('concert-assets/img/logo.png') }}" alt="">
+                                        <h2 class="glitch-text" data-text="RH."
+                                            style="color: white; font-weight: bold; margin-bottom: 0;">RH.</h2>
                                     </a>
                                 </div>
                             </div>
@@ -52,23 +116,10 @@
                                     <nav>
                                         <ul id="navigation">
                                             <li><a href="{{ route('concert1') }}">home</a></li>
-                                            <li><a href="performer.html">Performer</a></li>
-                                            
-                                            <li><a href="#">pages <i class="ti-angle-down"></i></a>
-                                                <ul class="submenu">
-                                                    <li><a href="about.html">about</a></li>
-                                                    <li><a href="Program.html">Program</a></li>
-                                                    <li><a href="Venue.html">Venue</a></li>
-                                                    <li><a href="elements.html">elements</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="#">blog <i class="ti-angle-down"></i></a>
-                                                <ul class="submenu">
-                                                    <li><a href="blog.html">blog</a></li>
-                                                    <li><a href="single-blog.html">single-blog</a></li>
-                                                </ul>
-                                            </li>
-                                            <li><a href="contact.html">Contact</a></li>
+                                            <li><a href="#performers">Performer</a></li>
+                                            <li><a href="#about">About</a></li>
+                                            <li><a href="#program">Program</a></li>
+                                            <li><a href="#venue">Venue</a></li>
                                         </ul>
                                     </nav>
                                 </div>
@@ -76,7 +127,7 @@
                             <div class="col-xl-3 col-lg-3 d-none d-lg-block">
                                 <div class="buy_tkt">
                                     <div class="book_btn d-none d-lg-block">
-                                        <a href="#">Buy Tickets</a>
+                                        <a href="#">Join Waitlist</a>
                                     </div>
                                 </div>
                             </div>
@@ -105,9 +156,10 @@
                             <div class="shape_2 wow fadeInDown" data-wow-duration="1s" data-wow-delay=".2s">
                                 <img src="{{ asset('concert-assets/img/shape/shape_2.svg') }}" alt="">
                             </div>
-                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">12 Feb, 2020</span>
-                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">Concert  2020</h3>
-                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Green Avenue, New York</p>
+                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">20 Nov, 2026</span>
+                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">Radiohead LIVE</h3>
+                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Jakarta International
+                                Stadium (JIS), Indonesia</p>
                         </div>
                     </div>
                 </div>
@@ -117,12 +169,12 @@
     <!-- slider_area_end -->
 
     <!-- performar_area_start  -->
-    <div class="performar_area black_bg">
+    <div id="performers" class="performar_area black_bg">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section_title mb-80">
-                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">Performer</h3>
+                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">The Band</h3>
                     </div>
                 </div>
             </div>
@@ -130,46 +182,50 @@
                 <div class="col-lg-8">
                     <div class="row">
                         <div class="col-lg-6 col-md-6">
-                            <div  class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
+                            <div class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
                                 <div data-tilt class="thumb">
-                                    <img src="{{ asset('concert-assets/img/performer/1.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1549412650-ef3bb78330fc?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
                                 <div class="performer_heading">
-                                    <h4>Mr. Zosoldos</h4>
-                                    <span>Acoustic drum</span>
+                                    <h4>Thom Yorke</h4>
+                                    <span>Vocals / Keys / Guitar</span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6">
-                            <div  class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
+                            <div class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
                                 <div data-tilt class="thumb">
-                                    <img src="{{ asset('concert-assets/img/performer/2.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
                                 <div class="performer_heading">
-                                    <h4>Protik Hasan</h4>
-                                    <span>Acoustic drum</span>
+                                    <h4>Jonny Greenwood</h4>
+                                    <span>Lead Guitar / Keyboard</span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6">
-                            <div  class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
+                            <div class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
                                 <div data-tilt class="thumb">
-                                    <img src="{{ asset('concert-assets/img/performer/3.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
                                 <div class="performer_heading">
-                                    <h4>Salmon Vicky</h4>
-                                    <span>Acoustic drum</span>
+                                    <h4>Ed O'Brien</h4>
+                                    <span>Rhythm Guitar / Backing Vocals</span>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-6 col-md-6">
-                            <div   class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
+                            <div class="single_performer wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
                                 <div data-tilt class="thumb">
-                                    <img src="{{ asset('concert-assets/img/performer/4.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
                                 <div class="performer_heading">
-                                    <h4>Filaris Habol</h4>
-                                    <span>Acoustic drum</span>
+                                    <h4>Philip Selway</h4>
+                                    <span>Drums / Percussion</span>
                                 </div>
                             </div>
                         </div>
@@ -181,13 +237,15 @@
     <!-- performar_area_end  -->
 
     <!-- about_area_start  -->
-    <div class="about_area black_bg">
+    <div id="about" class="about_area black_bg">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="section_title text-center mb-80">
-                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s" >About Program</h3>
-                        <p class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s" >The event regularly attracts a diverse range of attendees from around the world, across different professions, and with different.</p>
+                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">A Heart-Shaped Void</h3>
+                        <p class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Radiohead returns with
+                            their most ambitious world tour yet. Merging immersive visual art with their groundbreaking
+                            sonic landscapes, this isn't just a concert—it's a descent into the sublime.</p>
                     </div>
                 </div>
             </div>
@@ -198,15 +256,21 @@
                             <img src="{{ asset('concert-assets/img/shape/shape_3.svg') }}" alt="">
                         </div>
                         <div class="thumb_inner  wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
-                            <img src="{{ asset('concert-assets/img/about/about.png') }}" alt="">
+                            <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=1000"
+                                alt="">
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-5 col-md-6">
                     <div class="about_info pl-68">
-                        <h4 class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">It’s time to book your seat</h4>
-                        <p  class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".6s">The event regularly attracts a diverse range of attendees from around the world, across different professions, and with different levels of experience transform your business.</p>
-                        <a href="#" class="boxed-btn3  wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".7s">Buy Tickets</a>
+                        <h4 class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Experience it live in
+                            Jakarta</h4>
+                        <p class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".6s">After years of
+                            anticipation, the Oxford quintessential art-rockers are finally landing on Indonesian soil.
+                            With a setlist spanning three decades of mastery, from OK Computer to A Moon Shaped Pool.
+                        </p>
+                        <a href="#" class="boxed-btn3  wow fadeInLeft" data-wow-duration="1s"
+                            data-wow-delay=".7s">Waitlist Now</a>
                     </div>
                 </div>
             </div>
@@ -214,12 +278,13 @@
     </div>
     <!-- about_area_end  -->
 
-    <div class="program_details_area detials_bg_1 overlay2">
+    <div id="program" class="program_details_area detials_bg_1 overlay2">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="section_title text-center mb-80  wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">
-                        <h3>Program Details</h3>
+                    <div class="section_title text-center mb-80  wow fadeInRight" data-wow-duration="1s"
+                        data-wow-delay=".3s">
+                        <h3>Setlist Expectations</h3>
                     </div>
                 </div>
             </div>
@@ -230,52 +295,66 @@
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">3.00-4.00pm</span>
-                                    <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">12 Feb 2020</h4>
+                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">07:00
+                                        PM</span>
+                                    <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">Doors Open
+                                    </h4>
                                 </div>
                                 <div class="thumb wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="{{ asset('concert-assets/img/program_details/1.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
-                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Mr. Zosoldos</h4>
+                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Preshow Ambience
+                                </h4>
                             </div>
                         </div>
                         <div class="single_propram">
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">3.00-4.00pm</span>
-                                    <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">12 Feb 2020</h4>
+                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">08:00
+                                        PM</span>
+                                    <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Opening Act
+                                    </h4>
                                 </div>
                                 <div class="thumb wow fadeInRight" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="{{ asset('concert-assets/img/program_details/2.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
-                                <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".6s">Mr. Zosoldos</h4>
+                                <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".6s">The Smile
+                                    (Special Guest)</h4>
                             </div>
                         </div>
                         <div class="single_propram">
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">3.00-4.00pm</span>
-                                    <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">12 Feb 2020</h4>
+                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">09:15
+                                        PM</span>
+                                    <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">Radiohead</h4>
                                 </div>
                                 <div class="thumb  wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="{{ asset('concert-assets/img/program_details/3.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1501612722273-30ad506f52de?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
-                                <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Mr. Zosoldos</h4>
+                                <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Main Set
+                                    Performance</h4>
                             </div>
                         </div>
                         <div class="single_propram">
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">3.00-4.00pm</span>
-                                    <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">12 Feb 2020</h4>
+                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">11:00
+                                        PM</span>
+                                    <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Encore</h4>
                                 </div>
                                 <div class="thumb wow fadeInRight" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="{{ asset('concert-assets/img/program_details/4.png') }}" alt="">
+                                    <img src="https://images.unsplash.com/photo-1514525253361-b83f859b71c0?auto=format&fit=crop&q=80&w=400"
+                                        alt="">
                                 </div>
-                                <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".6s">Mr. Zosoldos</h4>
+                                <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".6s">Closing Rituals
+                                </h4>
                             </div>
                         </div>
                     </div>
@@ -285,61 +364,63 @@
     </div>
 
     <!-- map_area_start  -->
-    <div class="map_area">
+    <div id="venue" class="map_area">
         <div id="map" style="height: 600px; position: relative; overflow: hidden;">
-        
+
         </div>
         <script>
             function initMap() {
                 var uluru = {
-                    lat: -25.363,
-                    lng: 131.044
+                    lat: -6.1245,
+                    lng: 106.8211
                 };
                 var grayStyles = [{
-                        featureType: "all",
-                        stylers: [{
-                                saturation: -90
-                            },
-                            {
-                                lightness: 50
-                            }
-                        ]
+                    featureType: "all",
+                    stylers: [{
+                        saturation: -90
                     },
                     {
-                        elementType: 'labels.text.fill',
-                        stylers: [{
-                            color: '#ccdee9'
-                        }]
+                        lightness: 50
                     }
+                    ]
+                },
+                {
+                    elementType: 'labels.text.fill',
+                    stylers: [{
+                        color: '#ccdee9'
+                    }]
+                }
                 ];
                 var map = new google.maps.Map(document.getElementById('map'), {
-                    center: {
-                        lat: -31.197,
-                        lng: 150.744
-                    },
-                    zoom: 9,
+                    center: uluru,
+                    zoom: 15,
                     styles: grayStyles,
                     scrollwheel: false
                 });
+                var marker = new google.maps.Marker({
+                    position: uluru,
+                    map: map,
+                    title: 'Jakarta International Stadium'
+                });
             }
         </script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpfS1oRGreGSBU5HHjMmQ3o5NLw7VdJ6I&amp;callback=initMap">
-        </script>
+        <script
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpfS1oRGreGSBU5HHjMmQ3o5NLw7VdJ6I&amp;callback=initMap">
+            </script>
         <div class="location_information black_bg wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
-            <h3>Concert 2020</h3>
+            <h3>JIS - Jakarta</h3>
             <div class="info_wrap">
                 <div class="single_info">
-                    <span>Vanue:</span>
-                    <p>26/A, Coontum Avenu
-                        New York-2783</p>
+                    <span>Venue:</span>
+                    <p>Papanggo, Tj. Priok <br>Jakarta Utara, 14340</p>
                 </div>
                 <div class="single_info">
                     <span>Phone:</span>
-                    <p>+10 (88) 267 368 283</p>
+                    <p>+62 (21) 123 4567</p>
                 </div>
                 <div class="single_info">
                     <span>Email:</span>
-                    <p>contact@concert20.com</p>
+                    <p>tours@radiohead.com</p>
                 </div>
             </div>
         </div>
@@ -352,7 +433,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="section_title text-center mb-80">
-                        <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">Sponsor Logos</h4>
+                        <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">Tour Partners</h4>
                     </div>
                 </div>
             </div>
@@ -396,10 +477,12 @@
                     <div class="col-lg-6 col-md-8">
                         <div class="footer_widget">
                             <div class="address_details text-center">
-                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">12 Feb, 2020</h4>
-                                <h3 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">Green Avenue, New York</h3>
-                                <p class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">The event regularly attracts a diverse range of attendees from around the world.</p>
-                                <a href="#" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Buy Tickets</a>
+                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">20 Nov, 2026</h4>
+                                <h3 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">JIS, Jakarta</h3>
+                                <p class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">Everything in its
+                                    right place.</p>
+                                <a href="#" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
+                                    data-wow-delay=".6s">Stay Notified</a>
                             </div>
                         </div>
                     </div>
@@ -412,8 +495,10 @@
                     <div class="col-xl-12">
                         <p class="copy_right text-center wow fadeInDown" data-wow-duration="1s" data-wow-delay=".5s">
                             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> Radiohead Official Tours. All
+                            rights reserved.
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                         </p>
                     </div>
                 </div>
@@ -443,15 +528,12 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
     <script src="{{ asset('concert-assets/js/tilt.jquery.js') }}"></script>
     <script src="{{ asset('concert-assets/js/plugins.js') }}"></script>
 
-
-
     <!--contact js-->
     <script src="{{ asset('concert-assets/js/contact.js') }}"></script>
     <script src="{{ asset('concert-assets/js/jquery.ajaxchimp.min.js') }}"></script>
     <script src="{{ asset('concert-assets/js/jquery.form.js') }}"></script>
     <script src="{{ asset('concert-assets/js/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('concert-assets/js/mail-script.js') }}"></script>
-
 
     <script src="{{ asset('concert-assets/js/main.js') }}"></script>
 </body>
