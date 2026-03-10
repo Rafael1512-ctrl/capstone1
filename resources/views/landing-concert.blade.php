@@ -66,6 +66,46 @@
           </a>
         </div>
 
+        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="500">
+          <a href="{{ route('concert5') }}" class="work-thumb">
+            <div class="work-text">
+              <h2>Queen</h2>
+              <p>Live at Wembley - The Magic Tour</p>
+            </div>
+            <img src="{{ asset('cardboard-assets/img/queen.png') }}" alt="Queen" class="img-fluid">
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="600">
+          <a href="{{ route('concert6') }}" class="work-thumb">
+            <div class="work-text">
+              <h2>The Weeknd</h2>
+              <p>After Hours Til Dawn Tour - Global Event</p>
+            </div>
+            <img src="{{ asset('cardboard-assets/img/theweeknd.png') }}" alt="The Weeknd" class="img-fluid">
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="700">
+          <a href="{{ route('concert7') }}" class="work-thumb">
+            <div class="work-text">
+              <h2>NIKI</h2>
+              <p>Nicole World Tour - Live in Jakarta</p>
+            </div>
+            <img src="{{ asset('cardboard-assets/img/niki.png') }}" alt="NIKI" class="img-fluid">
+          </a>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="800">
+          <a href="{{ route('concert8') }}" class="work-thumb">
+            <div class="work-text">
+              <h2>BTS</h2>
+              <p>Yet To Come - Busan Special Event</p>
+            </div>
+            <img src="{{ asset('cardboard-assets/img/bts_concert.jpg') }}" alt="BTS" class="img-fluid">
+          </a>
+        </div>
+
       </div>
 
       <div class="row mt-5">
