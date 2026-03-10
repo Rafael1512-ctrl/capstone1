@@ -294,40 +294,6 @@
     </div>
     <!-- map_area_end  -->
 
-    <!-- footer start  -->
-    <footer class="footer">
-        <div class="footer_top">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6 col-md-8">
-                        <div class="footer_widget">
-                            <div class="address_details text-center">
-                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">March 20, 2027</h4>
-                                <h3 class="wow fadeInUp text-info" data-wow-duration="1s" data-wow-delay=".4s">Gelora Bung Karno Main Stadium, Jakarta</h3>
-                                <p class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">Are you ready for it?</p>
-                                <a href="#" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
-                                    data-wow-delay=".6s">Get Your Era Ticket</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="copy-right_text">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <p class="copy_right text-center wow fadeInDown" data-wow-duration="1s" data-wow-delay=".5s">
-                            Copyright &copy;
-                            <script>document.write(new Date().getFullYear());</script> Taylor Swift | The Eras Tour Jakarta. All rights reserved.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <!-- footer end  -->
-
     <!-- brand_area_start  -->
     <div class="brand_area black_bg" style="display:none;">
         <div class="container">
@@ -371,41 +337,15 @@
     </div>
     <!-- brand_area_end  -->
     <!-- footer_start  -->
-    <footer class="footer">
-        <div class="footer_top">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6 col-md-8">
-                        <div class="footer_widget">
-                            <div class="address_details text-center">
-                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">20 Nov, 2026</h4>
-                                <h3 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">JIS, Jakarta</h3>
-                                <p class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">Everything in its
-                                    right place.</p>
-                                <a href="#" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
-                                    data-wow-delay=".6s">Stay Notified</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="copy-right_text">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <p class="copy_right text-center wow fadeInDown" data-wow-duration="1s" data-wow-delay=".5s">
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            Copyright &copy;
-                            <script>document.write(new Date().getFullYear());</script> Radiohead Official Tours. All
-                            rights reserved.
-                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    @include('layouts.headerconcert.footer', [
+        'footerDate' => 'March 20, 2027',
+        'footerLocation' => 'Gelora Bung Karno Main Stadium, Jakarta',
+        'footerLocationClass' => 'text-info',
+        'footerSlogan' => 'Are you ready for it?',
+        'footerSloganClass' => '',
+        'footerButtonText' => 'Get Your Era Ticket',
+        'footerCopyright' => 'Taylor Swift | The Eras Tour Jakarta. All rights reserved.'
+    ])
     <!-- footer_end  -->
 
     <!-- JS here -->
