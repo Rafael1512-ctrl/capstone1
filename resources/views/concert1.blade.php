@@ -105,9 +105,8 @@
                         <div class="row align-items-center">
                             <div class="col-xl-3 col-lg-3">
                                 <div class="logo">
-                                    <a href="{{ route('concert1') }}">
-                                        <h2 class="glitch-text" data-text="RH."
-                                            style="color: white; font-weight: bold; margin-bottom: 0;">RH.</h2>
+                                    <a href="{{ route('landingconcert') }}">
+                                        <h2 style="background: linear-gradient(90deg, #dc143c, #8b0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 0;">TIXLY</h2>
                                     </a>
                                 </div>
                             </div>

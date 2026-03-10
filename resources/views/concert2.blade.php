@@ -75,6 +75,7 @@
                                 <div class="main-menu  d-none d-lg-block">
                                     <nav>
                                         <ul id="navigation">
+                                            <li><a href="{{ route('landingconcert') }}"><i class="fa fa-arrow-left"></i> Back</a></li>
                                             <li><a href="{{ route('concert2') }}">home</a></li>
                                             <li><a href="#performers">The Band</a></li>
                                             <li><a href="#about">The Tour</a></li>
