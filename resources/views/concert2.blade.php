@@ -56,51 +56,7 @@
 
 <body>
     <!-- header-start -->
-    <header>
-        <div class="header-area ">
-            <div id="sticky-header" class="main-header-area">
-                <div class="container">
-                    <div class="header_bottom_border">
-                        <div class="row align-items-center">
-                            <div class="col-xl-3 col-lg-3">
-                                <div class="logo">
-                                    <a href="{{ route('concert2') }}">
-                                        <h2
-                                            style="background: linear-gradient(90deg, #00d2ff, #ff0095); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 0;">
-                                            COLDPLAY</h2>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-xl-6 col-lg-6">
-                                <div class="main-menu  d-none d-lg-block">
-                                    <nav>
-                                        <ul id="navigation">
-                                            <li><a href="{{ route('landingconcert') }}"><i class="fa fa-arrow-left"></i> Back</a></li>
-                                            <li><a href="{{ route('concert2') }}">home</a></li>
-                                            <li><a href="#performers">The Band</a></li>
-                                            <li><a href="#about">The Tour</a></li>
-                                            <li><a href="#sustainability">Planet</a></li>
-                                            <li><a href="#venue">Venue</a></li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-3 d-none d-lg-block">
-                                <div class="buy_tkt">
-                                    <div class="book_btn d-none d-lg-block">
-                                        <a href="#">Join the Light</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="mobile_menu d-block d-lg-none"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+    @include('layouts.headerconcert.header')
     <!-- header-end -->
 
     <!-- slider_area_start -->
