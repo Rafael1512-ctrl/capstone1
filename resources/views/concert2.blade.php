@@ -275,7 +275,7 @@
         'footerLocationClass' => 'text-info',
         'footerSlogan' => 'Believe in Love.',
         'footerSloganClass' => '',
-        'footerButtonText' => 'Join the Galaxy',
+        'footerButtonText' => 'Get Your Ticket',
         'footerCopyright' => 'Coldplay Official Tours. All rights reserved.'
     ])
 

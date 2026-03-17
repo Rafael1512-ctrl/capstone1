@@ -1,5 +1,27 @@
 @extends('layouts.landingpageconcert.landingconcert')
 @section('contentlandingconcert')
+  <style>
+    /* Custom Override for Concert Cards Hover Effect */
+    .work-thumb {
+        overflow: hidden !important; 
+        border: 4px solid #fff !important; /* Keep the white border static on the container */
+    }
+    .work-thumb img {
+        border: none !important; 
+        transition: transform 0.5s ease !important; 
+        width: 100%;
+        display: block;
+    }
+    .work-thumb:hover img {
+        transform: scale(1.1) !important; 
+    }
+    .work-thumb:before {
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+    }
+  </style>
   <div class="slider-item overlay" data-stellar-background-ratio="0.5"
     style="background-image: url('{{ asset('cardboard-assets/img/hero_2.jpg') }}');">
     <div class="container">
@@ -69,10 +91,10 @@
         <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="500">
           <a href="{{ route('concert5') }}" class="work-thumb">
             <div class="work-text">
-              <h2>Queen</h2>
-              <p>Live at Wembley - The Magic Tour</p>
+              <h2>Bruno Mars</h2>
+              <p>Bruno Mars brings the groove.</p>
             </div>
-            <img src="{{ asset('cardboard-assets/img/queen.png') }}" alt="Queen" class="img-fluid">
+            <img src="{{ asset('cardboard-assets/img/BrunoMars.png') }}" alt="BrunoMars" class="img-fluid">
           </a>
         </div>
 
@@ -82,27 +104,27 @@
               <h2>The Weeknd</h2>
               <p>After Hours Til Dawn Tour - Global Event</p>
             </div>
-            <img src="{{ asset('cardboard-assets/img/theweeknd.png') }}" alt="The Weeknd" class="img-fluid">
+            <img src="{{ asset('cardboard-assets/img/the-weeknd.jpg') }}" alt="The Weeknd" class="img-fluid">
           </a>
         </div>
 
         <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="700">
           <a href="{{ route('concert7') }}" class="work-thumb">
             <div class="work-text">
-              <h2>NIKI</h2>
-              <p>Nicole World Tour - Live in Jakarta</p>
+              <h2>edsheeran</h2>
+              <p>sings straight from the heart.</p>
             </div>
-            <img src="{{ asset('cardboard-assets/img/niki.png') }}" alt="NIKI" class="img-fluid">
+            <img src="{{ asset('cardboard-assets/img/edsheeran.jpg') }}" alt="edsheeran" class="img-fluid">
           </a>
         </div>
 
         <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="800">
           <a href="{{ route('concert8') }}" class="work-thumb">
             <div class="work-text">
-              <h2>BTS</h2>
-              <p>Yet To Come - Busan Special Event</p>
+              <h2>Billie Eilish</h2>
+              <p>Billie Eilish owns the stage</p>
             </div>
-            <img src="{{ asset('cardboard-assets/img/bts_concert.jpg') }}" alt="BTS" class="img-fluid">
+            <img src="{{ asset('cardboard-assets/img/billie-eilish.jpg') }}" alt="Billie Eilish" class="img-fluid">
           </a>
         </div>
 

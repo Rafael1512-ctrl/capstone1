@@ -433,7 +433,7 @@
         'footerLocationClass' => '',
         'footerSlogan' => 'Everything in its right place.',
         'footerSloganClass' => '',
-        'footerButtonText' => 'Stay Notified',
+        'footerButtonText' => 'Get Your Ticket',
         'footerCopyright' => 'Radiohead Official Tours. All rights reserved.'
     ])
     <!-- footer_end  -->

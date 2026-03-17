@@ -343,7 +343,7 @@
         'footerLocationClass' => 'text-info',
         'footerSlogan' => 'Are you ready for it?',
         'footerSloganClass' => '',
-        'footerButtonText' => 'Get Your Era Ticket',
+        'footerButtonText' => 'Get Your Ticket',
         'footerCopyright' => 'Taylor Swift | The Eras Tour Jakarta. All rights reserved.'
     ])
     <!-- footer_end  -->

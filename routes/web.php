@@ -27,21 +27,25 @@ Route::get('/concert4', function () {
 })->name('concert4');
 
 Route::get('/concert5', function () {
-    return view('concert1'); // Defaulting to concert1 for now
+    return view('concert5');
 })->name('concert5');
 
 Route::get('/concert6', function () {
-    return view('concert1'); // Defaulting to concert1 for now
+    return view('concert6');
 })->name('concert6');
 
 Route::get('/concert7', function () {
-    return view('concert1'); // Defaulting to concert1 for now
+    return view('concert7');
 })->name('concert7');
 
 Route::get('/concert8', function () {
-    return view('concert1'); // Defaulting to concert1 for now
+    return view('concert8');
 })->name('concert8');
 
 Route::get('/about', function () {
     return view('about');
 })->name('about');
+
+Route::get('/ticket-detail', function () {
+    return view('ticket');
+})->name('ticket.detail');
