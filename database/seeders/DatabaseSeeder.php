@@ -15,11 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Create a dummy test account for quick login
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Dummy User',
+            'email' => 'dummy@example.com',
+            'password' => bcrypt('password123'),
+            'role' => 'user',
+            'phone' => '081234567890',
+        ]);
+
+        // Optional organizer account
+        User::factory()->create([
+            'name' => 'Organizer User',
+            'email' => 'organizer@example.com',
+            'password' => bcrypt('organizer123'),
+            'role' => 'organizer',
         ]);
     }
 }

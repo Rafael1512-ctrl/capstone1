@@ -46,7 +46,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Registration successful! Welcome to the platform.');
+        return redirect()->route('landingconcert')->with('success', 'Registration successful! Welcome to the platform.');
     }
 
     /**
@@ -71,7 +71,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
             Auth::user()->update(['last_login' => now()]);
 
-            return redirect()->route('dashboard')->with('success', 'Login successful!');
+            return redirect()->route('landingconcert')->with('success', 'Login successful!');
         }
 
         return back()->withErrors([
@@ -89,6 +89,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('landingconcert')->with('success', 'Logged out successfully!');
+        return redirect()->route('login')->with('success', 'Logged out successfully!');
     }
 }
