@@ -57,50 +57,7 @@
         <![endif]-->
 
     <!-- header-start -->
-    <header>
-        <div class="header-area ">
-            <div id="sticky-header" class="main-header-area">
-                <div class="container">
-                    <div class="header_bottom_border">
-                        <div class="row align-items-center">
-                            <div class="col-xl-3 col-lg-3">
-                                <div class="logo">
-                                    <a href="{{ route('concert1') }}">
-                                        <h2 style="background: linear-gradient(90deg, #dc143c, #8b0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 0;">ARCTIC MONKEYS</h2>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col-xl-6 col-lg-6">
-                                <div class="main-menu  d-none d-lg-block">
-                                    <nav>
-                                        <ul id="navigation">
-                                            <li><a href="{{ route('landingconcert') }}"><i class="fa fa-arrow-left"></i> Back</a></li>
-                                            <li><a href="{{ route('concert4') }}">home</a></li>
-                                            <li><a href="#performer">Band</a></li>
-                                            <li><a href="#about">The Tour</a></li>
-                                            <li><a href="#program">Schedule</a></li>
-                                            <li><a href="#venue">Venue</a></li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-lg-3 d-none d-lg-block">
-                                <div class="buy_tkt">
-                                    <div class="book_btn d-none d-lg-block">
-                                        <a href="#">Get Your Ticket</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="mobile_menu d-block d-lg-none"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </header>
+    @include('layouts.headerconcert.header')
     <!-- header-end -->
 
     <!-- slider_area_start -->
@@ -351,39 +308,15 @@
     </div>
     <!-- map_area_end  -->
 
-    <!-- footer start  -->
-    <footer class="footer">
-        <div class="footer_top">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6 col-md-8">
-                        <div class="footer_widget">
-                            <div class="address_details text-center">
-                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">May 25, 2027</h4>
-                                <h3 class="wow fadeInUp text-warning" data-wow-duration="1s" data-wow-delay=".4s">Arctic Monkeys Live - Jakarta</h3>
-                                <p class="wow fadeInUp text-light" data-wow-duration="1s" data-wow-delay=".5s">Do I Wanna Know? Yes, You Do.</p>
-                                <a href="#" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
-                                    data-wow-delay=".6s">Get Your Ticket</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="copy-right_text">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-12">
-                        <p class="copy_right text-center wow fadeInDown" data-wow-duration="1s" data-wow-delay=".5s">
-                            Copyright &copy;
-                            <script>document.write(new Date().getFullYear());</script> Arctic Monkeys | The Car World Tour Jakarta. All rights reserved.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <!-- footer end  -->
+    @include('layouts.headerconcert.footer', [
+        'footerDate' => 'May 25, 2027',
+        'footerLocation' => 'Arctic Monkeys Live - Jakarta',
+        'footerLocationClass' => 'text-warning',
+        'footerSlogan' => 'Do I Wanna Know? Yes, You Do.',
+        'footerSloganClass' => 'text-light',
+        'footerButtonText' => 'Get Your Ticket',
+        'footerCopyright' => 'Arctic Monkeys | The Car World Tour Jakarta. All rights reserved.'
+    ])
 
     <!-- JS here -->
     <script src="{{ asset('concert-assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>

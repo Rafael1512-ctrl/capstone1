@@ -3,35 +3,75 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
-    public function showLoginForm()
+    /**
+     * Show registration form
+     */
+    public function showRegister()
+    {
+        $role = request('role', 'user'); // Default ke 'user' jika tidak ada
+    return view('auth.register', compact('role'));
+    }
+
+    /**
+     * Handle user registration
+     */
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'role' => ['required', 'in:user,organizer'],
+        ]);
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'phone' => $validated['phone'] ?? null,
+            'role' => $validated['role'],
+        ]);
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect()->route('landingconcert')->with('success', 'Registration successful! Welcome to the platform.');
+    }
+
+    /**
+     * Show login form
+     */
+    public function showLogin()
     {
         return view('auth.login');
     }
 
+    /**
+     * Handle user login
+     */
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
-            'password' => ['required'],
+            'password' => ['required', 'string'],
         ]);
 
-        // Mapping: input 'email' to column 'name', input 'password' to column 'pass'
-        if (Auth::attempt(['name' => $credentials['email'], 'password' => $credentials['password']])) {
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            Auth::user()->update(['last_login' => now()]);
 
-            $user = Auth::user();
-            if ($user->role === 'Admin') {
-                return redirect()->intended('/starter-template');
-            } else {
-                return redirect()->intended('/');
-            }
+            return redirect()->route('landingconcert')->with('success', 'Login successful!');
         }
 
         return back()->withErrors([
@@ -39,42 +79,16 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    public function showRegisterForm()
-    {
-        return view('auth.register');
-    }
-
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,name'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-
-        // Generate simple ID (T-0000X)
-        $count = User::count() + 1;
-        $user_id = 'T-' . str_pad($count, 5, '0', STR_PAD_LEFT);
-
-        $user = User::create([
-            'user_id' => $user_id,
-            'name' => $validated['email'], // Column 'name' stores email login
-            'email' => $validated['name'], // Column 'email' stores full name
-            'pass' => Hash::make($validated['password']),
-            'role_id' => 3, // Default role_id for 'User'
-        ]);
-
-        Auth::login($user);
-
-        return redirect('/');
-    }
-
+    /**
+     * Handle logout
+     */
     public function logout(Request $request)
     {
         Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login')->with('success', 'Logged out successfully!');
     }
 }

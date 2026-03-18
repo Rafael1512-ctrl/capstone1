@@ -6,24 +6,19 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckRole
+class EnsureUserIsOrganizer
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  ...$roles
      */
-    public function handle(Request $request, Closure $next, ...$roles): Response
+    public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
-            return redirect()->route('login');
-        }
-
-        if (in_array(auth()->user()->role, $roles)) {
+        if (auth()->check() && (auth()->user()->isOrganizer() || auth()->user()->isAdmin())) {
             return $next($request);
         }
 
-        abort(403, 'Unauthorized: You do not have access to this resource.');
+        abort(403, 'Only event organizers can access this resource.');
     }
 }
