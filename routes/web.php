@@ -8,17 +8,43 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrganizerController;
 
 // ============================================================
 // PUBLIC ROUTES
 // ============================================================
 Route::get('/', function () {
-    return view('user');
+    if (auth()->check()) {
+        $user = auth()->user();
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.starter');
+        }
+        if ($user->isOrganizer()) {
+            return redirect()->route('organizer.dashboard');
+        }
+        return redirect()->route('landing');
+    }
+    return redirect()->route('login');
 })->name('landingconcert');
 
 Route::get('/admin', function () {
     return view('dashboard.admin');
-})->name('dashboard.admin')->middleware('auth', 'admin');
+})->name('dashboard.admin')->middleware(['auth', 'role:admin']);
+
+// Starter Template (Admin Only)
+Route::get('/starter-template', function () {
+    return view('starter-template');
+})->name('admin.starter')->middleware(['auth', 'role:admin']);
+
+// Landing Page (User & Organizer)
+Route::get('/landing', function () {
+    return view('user');
+})->name('landing')->middleware('auth');
+
+// Organizer Dashboard
+Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
+    ->name('organizer.dashboard')
+    ->middleware(['auth', 'role:organizer,admin']);
 
 // Concert Pages (Public)
 Route::get('/concert1', function () { return view('concert1'); })->name('concert1');
