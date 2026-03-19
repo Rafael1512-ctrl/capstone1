@@ -206,7 +206,7 @@
         'footerSlogan' => 'Don\'t miss out on the greatest shows.',
         'footerSloganClass' => '',
         'footerButtonText' => 'Back to Home',
-        'footerButtonLink' => route('landingconcert'),
+        'footerButtonLink' => route('home'),
         'footerCopyright' => 'Official Concert Tours. All rights reserved.'
     ])
     <!-- footer_end  -->

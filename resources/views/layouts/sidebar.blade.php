@@ -58,24 +58,24 @@
               <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#base">
                   <i class="fas fa-layer-group"></i>
-                  <p>Base</p>
+                  <p>User</p>
                   <span class="caret"></span>
                 </a>
                 <div class="collapse" id="base">
                   <ul class="nav nav-collapse">
                     <li>
-                      <a href="{{ route('concert1') }}">
-                        <span class="sub-item">Concert</span>
+                      <a href="{{ route('admin.users.admins') }}">
+                        <span class="sub-item">Admin</span>
                       </a>
                     </li> 
                     <li>
-                      <a href="{{ route('landingconcert') }}">
-                        <span class="sub-item">Landing Concert</span>
+                      <a href="{{ route('admin.users.organizers') }}">
+                        <span class="sub-item">Organizer</span>
                       </a>
                     </li>
                     <li>
-                      <a href="components/gridsystem.html">
-                        <span class="sub-item">Grid System</span>
+                      <a href="{{ route('admin.users.users') }}">
+                        <span class="sub-item">User</span>
                       </a>
                     </li>
                     <li>

@@ -14,18 +14,21 @@ use App\Http\Controllers\OrganizerController;
 // PUBLIC ROUTES
 // ============================================================
 Route::get('/', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.starter');
-        }
-        if ($user->isOrganizer()) {
-            return redirect()->route('organizer.dashboard');
-        }
-        return redirect()->route('landing');
-    }
-    return redirect()->route('login');
-})->name('landingconcert');
+    return view('user');
+})->name('home');
+// Route::get('/', function () {
+//     if (auth()->check()) {
+//         $user = auth()->user();
+//         if ($user->isAdmin()) {
+//             return redirect()->route('admin.starter');
+//         }
+//         if ($user->isOrganizer()) {
+//             return redirect()->route('organizer.dashboard');
+//         }
+//         return redirect()->route('landing');
+//     }
+//     return redirect()->route('login');
+// })->name('landingconcert');
 
 Route::get('/admin', function () {
     return view('dashboard.admin');
@@ -47,16 +50,34 @@ Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
     ->middleware(['auth', 'role:organizer,admin']);
 
 // Concert Pages (Public)
-Route::get('/concert1', function () { return view('concert1'); })->name('concert1');
-Route::get('/concert2', function () { return view('concert2'); })->name('concert2');
-Route::get('/concert3', function () { return view('concert3'); })->name('concert3');
-Route::get('/concert4', function () { return view('concert4'); })->name('concert4');
-Route::get('/concert5', function () { return view('concert5'); })->name('concert5');
-Route::get('/concert6', function () { return view('concert6'); })->name('concert6');
-Route::get('/concert7', function () { return view('concert7'); })->name('concert7');
-Route::get('/concert8', function () { return view('concert8'); })->name('concert8');
+Route::get('/concert1', function () {
+    return view('concert1');
+})->name('concert1');
+Route::get('/concert2', function () {
+    return view('concert2');
+})->name('concert2');
+Route::get('/concert3', function () {
+    return view('concert3');
+})->name('concert3');
+Route::get('/concert4', function () {
+    return view('concert4');
+})->name('concert4');
+Route::get('/concert5', function () {
+    return view('concert5');
+})->name('concert5');
+Route::get('/concert6', function () {
+    return view('concert6');
+})->name('concert6');
+Route::get('/concert7', function () {
+    return view('concert7');
+})->name('concert7');
+Route::get('/concert8', function () {
+    return view('concert8');
+})->name('concert8');
 
-Route::get('/about', function () { return view('about'); })->name('about');
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
 
 // ============================================================
 // AUTHENTICATION ROUTES
@@ -135,5 +156,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/users', function () {
             return view('admin.users.index');
         })->name('admin.users.index');
+    });
+    Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    });
+    Route::middleware('role:admin')->group(function () {
+        Route::prefix('admin/users')->name('admin.users.')->group(function () {
+            Route::get('/admins', [App\Http\Controllers\Admin\UserManagementController::class, 'admins'])->name('admins');
+            Route::get('/organizers', [App\Http\Controllers\Admin\UserManagementController::class, 'organizers'])->name('organizers');
+            Route::get('/users', [App\Http\Controllers\Admin\UserManagementController::class, 'users'])->name('users');
+        });
     });
 });

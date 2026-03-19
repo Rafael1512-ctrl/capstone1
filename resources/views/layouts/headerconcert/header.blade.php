@@ -6,7 +6,7 @@
                         <div class="row align-items-center">
                             <div class="col-xl-3 col-lg-3">
                                 <div class="logo">
-                                    <a href="{{ route('landingconcert') }}">
+                                    <a href="{{ route('home') }}">
                                         <h2 style="background: linear-gradient(90deg, #dc143c, #8b0000); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; margin-bottom: 0;">TIXLY</h2>
                                     </a>
                                 </div>
