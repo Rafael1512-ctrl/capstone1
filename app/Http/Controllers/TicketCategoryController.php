@@ -3,23 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use App\Models\TicketCategory;
+use App\Models\TicketType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class TicketCategoryController extends Controller
 {
     /**
-     * Show all ticket categories for an event
+     * Tampilkan semua tipe tiket untuk sebuah event
      */
     public function index(Event $event)
     {
-        $categories = $event->ticketCategories()->get();
-        return view('ticket-categories.index', compact('event', 'categories'));
+        $this->authorize('update', $event);
+        $ticketTypes = $event->ticketTypes()->get();
+        return view('ticket-categories.index', compact('event', 'ticketTypes'));
     }
 
     /**
-     * Show create ticket category form
+     * Form buat tipe tiket baru
      */
     public function create(Event $event)
     {
@@ -28,75 +28,70 @@ class TicketCategoryController extends Controller
     }
 
     /**
-     * Store new ticket category
+     * Simpan tipe tiket baru
      */
     public function store(Request $request, Event $event)
     {
         $this->authorize('update', $event);
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'total_tickets' => ['required', 'integer', 'min:1'],
+            'name'           => ['required', 'string', 'max:255'],
+            'description'    => ['nullable', 'string'],
+            'price'          => ['required', 'numeric', 'min:0'],
+            'quantity_total' => ['required', 'integer', 'min:1'],
         ]);
 
-        $validated['event_id'] = $event->id;
-        $validated['available_tickets'] = $validated['total_tickets'];
-        $validated['status'] = 'active';
+        $validated['event_id']       = $event->id;
+        $validated['quantity_sold']  = 0;
 
-        TicketCategory::create($validated);
+        TicketType::create($validated);
 
-        return redirect()->route('events.show', $event)->with('success', 'Ticket category added successfully!');
+        return redirect()->route('events.show', $event)
+            ->with('success', 'Tipe tiket berhasil ditambahkan!');
     }
 
     /**
-     * Show edit form
+     * Form edit tipe tiket
      */
-    public function edit(Event $event, TicketCategory $category)
+    public function edit(Event $event, TicketType $category)
     {
         $this->authorize('update', $event);
         return view('ticket-categories.edit', compact('event', 'category'));
     }
 
     /**
-     * Update category
+     * Update tipe tiket
      */
-    public function update(Request $request, Event $event, TicketCategory $category)
+    public function update(Request $request, Event $event, TicketType $category)
     {
         $this->authorize('update', $event);
 
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'price' => ['required', 'numeric', 'min:0'],
-            'total_tickets' => ['required', 'integer', 'min:' . $category->sold_tickets],
+            'name'           => ['required', 'string', 'max:255'],
+            'description'    => ['nullable', 'string'],
+            'price'          => ['required', 'numeric', 'min:0'],
+            'quantity_total' => ['required', 'integer', 'min:' . $category->quantity_sold],
         ]);
-
-        // If total_tickets increased, add to available_tickets
-        if ($validated['total_tickets'] > $category->total_tickets) {
-            $difference = $validated['total_tickets'] - $category->total_tickets;
-            $validated['available_tickets'] = $category->available_tickets + $difference;
-        }
 
         $category->update($validated);
 
-        return redirect()->route('events.show', $event)->with('success', 'Ticket category updated successfully!');
+        return redirect()->route('events.show', $event)
+            ->with('success', 'Tipe tiket berhasil diupdate!');
     }
 
     /**
-     * Delete ticket category
+     * Hapus tipe tiket
      */
-    public function destroy(Event $event, TicketCategory $category)
+    public function destroy(Event $event, TicketType $category)
     {
         $this->authorize('update', $event);
 
-        if ($category->sold_tickets > 0) {
-            return back()->with('error', 'Cannot delete category with sold tickets.');
+        if ($category->quantity_sold > 0) {
+            return back()->with('error', 'Tidak bisa menghapus tipe tiket yang sudah terjual.');
         }
 
         $category->delete();
 
-        return back()->with('success', 'Ticket category deleted successfully!');
+        return back()->with('success', 'Tipe tiket berhasil dihapus!');
     }
 }

@@ -21,7 +21,7 @@
                                         <strong>Event:</strong> {{ $order->event->title }}
                                     </p>
                                     <p class="mb-2">
-                                        <strong>Event Date:</strong> {{ $order->event->event_date->format('F d, Y') }}
+                                        <strong>Event Date:</strong> {{ $order->event->date->format('F d, Y') }}
                                     </p>
                                 </div>
                                 <div class="col-md-6">
@@ -51,7 +51,7 @@
                                     <thead>
                                         <tr>
                                             <th>Ticket #</th>
-                                            <th>Category</th>
+                                            <th>Type</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -59,12 +59,12 @@
                                     <tbody>
                                         @forelse($order->tickets ?? [] as $ticket)
                                             <tr>
-                                                <td><strong>{{ $ticket->ticket_number }}</strong></td>
-                                                <td>{{ $ticket->ticketCategory->name }}</td>
+                                                <td><strong>{{ Str::limit($ticket->unique_code, 8, '') }}</strong></td>
+                                                <td>{{ $ticket->ticketType->name }}</td>
                                                 <td>
                                                     <span
-                                                        class="badge bg-{{ $ticket->status === 'used' ? 'success' : 'primary' }}">
-                                                        {{ ucfirst($ticket->status) }}
+                                                        class="badge bg-{{ $ticket->is_used ? 'success' : 'primary' }}">
+                                                        {{ $ticket->is_used ? 'Used' : 'Active' }}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -100,14 +100,16 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
+                                @foreach($order->items as $item)
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Tickets ({{ $order->quantity }})</span>
-                                    <strong>${{ number_format($order->total_price, 2) }}</strong>
+                                    <span>{{ $item->ticketType->name }} (x{{ $item->quantity }})</span>
+                                    <strong>${{ number_format($item->subtotal, 2) }}</strong>
                                 </div>
+                                @endforeach
                                 <hr>
                                 <div class="d-flex justify-content-between">
                                     <strong>Total:</strong>
-                                    <strong class="text-primary">${{ number_format($order->total_price, 2) }}</strong>
+                                    <strong class="text-primary">${{ number_format($order->total_amount, 2) }}</strong>
                                 </div>
                             </div>
                         </div>

@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Order;
-use App\Models\Transaction;
-use Illuminate\Http\Request;
+use App\Models\Payment;
+use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     /**
-     * Show the dashboard based on user role
+     * Route ke halaman dashboard sesuai role
      */
     public function index()
     {
@@ -21,63 +22,63 @@ class DashboardController extends Controller
             return $this->adminDashboard();
         } elseif ($user->isOrganizer()) {
             return $this->organizerDashboard();
-        } else {
-            return $this->userDashboard();
         }
+
+        return $this->userDashboard();
     }
 
     /**
-     * Admin Dashboard
+     * Admin Dashboard page (standalone route)
      */
+    public function adminDashboardPage()
+    {
+        return $this->adminDashboard();
+    }
+
+    // -----------------------------------------------
+    // Admin
+    // -----------------------------------------------
     private function adminDashboard()
     {
         $stats = [
-            'total_users' => \App\Models\User::count(),
-            'total_organizers' => \App\Models\User::where('role', 'organizer')->count(),
-            'total_events' => Event::count(),
-            'total_orders' => Order::count(),
-            'pending_transactions' => Transaction::where('status', 'pending')->count(),
-            'completed_transactions' => Transaction::where('status', 'completed')->count(),
-            'total_revenue' => Transaction::where('status', 'completed')->sum('amount'),
+            'total_users'       => User::where('role', 'user')->count(),
+            'total_organizers'  => User::where('role', 'organizer')->count(),
+            'total_events'      => Event::count(),
+            'total_orders'      => Order::count(),
+            'total_revenue'     => Payment::where('status', 'success')->sum('amount'),
+            'pending_payments'  => Payment::where('status', 'pending')->count(),
         ];
 
-        $recent_orders = Order::with('user', 'event')
+        $recent_orders = Order::with(['user', 'event'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
 
-        $recent_transactions = Transaction::with('order', 'user')
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-
-        return view('dashboard.admin', compact('stats', 'recent_orders', 'recent_transactions'));
+        return view('admin.dashboard', compact('stats', 'recent_orders'));
     }
 
-    /**
-     * Organizer Dashboard
-     */
+    // -----------------------------------------------
+    // Organizer
+    // -----------------------------------------------
     private function organizerDashboard()
     {
-        $user = Auth::user();
-
-        $events = Event::where('organizer_id', $user->id)
-            ->withCount('orders', 'tickets')
-            ->get();
+        $user   = Auth::user();
+        $events = Event::where('organizer_id', $user->id)->withCount('orders')->get();
+        $eventIds = $events->pluck('id');
 
         $stats = [
-            'total_events' => $events->count(),
-            'total_orders' => Order::whereIn('event_id', $events->pluck('id'))->count(),
-            'total_revenue' => Order::whereIn('event_id', $events->pluck('id'))
-                ->where('status', 'paid')
-                ->sum('total_price'),
-            'pending_orders' => Order::whereIn('event_id', $events->pluck('id'))
-                ->where('status', 'pending')
-                ->count(),
+            'total_events'  => $events->count(),
+            'total_orders'  => Order::whereIn('event_id', $eventIds)->count(),
+            'total_revenue' => Order::whereIn('event_id', $eventIds)
+                                    ->where('status', 'paid')
+                                    ->sum('total_amount'),
+            'pending_orders' => Order::whereIn('event_id', $eventIds)
+                                    ->where('status', 'pending')
+                                    ->count(),
         ];
 
-        $recent_orders = Order::whereIn('event_id', $events->pluck('id'))
-            ->with('user', 'event')
+        $recent_orders = Order::whereIn('event_id', $eventIds)
+            ->with(['user', 'event'])
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
@@ -85,9 +86,9 @@ class DashboardController extends Controller
         return view('dashboard.organizer', compact('stats', 'events', 'recent_orders'));
     }
 
-    /**
-     * User Dashboard
-     */
+    // -----------------------------------------------
+    // Regular User
+    // -----------------------------------------------
     private function userDashboard()
     {
         $user = Auth::user();
@@ -97,16 +98,15 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        $tickets = \App\Models\Ticket::whereHas('order', function ($query) {
-            $query->where('user_id', Auth::id());
-        })
-            ->with('event', 'ticketCategory')
-            ->get();
+        $tickets = Ticket::whereHas('order', function ($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->with('ticketType.event')->get();
 
         $stats = [
-            'total_tickets' => $tickets->count(),
-            'used_tickets' => $tickets->where('status', 'used')->count(),
-            'upcoming_events' => $orders->where('event.event_date', '>=', now()->toDateString())->count(),
+            'total_orders'   => $orders->count(),
+            'total_tickets'  => $tickets->count(),
+            'used_tickets'   => $tickets->where('is_used', true)->count(),
+            'active_tickets' => $tickets->where('is_used', false)->count(),
         ];
 
         return view('dashboard.user', compact('orders', 'tickets', 'stats'));

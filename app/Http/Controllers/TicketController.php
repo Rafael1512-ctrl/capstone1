@@ -2,137 +2,132 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
 {
     /**
-     * Generate QR code for ticket
+     * Generate QR code untuk tiket
      */
     public function generateQrCode(Ticket $ticket)
     {
-        // Check authorization
-        if (Auth::user()->id !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
+        if (Auth::id() !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
         try {
-            $qrCode = \SimpleSoftwareIO\QrCode\Facades\QrCode::format('png')
-                ->size(300)
-                ->generate($ticket->ticket_number);
+            $qrCode = QrCode::format('png')->size(300)->generate($ticket->unique_code);
 
-            // Save QR code to storage
-            $filename = 'qr-codes/' . $ticket->ticket_number . '.png';
+            $filename = 'qr-codes/' . $ticket->unique_code . '.png';
             Storage::disk('public')->put($filename, $qrCode);
 
-            $ticket->update([
-                'qr_code' => $ticket->ticket_number,
-                'qr_code_path' => $filename,
-            ]);
+            $ticket->update(['qr_code_url' => $filename]);
 
             return response($qrCode)
                 ->header('Content-Type', 'image/png')
-                ->header('Content-Disposition', 'attachment; filename="' . $ticket->ticket_number . '.png"');
+                ->header('Content-Disposition', 'inline; filename="' . $ticket->unique_code . '.png"');
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to generate QR code'], 500);
+            return response()->json(['error' => 'Gagal membuat QR code: ' . $e->getMessage()], 500);
         }
     }
 
     /**
-     * Download ticket with QR code
+     * Download tiket sebagai file gambar QR
      */
     public function download(Ticket $ticket)
     {
-        // Authorization
-        if (Auth::user()->id !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
+        if (Auth::id() !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
-        // Generate QR if not exists
-        if (!$ticket->qr_code_path || !Storage::disk('public')->exists($ticket->qr_code_path)) {
+        // Generate QR jika belum ada
+        if (!$ticket->qr_code_url || !Storage::disk('public')->exists($ticket->qr_code_url)) {
             $this->generateQrCode($ticket);
+            $ticket->refresh(); // reload data setelah update
         }
 
-        $path = Storage::disk('public')->path($ticket->qr_code_path);
+        $path = Storage::disk('public')->path($ticket->qr_code_url);
 
-        return response()->download($path, $ticket->ticket_number . '.png');
+        return response()->download($path, $ticket->unique_code . '.png');
     }
 
     /**
-     * View ticket details
+     * Lihat detail tiket di browser
      */
     public function view(Ticket $ticket)
     {
-        // Authorization
-        if (Auth::user()->id !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
+        if (Auth::id() !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
-        // Generate QR if not exists
-        if (!$ticket->qr_code_path || !Storage::disk('public')->exists($ticket->qr_code_path)) {
+        // Generate QR jika belum ada
+        if (!$ticket->qr_code_url || !Storage::disk('public')->exists($ticket->qr_code_url)) {
             $this->generateQrCode($ticket);
+            $ticket->refresh();
         }
 
-        $ticket->load('event', 'ticketCategory', 'order');
-        $qrCodeUrl = Storage::disk('public')->url($ticket->qr_code_path);
+        $ticket->load('ticketType.event', 'order');
+
+        // Gunakan asset() dengan path relatif ke public disk
+        $qrCodeUrl = asset('storage/' . $ticket->qr_code_url);
 
         return view('tickets.view', compact('ticket', 'qrCodeUrl'));
     }
 
     /**
-     * Validate ticket (scan QR code) - Admin/Event Staff
+     * Validasi tiket via scan QR (Admin/Organizer)
      */
     public function validate(Request $request)
     {
         $user = Auth::user();
 
-        // Only admin and organizers can validate
         if (!$user->isAdmin() && !$user->isOrganizer()) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $ticketNumber = $request->input('ticket_number');
+        $uniqueCode = $request->input('unique_code');
 
-        if (!$ticketNumber) {
-            return response()->json(['error' => 'Ticket number required'], 400);
+        if (!$uniqueCode) {
+            return response()->json(['error' => 'Kode unik diperlukan'], 400);
         }
 
-        $ticket = Ticket::where('ticket_number', $ticketNumber)->first();
+        $ticket = Ticket::where('unique_code', $uniqueCode)->first();
 
         if (!$ticket) {
-            return response()->json(['error' => 'Ticket not found'], 404);
+            return response()->json(['error' => 'Tiket tidak ditemukan'], 404);
         }
 
-        // If organizer, check if they own the event
-        if ($user->isOrganizer() && $ticket->event->organizer_id !== $user->id) {
-            return response()->json(['error' => 'You can only validate tickets for your events'], 403);
+        $event = $ticket->ticketType->event;
+
+        // Organizer hanya bisa validasi tiket eventnya sendiri
+        if ($user->isOrganizer() && $event->organizer_id !== $user->id) {
+            return response()->json(['error' => 'Anda hanya bisa memvalidasi tiket event Anda'], 403);
         }
 
         if (!$ticket->isActive()) {
-            return response()->json(['error' => 'Ticket is not active'], 400);
+            return response()->json(['error' => 'Tiket sudah digunakan'], 400);
         }
 
-        // Mark as used
-        $ticket->validate($user->name);
+        $ticket->validate();
 
         return response()->json([
             'success' => true,
-            'message' => 'Ticket validated successfully',
-            'ticket' => [
-                'number' => $ticket->ticket_number,
-                'event' => $ticket->event->title,
-                'category' => $ticket->ticketCategory->name,
-                'validated_at' => $ticket->validated_at,
+            'message' => 'Tiket berhasil divalidasi',
+            'ticket'  => [
+                'unique_code'  => $ticket->unique_code,
+                'event'        => $event->title,
+                'ticket_type'  => $ticket->ticketType->name,
+                'used_at'      => $ticket->used_at,
             ],
         ]);
     }
 
     /**
-     * Scan QR code (AJAX endpoint)
+     * Alias scan → validate
      */
     public function scan(Request $request)
     {
@@ -140,14 +135,14 @@ class TicketController extends Controller
     }
 
     /**
-     * List user tickets
+     * Daftar tiket milik user yang sedang login
      */
     public function myTickets()
     {
         $tickets = Ticket::whereHas('order', function ($query) {
             $query->where('user_id', Auth::id());
         })
-            ->with('event', 'ticketCategory', 'order')
+            ->with(['ticketType.event', 'order'])
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 

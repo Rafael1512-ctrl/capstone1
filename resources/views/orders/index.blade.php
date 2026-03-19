@@ -32,8 +32,8 @@
                                             <tr>
                                                 <td>{{ $order->order_number }}</td>
                                                 <td>{{ $order->event->title }}</td>
-                                                <td>{{ $order->quantity }}</td>
-                                                <td>${{ number_format($order->total_price, 2) }}</td>
+                                                <td>{{ $order->items->sum('quantity') }}</td>
+                                                <td>${{ number_format($order->total_amount, 2) }}</td>
                                                 <td>
                                                     <span
                                                         class="badge bg-{{ $order->status === 'paid' ? 'success' : ($order->status === 'pending' ? 'warning' : 'danger') }}">

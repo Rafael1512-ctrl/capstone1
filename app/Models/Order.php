@@ -4,104 +4,61 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Order extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'event_id',
-        'order_number',
-        'quantity',
-        'total_price',
-        'status',
-        'payment_method',
-        'notes',
+        'user_id', 'event_id', 'order_number', 'total_amount', 'status'
     ];
 
     protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'deleted_at' => 'datetime',
+        'total_amount' => 'decimal:2',
     ];
 
-    /**
-     * Boot
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->order_number = 'ORD-' . date('Ymd') . '-' . strtoupper(uniqid());
-        });
-    }
-
-    /**
-     * Relations
-     */
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function event(): BelongsTo
+    public function event()
     {
         return $this->belongsTo(Event::class);
     }
 
-    public function tickets(): HasMany
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function tickets()
     {
         return $this->hasMany(Ticket::class);
     }
 
-    public function transactions(): HasMany
+    public function payments()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Payment::class);
     }
 
-    /**
-     * Scopes
-     */
-    public function scopePaid($query)
-    {
-        return $query->where('status', 'paid');
-    }
-
-    public function scopePending($query)
-    {
-        return $query->where('status', 'pending');
-    }
-
-    /**
-     * Methods
-     */
-    public function markAsPaid(): void
-    {
-        $this->update(['status' => 'paid']);
-    }
-
-    public function markAsCompleted(): void
-    {
-        $this->update(['status' => 'completed']);
-    }
-
-    public function cancel(): void
-    {
-        $this->update(['status' => 'cancelled']);
-    }
-
-    public function isPaid(): bool
+    public function isPaid()
     {
         return $this->status === 'paid';
     }
 
-    public function isPending(): bool
+    public function isPending()
     {
         return $this->status === 'pending';
+    }
+
+    public function markAsPaid()
+    {
+        $this->update(['status' => 'paid']);
+        
+        $this->payments()->where('status', 'pending')->update([
+            'status' => 'success',
+            'paid_at' => now(),
+        ]);
     }
 }

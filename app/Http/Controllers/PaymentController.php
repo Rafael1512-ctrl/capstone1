@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Models\Transaction;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -15,7 +16,10 @@ class PaymentController extends Controller
      */
     public function show(Order $order)
     {
-        $this->authorize('view', $order);
+        // Simple manual authorization or use Policy
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
 
         if ($order->isPaid()) {
             return redirect()->route('orders.show', $order)->with('info', 'This order is already paid.');
@@ -29,7 +33,9 @@ class PaymentController extends Controller
      */
     public function process(Request $request, Order $order)
     {
-        $this->authorize('view', $order);
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'payment_method' => ['required', 'in:credit_card,bank_transfer,dummy'],
@@ -41,28 +47,28 @@ class PaymentController extends Controller
         ]);
 
         return DB::transaction(function () use ($validated, $order, $request) {
-            // Create transaction
-            $transaction = Transaction::create([
+            // Create payment
+            $payment = Payment::create([
                 'order_id' => $order->id,
-                'user_id' => Auth::id(),
-                'amount' => $order->total_price,
-                'status' => 'pending',
+                'amount' => $order->total_amount,
                 'payment_method' => $validated['payment_method'],
-                'notes' => $request->input('notes'),
+                'status' => 'pending',
+                'transaction_id' => 'TX-' . strtoupper(Str::random(12)),
             ]);
 
             // Simulate payment processing
             if ($this->simulatePayment($validated)) {
-                $transaction->markAsCompleted();
+                $payment->update([
+                    'status' => 'success',
+                    'paid_at' => now(),
+                ]);
                 $order->markAsPaid();
-
-                // Send confirmation email
-                \App\Notifications\PaymentConfirmation::dispatch($order);
 
                 return redirect()->route('orders.show', $order)
                     ->with('success', 'Payment successful! Your tickets are ready.');
             } else {
-                $transaction->markAsFailed();
+                $payment->update(['status' => 'failed']);
+                $order->update(['status' => 'failed']);
 
                 return back()->with('error', 'Payment failed. Please try again or use a different payment method.');
             }
@@ -74,7 +80,7 @@ class PaymentController extends Controller
      */
     private function simulatePayment(array $data): bool
     {
-        // Simulate payment with 95% success rate (only fail for test card numbers ending in 00)
+        // Simulate payment with 95% success rate
         if ($data['payment_method'] === 'credit_card') {
             $cardNumber = $data['card_number'] ?? '';
             if (substr($cardNumber, -2) === '00') {
@@ -93,44 +99,12 @@ class PaymentController extends Controller
      */
     public function verify(Order $order)
     {
-        $transaction = $order->transactions()->where('status', 'completed')->latest()->first();
+        $paid = $order->payments()->where('status', 'success')->exists();
 
-        if ($transaction) {
+        if ($paid) {
             return response()->json(['status' => 'success', 'message' => 'Payment verified']);
         }
 
         return response()->json(['status' => 'pending', 'message' => 'Payment pending'], 202);
-    }
-
-    /**
-     * Refund payment
-     */
-    public function refund(Order $order)
-    {
-        $this->authorize('view', $order);
-
-        if (!$order->isPaid()) {
-            return back()->with('error', 'Only paid orders can be refunded.');
-        }
-
-        return DB::transaction(function () use ($order) {
-            // Get the paid transaction
-            $transaction = $order->transactions()->where('status', 'completed')->latest()->first();
-
-            if ($transaction) {
-                $transaction->refund();
-            }
-
-            // Cancel order
-            $order->cancel();
-
-            // Refund tickets back to category
-            foreach ($order->tickets as $ticket) {
-                $ticket->ticketCategory->increaseAvailableTickets(1);
-                $ticket->update(['status' => 'cancelled']);
-            }
-
-            return back()->with('success', 'Order refunded successfully.');
-        });
     }
 }

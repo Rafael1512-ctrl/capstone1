@@ -122,7 +122,7 @@
                                                 <td>{{ $order->order_number }}</td>
                                                 <td>{{ $order->user->name }}</td>
                                                 <td>{{ $order->event->title }}</td>
-                                                <td>${{ number_format($order->total_price, 2) }}</td>
+                                                <td>${{ number_format($order->total_amount, 2) }}</td>
                                                 <td>
                                                     <span
                                                         class="badge bg-{{ $order->status === 'paid' ? 'success' : 'warning' }}">
@@ -133,47 +133,6 @@
                                         @empty
                                             <tr>
                                                 <td colspan="5" class="text-center text-muted">No orders yet</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">Recent Transactions</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>TXN #</th>
-                                            <th>User</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($recent_transactions ?? [] as $txn)
-                                            <tr>
-                                                <td>{{ $txn->transaction_code }}</td>
-                                                <td>{{ $txn->user->name }}</td>
-                                                <td>${{ number_format($txn->amount, 2) }}</td>
-                                                <td>
-                                                    <span
-                                                        class="badge bg-{{ $txn->status === 'completed' ? 'success' : ($txn->status === 'pending' ? 'warning' : 'danger') }}">
-                                                        {{ ucfirst($txn->status) }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center text-muted">No transactions yet</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -193,8 +152,6 @@
                         </div>
                         <div class="card-body">
                             <a href="{{ route('admin.users.index') }}" class="btn btn-sm btn-primary me-2">Manage Users</a>
-                            <a href="{{ route('admin.analytics') }}" class="btn btn-sm btn-info me-2">View Analytics</a>
-                            <a href="{{ route('admin.reports') }}" class="btn btn-sm btn-success me-2">Generate Reports</a>
                             <a href="{{ route('events.index') }}" class="btn btn-sm btn-warning">Manage Events</a>
                         </div>
                     </div>

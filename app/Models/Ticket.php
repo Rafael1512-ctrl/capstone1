@@ -4,103 +4,46 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Ticket extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'order_id',
-        'event_id',
-        'ticket_category_id',
-        'ticket_number',
-        'qr_code',
-        'qr_code_path',
-        'status',
-        'used_at',
-        'validated_at',
-        'validated_by',
-        'notes',
+        'order_id', 'ticket_type_id', 'unique_code', 
+        'qr_code_url', 'is_used', 'used_at'
     ];
 
     protected $casts = [
+        'is_used' => 'boolean',
         'used_at' => 'datetime',
-        'validated_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
 
-    /**
-     * Boot
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->ticket_number = 'TKT-' . date('Ymd') . '-' . strtoupper(uniqid());
-        });
-    }
-
-    /**
-     * Relations
-     */
-    public function order(): BelongsTo
+    public function order()
     {
         return $this->belongsTo(Order::class);
     }
 
-    public function event(): BelongsTo
+    public function ticketType()
     {
-        return $this->belongsTo(Event::class);
+        return $this->belongsTo(TicketType::class, 'ticket_type_id');
     }
 
-    public function ticketCategory(): BelongsTo
+    public function event()
     {
-        return $this->belongsTo(TicketCategory::class);
+        return $this->ticketType->event(); // Access event through ticket type
     }
 
-    /**
-     * Scopes
-     */
-    public function scopeActive($query)
+    public function isActive()
     {
-        return $query->where('status', 'active');
+        return !$this->is_used;
     }
 
-    public function scopeUsed($query)
-    {
-        return $query->where('status', 'used');
-    }
-
-    /**
-     * Methods
-     */
-    public function markAsUsed(): void
+    public function validate($validatedBy = null)
     {
         $this->update([
-            'status' => 'used',
+            'is_used' => true,
             'used_at' => now(),
         ]);
-    }
-
-    public function validate(string $validatedBy): void
-    {
-        $this->update([
-            'status' => 'used',
-            'validated_at' => now(),
-            'validated_by' => $validatedBy,
-        ]);
-    }
-
-    public function isActive(): bool
-    {
-        return $this->status === 'active';
-    }
-
-    public function isUsed(): bool
-    {
-        return $this->status === 'used';
     }
 }
