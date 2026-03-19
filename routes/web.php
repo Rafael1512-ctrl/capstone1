@@ -16,6 +16,10 @@ Route::get('/', function () {
     return view('user');
 })->name('landingconcert');
 
+Route::get('/admin', function () {
+    return view('dashboard.admin');
+})->name('dashboard.admin')->middleware('auth', 'admin');
+
 // Concert Pages (Public)
 Route::get('/concert1', function () { return view('concert1'); })->name('concert1');
 Route::get('/concert2', function () { return view('concert2'); })->name('concert2');
