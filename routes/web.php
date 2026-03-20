@@ -157,25 +157,69 @@ Route::middleware('auth')->group(function () {
         })->name('admin.users.index');
     });
     Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
-        Route::get('/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Admin\AnalyticsController::class, 'dashboard'])->name('admin.dashboard');
     });
     Route::middleware('role:admin')->group(function () {
         Route::prefix('admin/users')->name('admin.users.')->group(function () {
             Route::get('/admins', [App\Http\Controllers\Admin\UserManagementController::class, 'admins'])->name('admins');
             Route::get('/organizers', [App\Http\Controllers\Admin\UserManagementController::class, 'organizers'])->name('organizers');
             Route::get('/users', [App\Http\Controllers\Admin\UserManagementController::class, 'users'])->name('users');
-            
+
             Route::get('/create/{role?}', [App\Http\Controllers\Admin\UserManagementController::class, 'create'])->name('create');
             Route::post('/store', [App\Http\Controllers\Admin\UserManagementController::class, 'store'])->name('store');
             Route::get('/{user}/edit', [App\Http\Controllers\Admin\UserManagementController::class, 'edit'])->name('edit');
             Route::put('/{user}/update', [App\Http\Controllers\Admin\UserManagementController::class, 'update'])->name('update');
             Route::delete('/{user}/destroy', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('destroy');
         });
-        
+
         Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\OrderManagementController::class, 'index'])->name('index');
             Route::get('/{order}', [App\Http\Controllers\Admin\OrderManagementController::class, 'show'])->name('show');
             Route::put('/{order}/status', [App\Http\Controllers\Admin\OrderManagementController::class, 'updateStatus'])->name('status');
+        });
+
+        // Admin Event Management
+        Route::prefix('admin/events')->name('admin.events.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\EventManagementController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Admin\EventManagementController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Admin\EventManagementController::class, 'store'])->name('store');
+            Route::get('/{event}', [App\Http\Controllers\Admin\EventManagementController::class, 'show'])->name('show');
+            Route::get('/{event}/edit', [App\Http\Controllers\Admin\EventManagementController::class, 'edit'])->name('edit');
+            Route::put('/{event}', [App\Http\Controllers\Admin\EventManagementController::class, 'update'])->name('update');
+            Route::delete('/{event}', [App\Http\Controllers\Admin\EventManagementController::class, 'destroy'])->name('destroy');
+
+            // Ticket Management
+            Route::get('/{event}/manage-tickets', [App\Http\Controllers\Admin\EventManagementController::class, 'manageTickets'])->name('manage-tickets');
+            Route::post('/{event}/tickets', [App\Http\Controllers\Admin\EventManagementController::class, 'storeTicket'])->name('store-ticket');
+            Route::put('/{event}/tickets', [App\Http\Controllers\Admin\EventManagementController::class, 'updateTicket'])->name('update-ticket');
+            Route::delete('/{event}/tickets/{ticketId}', [App\Http\Controllers\Admin\EventManagementController::class, 'deleteTicket'])->name('delete-ticket');
+        });
+
+        // Analytics
+        Route::prefix('admin/analytics')->name('admin.analytics.')->group(function () {
+            Route::get('/sales', [App\Http\Controllers\Admin\AnalyticsController::class, 'sales'])->name('sales');
+            Route::get('/transactions', [App\Http\Controllers\Admin\AnalyticsController::class, 'transactions'])->name('transactions');
+            Route::get('/event-performance', [App\Http\Controllers\Admin\AnalyticsController::class, 'eventPerformance'])->name('event-performance');
+            Route::get('/revenue-category', [App\Http\Controllers\Admin\AnalyticsController::class, 'revenueByCategory'])->name('revenue-category');
+            Route::get('/user-stats', [App\Http\Controllers\Admin\AnalyticsController::class, 'userStats'])->name('user-stats');
+        });
+
+        // Exports
+        Route::prefix('admin/export')->name('admin.export.')->group(function () {
+            Route::get('/events', [App\Http\Controllers\Admin\ExportController::class, 'exportEvents'])->name('events');
+            Route::get('/orders', [App\Http\Controllers\Admin\ExportController::class, 'exportOrders'])->name('orders');
+            Route::get('/sales', [App\Http\Controllers\Admin\ExportController::class, 'exportSalesReport'])->name('sales');
+            Route::get('/event-performance', [App\Http\Controllers\Admin\ExportController::class, 'exportEventPerformance'])->name('event-performance');
+        });
+
+        // Event Categories
+        Route::prefix('admin/categories')->name('admin.categories.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\EventCategoryController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Admin\EventCategoryController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Admin\EventCategoryController::class, 'store'])->name('store');
+            Route::get('/{category}/edit', [App\Http\Controllers\Admin\EventCategoryController::class, 'edit'])->name('edit');
+            Route::put('/{category}', [App\Http\Controllers\Admin\EventCategoryController::class, 'update'])->name('update');
+            Route::delete('/{category}', [App\Http\Controllers\Admin\EventCategoryController::class, 'destroy'])->name('destroy');
         });
     });
 });

@@ -10,8 +10,15 @@ class Event extends Model
     use HasFactory;
 
     protected $fillable = [
-        'organizer_id', 'title', 'description', 'date', 
-        'location', 'banner_url', 'status', 'template_id'
+        'organizer_id',
+        'category_id',
+        'title',
+        'description',
+        'date',
+        'location',
+        'banner_url',
+        'status',
+        'template_id'
     ];
 
     protected $casts = [
@@ -21,6 +28,11 @@ class Event extends Model
     public function organizer()
     {
         return $this->belongsTo(User::class, 'organizer_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(EventCategory::class, 'category_id');
     }
 
     public function ticketTypes()
