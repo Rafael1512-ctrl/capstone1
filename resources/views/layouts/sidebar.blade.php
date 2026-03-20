@@ -112,6 +112,33 @@
                 </div>
               </li>
               <li class="nav-item">
+                <a data-bs-toggle="collapse" href="#events">
+                  <i class="fas fa-calendar-alt"></i>
+                  <p>Events</p>
+                  <span class="caret"></span>
+                </a>
+                <div class="collapse" id="events">
+                  <ul class="nav nav-collapse">
+                    <li>
+                      <a href="{{ route('events.index') }}">
+                        <span class="sub-item">All Events</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a href="{{ route('events.create') }}">
+                        <span class="sub-item">Add Event</span>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('admin.orders.index') }}">
+                  <i class="fas fa-shopping-cart"></i>
+                  <p>All Orders</p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a data-bs-toggle="collapse" href="#sidebarLayouts">
                   <i class="fas fa-th-list"></i>
                   <p>Sidebar Layouts</p>

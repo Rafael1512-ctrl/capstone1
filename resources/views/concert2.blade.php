@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Coldplay | Music Of The Spheres World Tour</title>
-    <meta name="description" content="Coldplay Live in Jakarta - A night of neon stars and magic.">
+    <title>{{ $event->title ?? 'Coldplay' }} | Music Of The Spheres World Tour</title>
+    <meta name="description" content="{{ $event->description ?? 'Coldplay Live in Jakarta' }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- <link rel="manifest" href="site.webmanifest"> -->
@@ -27,7 +27,7 @@
     <style>
         /* Coldplay Unique Vibrant Vibe */
         .slider_bg_1 {
-            background-image: url("https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=2070");
+            background-image: url("{{ (isset($event) && $event->banner_url) ? Storage::url($event->banner_url) : 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?auto=format&fit=crop&q=80&w=2070' }}");
             background-size: cover;
             background-position: center;
         }
@@ -72,11 +72,9 @@
                             <div class="shape_2 wow fadeInDown" data-wow-duration="1s" data-wow-delay=".2s">
                                 <img src="{{ asset('concert-assets/img/shape/shape_2.svg') }}" alt="">
                             </div>
-                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">15 Nov, 2026</span>
-                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">Music Of The Spheres
-                            </h3>
-                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Gelora Bung Karno
-                                Stadium, Indonesia</p>
+                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">{{ isset($event) ? $event->date->format('d M, Y') : '15 Nov, 2026' }}</span>
+                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->title ?? 'Music Of The Spheres' }}</h3>
+                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">{{ $event->location ?? 'Gelora Bung Karno Stadium, Indonesia' }}</p>
                         </div>
                     </div>
                 </div>
@@ -270,13 +268,14 @@
     <!-- map_area_end  -->
 
     @include('layouts.headerconcert.footer', [
-        'footerDate' => '15 Nov, 2026',
-        'footerLocation' => 'GBK, Jakarta',
+        'footerDate' => isset($event) ? $event->date->format('d M, Y') : '15 Nov, 2026',
+        'footerLocation' => $event->location ?? 'GBK, Jakarta',
         'footerLocationClass' => 'text-info',
         'footerSlogan' => 'Believe in Love.',
         'footerSloganClass' => '',
         'footerButtonText' => 'Get Your Ticket',
-        'footerCopyright' => 'Coldplay Official Tours. All rights reserved.'
+        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerCopyright' => ($event->title ?? 'Coldplay') . ' Official Tours. All rights reserved.'
     ])
 
     <!-- JS here -->

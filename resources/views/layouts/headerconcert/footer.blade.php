@@ -8,8 +8,8 @@
                                 <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">{{ $footerDate }}</h4>
                                 <h3 class="wow fadeInUp {{ $footerLocationClass ?? 'text-warning' }}" data-wow-duration="1s" data-wow-delay=".4s">{{ $footerLocation }}</h3>
                                 <p class="wow fadeInUp {{ $footerSloganClass ?? 'text-light' }}" data-wow-duration="1s" data-wow-delay=".5s">{{ $footerSlogan }}</p>
-                                {{-- <a href="{{ $footerButtonLink ?? route('ticket.detail') }}" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
-                                    data-wow-delay=".6s">{{ $footerButtonText }}</a> --}}
+                                <a href="{{ $footerButtonLink ?? '#' }}" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
+                                    data-wow-delay=".6s">{{ $footerButtonText }}</a>
                             </div>
                         </div>
                     </div>

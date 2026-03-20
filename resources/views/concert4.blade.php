@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Arctic Monkeys | The Car World Tour Jakarta</title>
-    <meta name="description" content="Arctic Monkeys The Car World Tour Live in Jakarta - Complete info, setlist, merchandise, venue, and fan experience.">
+    <title>{{ $event->title ?? 'Arctic Monkeys' }} | The Car World Tour</title>
+    <meta name="description" content="{{ $event->description ?? 'Arctic Monkeys Live in Jakarta' }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- <link rel="manifest" href="site.webmanifest"> -->
@@ -28,7 +28,7 @@
     <!-- <link rel="stylesheet" href="{{ asset('concert-assets/css/responsive.css') }}"> -->
     <style>
         .slider_bg_1 {
-            background-image: url("https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=2070");
+            background-image: url("{{ (isset($event) && $event->banner_url) ? Storage::url($event->banner_url) : 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&q=80&w=2070' }}");
             background-size: cover;
             background-position: center;
         }
@@ -73,9 +73,9 @@
                             <div class="shape_2 wow fadeInDown" data-wow-duration="1s" data-wow-delay=".2s">
                                 <img src="{{ asset('concert-assets/img/shape/shape_2.svg') }}" alt="">
                             </div>
-                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">May 25, 2027</span>
-                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">The Car World Tour Jakarta</h3>
-                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Gelora Bung Karno Main Stadium, Jakarta</p>
+                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">{{ isset($event) ? $event->date->format('d M, Y') : 'May 25, 2027' }}</span>
+                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->title ?? 'The Car World Tour Jakarta' }}</h3>
+                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">{{ $event->location ?? 'Gelora Bung Karno Main Stadium, Jakarta' }}</p>
                         </div>
                     </div>
                 </div>
@@ -121,8 +121,8 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="section_title text-center mb-80">
-                        <h3 class="wow fadeInRight text-light" data-wow-duration="1s" data-wow-delay=".3s">Tranquility Base Hotel & Casino</h3>
-                        <p class="wow fadeInRight text-warning" data-wow-duration="1s" data-wow-delay=".4s">Arctic Monkeys returns with The Car, their latest masterpiece. A dark, introspective journey through synthesizers and profound lyrics. Experience the haunting beauty of Sheffield's finest on their most intimate and moody tour yet.</p>
+                        <h3 class="wow fadeInRight text-light" data-wow-duration="1s" data-wow-delay=".3s">{{ $event->title ?? 'Tranquility Base Hotel & Casino' }}</h3>
+                        <p class="wow fadeInRight text-warning" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->description ?? 'Arctic Monkeys returns with The Car, their latest masterpiece. A dark, introspective journey through synthesizers and profound lyrics.' }}</p>
                     </div>
                 </div>
             </div>
@@ -309,13 +309,14 @@
     <!-- map_area_end  -->
 
     @include('layouts.headerconcert.footer', [
-        'footerDate' => 'May 25, 2027',
-        'footerLocation' => 'Arctic Monkeys Live - Jakarta',
+        'footerDate' => isset($event) ? $event->date->format('d M, Y') : 'May 25, 2027',
+        'footerLocation' => $event->location ?? 'GBK Stadium, Jakarta',
         'footerLocationClass' => 'text-warning',
         'footerSlogan' => 'Do I Wanna Know? Yes, You Do.',
         'footerSloganClass' => 'text-light',
         'footerButtonText' => 'Get Your Ticket',
-        'footerCopyright' => 'Arctic Monkeys | The Car World Tour Jakarta. All rights reserved.'
+        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerCopyright' => ($event->title ?? 'Arctic Monkeys') . ' | The Car World Tour Jakarta. All rights reserved.'
     ])
 
     <!-- JS here -->

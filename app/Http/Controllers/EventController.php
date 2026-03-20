@@ -51,6 +51,7 @@ class EventController extends Controller
             'date'        => ['required', 'date', 'after:now'],
             'location'    => ['required', 'string'],
             'banner'      => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'template_id' => ['nullable', 'integer', 'min:1', 'max:8'],
         ]);
 
         $data = $request->except('banner');
@@ -90,6 +91,7 @@ class EventController extends Controller
             'location'    => ['required', 'string'],
             'status'      => ['required', 'in:draft,published,cancelled'],
             'banner'      => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'template_id' => ['nullable', 'integer', 'min:1', 'max:8'],
         ]);
 
         $data = $request->except('banner');
@@ -120,8 +122,7 @@ class EventController extends Controller
 
         $event->delete();
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Event berhasil dihapus!');
+        return back()->with('success', 'Event berhasil dihapus!');
     }
 
     /**

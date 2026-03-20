@@ -83,7 +83,8 @@ class DatabaseSeeder extends Seeder
                     'date' => $faker->dateTimeBetween('+1 month', '+6 months'),
                     'location' => $faker->city . ', ' . $faker->streetAddress,
                     'banner_url' => null,
-                    'status' => $faker->randomElement(['draft', 'published', 'cancelled']),
+                    'template_id' => $faker->numberBetween(1, 8),
+                    'status' => 'published',
                 ]);
                 $events[] = $event;
             }

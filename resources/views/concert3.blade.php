@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Taylor Swift | The Eras Tour Jakarta</title>
-    <meta name="description" content="Taylor Swift The Eras Tour Live in Jakarta - Complete info, setlist, merchandise, venue, and fan experience.">
+    <title>{{ $event->title ?? 'Taylor Swift' }} | The Eras Tour</title>
+    <meta name="description" content="{{ $event->description ?? 'Taylor Swift Live in Jakarta' }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- <link rel="manifest" href="site.webmanifest"> -->
@@ -28,7 +28,7 @@
     <!-- <link rel="stylesheet" href="{{ asset('concert-assets/css/responsive.css') }}"> -->
     <style>
         .slider_bg_1 {
-            background-image: url("https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=2070");
+            background-image: url("{{ (isset($event) && $event->banner_url) ? Storage::url($event->banner_url) : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=2070' }}");
             background-size: cover;
             background-position: center;
         }
@@ -73,9 +73,9 @@
                             <div class="shape_2 wow fadeInDown" data-wow-duration="1s" data-wow-delay=".2s">
                                 <img src="{{ asset('concert-assets/img/shape/shape_2.svg') }}" alt="">
                             </div>
-                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">March 20, 2027</span>
-                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">The Eras Tour Jakarta</h3>
-                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Gelora Bung Karno Main Stadium, Jakarta</p>
+                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">{{ isset($event) ? $event->date->format('d M, Y') : 'March 20, 2027' }}</span>
+                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->title ?? 'The Eras Tour Jakarta' }}</h3>
+                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">{{ $event->location ?? 'Gelora Bung Karno Main Stadium, Jakarta' }}</p>
                         </div>
                     </div>
                 </div>
@@ -121,8 +121,8 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="section_title text-center mb-80">
-                        <h3 class="wow fadeInRight text-dark" data-wow-duration="1s" data-wow-delay=".3s">A Journey Through Eras</h3>
-                        <p class="wow fadeInRight text-info" data-wow-duration="1s" data-wow-delay=".4s">The Eras Tour is a celebration of every iconic Taylor Swift album. Experience the magic, love stories, and special moments from Fearless to Midnights, all in one spectacular night.</p>
+                        <h3 class="wow fadeInRight text-dark" data-wow-duration="1s" data-wow-delay=".3s">{{ $event->title ?? 'A Journey Through Eras' }}</h3>
+                        <p class="wow fadeInRight text-info" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->description ?? 'The Eras Tour is a celebration of every iconic Taylor Swift album. Experience the magic, love stories, and special moments from Fearless to Midnights, all in one spectacular night.' }}</p>
                     </div>
                 </div>
             </div>
@@ -338,13 +338,14 @@
     <!-- brand_area_end  -->
     <!-- footer_start  -->
     @include('layouts.headerconcert.footer', [
-        'footerDate' => 'March 20, 2027',
-        'footerLocation' => 'Gelora Bung Karno Main Stadium, Jakarta',
+        'footerDate' => isset($event) ? $event->date->format('d M, Y') : 'March 20, 2027',
+        'footerLocation' => $event->location ?? 'GBK Stadium, Jakarta',
         'footerLocationClass' => 'text-info',
         'footerSlogan' => 'Are you ready for it?',
         'footerSloganClass' => '',
         'footerButtonText' => 'Get Your Ticket',
-        'footerCopyright' => 'Taylor Swift | The Eras Tour Jakarta. All rights reserved.'
+        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerCopyright' => ($event->title ?? 'Taylor Swift') . ' | The Eras Tour Jakarta. All rights reserved.'
     ])
     <!-- footer_end  -->
 

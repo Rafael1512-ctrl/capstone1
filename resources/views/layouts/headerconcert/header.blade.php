@@ -26,8 +26,12 @@
                             </div>
                             <div class="col-xl-3 col-lg-3 d-none d-lg-block">
                                 <div class="buy_tkt">
-                                    <div class="book_btn d-none d-lg-block">
-                                        <a href="#">Join Waitlist</a>
+                                    <div class="book_btn">
+                                        @auth
+                                            <a href="{{ auth()->user()->isAdmin() ? route('admin.starter') : (auth()->user()->isOrganizer() ? route('organizer.dashboard') : route('landing')) }}" class="boxed-btn3">Dashboard</a>
+                                        @else
+                                            <a href="{{ route('login') }}" class="boxed-btn3">Login</a>
+                                        @endauth
                                     </div>
                                 </div>
                             </div>

@@ -44,7 +44,7 @@ class CreateTriggersAndProcedures extends Migration
                 INSERT INTO tickets (order_id, ticket_type_id, unique_code, created_at)
                 SELECT oi.order_id, oi.ticket_type_id, UUID(), NOW()
                 FROM order_items oi
-                CROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) numbers
+                CROSS JOIN (SELECT 1 as n UNION SELECT 2 as n UNION SELECT 3 as n UNION SELECT 4 as n UNION SELECT 5 as n) numbers
                 WHERE oi.order_id = NEW.order_id
                   AND numbers.n <= oi.quantity;
             END IF;
@@ -68,7 +68,7 @@ class CreateTriggersAndProcedures extends Migration
                 INSERT INTO tickets (order_id, ticket_type_id, unique_code, created_at)
                 SELECT oi.order_id, oi.ticket_type_id, UUID(), NOW()
                 FROM order_items oi
-                CROSS JOIN (SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) numbers
+                CROSS JOIN (SELECT 1 as n UNION SELECT 2 as n UNION SELECT 3 as n UNION SELECT 4 as n UNION SELECT 5 as n) numbers
                 WHERE oi.order_id = NEW.order_id
                   AND numbers.n <= oi.quantity;
             END IF;

@@ -5,6 +5,9 @@
     <div class="page-inner">
         <div class="page-header">
             <h4 class="page-title">Daftar Admin</h4>
+            <div class="ms-md-auto py-2 py-md-0">
+                <a href="{{ route('admin.users.create', 'admin') }}" class="btn btn-primary btn-round">Add Admin</a>
+            </div>
         </div>
 
         <div class="row">
@@ -33,8 +36,12 @@
                                             <td>{{ $user->email }}</td>
                                             <td><span class="badge badge-danger">{{ ucfirst($user->role) }}</span></td>
                                             <td>
-                                                <a href="#" class="btn btn-sm btn-info">Edit</a>
-                                                <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                                                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-info">Edit</a>
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                                                </form>
                                             </td>
                                         </tr>
                                     @empty

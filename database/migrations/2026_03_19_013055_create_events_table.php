@@ -13,7 +13,13 @@ return new class extends Migration {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organizer_id')->constrained('users')->onDelete('cascade');
-            // kolom lainnya
+            $table->string('title');
+            $table->text('description');
+            $table->dateTime('date');
+            $table->string('location');
+            $table->string('banner_url')->nullable();
+            $table->integer('template_id')->default(1);
+            $table->enum('status', ['draft', 'published', 'cancelled'])->default('draft');
             $table->timestamps();
             $table->engine = 'InnoDB';
         });

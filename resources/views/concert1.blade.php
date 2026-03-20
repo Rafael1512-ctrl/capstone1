@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Radiohead | A Heart-Shaped Void World Tour</title>
-    <meta name="description" content="Radiohead Live in Jakarta - Experience the magic of their soundscapes.">
+    <title>{{ $event->title ?? 'Radiohead' }} | A Heart-Shaped Void World Tour</title>
+    <meta name="description" content="{{ $event->description ?? 'Radiohead Live in Jakarta' }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- <link rel="manifest" href="site.webmanifest"> -->
@@ -28,7 +28,7 @@
     <!-- <link rel="stylesheet" href="{{ asset('concert-assets/css/responsive.css') }}"> -->
     <style>
         .slider_bg_1 {
-            background-image: url("https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&q=80&w=1974&ixlib=rb-4.0.3");
+            background-image: url("{{ (isset($event) && $event->banner_url) ? Storage::url($event->banner_url) : 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&q=80&w=1974' }}");
             background-size: cover;
             background-position: center;
         }
@@ -113,10 +113,9 @@
                             <div class="shape_2 wow fadeInDown" data-wow-duration="1s" data-wow-delay=".2s">
                                 <img src="{{ asset('concert-assets/img/shape/shape_2.svg') }}" alt="">
                             </div>
-                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">20 Nov, 2026</span>
-                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">Radiohead LIVE</h3>
-                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">Jakarta International
-                                Stadium (JIS), Indonesia</p>
+                            <span class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">{{ isset($event) ? $event->date->format('d M, Y') : '20 Nov, 2026' }}</span>
+                            <h3 class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->title ?? 'Radiohead LIVE' }}</h3>
+                            <p class="wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".5s">{{ $event->location ?? 'Jakarta International Stadium (JIS), Indonesia' }}</p>
                         </div>
                     </div>
                 </div>
@@ -199,10 +198,8 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="section_title text-center mb-80">
-                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">A Heart-Shaped Void</h3>
-                        <p class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Radiohead returns with
-                            their most ambitious world tour yet. Merging immersive visual art with their groundbreaking
-                            sonic landscapes, this isn't just a concert—it's a descent into the sublime.</p>
+                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">{{ $event->title ?? 'A Heart-Shaped Void' }}</h3>
+                        <p class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">{{ $event->description ?? 'Radiohead returns with their most ambitious world tour yet. Merging immersive visual art with their groundbreaking sonic landscapes, this isn\'t just a concert—it\'s a descent into the sublime.' }}</p>
                     </div>
                 </div>
             </div>
@@ -428,13 +425,14 @@
     <!-- brand_area_end  -->
     <!-- footer_start  -->
     @include('layouts.headerconcert.footer', [
-        'footerDate' => '20 Nov, 2026',
-        'footerLocation' => 'JIS, Jakarta',
+        'footerDate' => isset($event) ? $event->date->format('d M, Y') : '20 Nov, 2026',
+        'footerLocation' => $event->location ?? 'JIS, Jakarta',
         'footerLocationClass' => '',
         'footerSlogan' => 'Everything in its right place.',
         'footerSloganClass' => '',
         'footerButtonText' => 'Get Your Ticket',
-        'footerCopyright' => 'Radiohead Official Tours. All rights reserved.'
+        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerCopyright' => ($event->title ?? 'Radiohead') . ' Official Tours. All rights reserved.'
     ])
     <!-- footer_end  -->
 

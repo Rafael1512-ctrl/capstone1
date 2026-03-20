@@ -11,7 +11,7 @@ class Event extends Model
 
     protected $fillable = [
         'organizer_id', 'title', 'description', 'date', 
-        'location', 'banner_url', 'status'
+        'location', 'banner_url', 'status', 'template_id'
     ];
 
     protected $casts = [

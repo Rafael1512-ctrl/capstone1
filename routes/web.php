@@ -11,11 +11,10 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrganizerController;
 
 // ============================================================
-// PUBLIC ROUTES
-// ============================================================
 Route::get('/', function () {
     return view('user');
 })->name('home');
+Route::get('/event/{event}', [\App\Http\Controllers\PublicController::class, 'showEvent'])->name('public.event.show');
 // Route::get('/', function () {
 //     if (auth()->check()) {
 //         $user = auth()->user();
@@ -165,6 +164,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/admins', [App\Http\Controllers\Admin\UserManagementController::class, 'admins'])->name('admins');
             Route::get('/organizers', [App\Http\Controllers\Admin\UserManagementController::class, 'organizers'])->name('organizers');
             Route::get('/users', [App\Http\Controllers\Admin\UserManagementController::class, 'users'])->name('users');
+            
+            Route::get('/create/{role?}', [App\Http\Controllers\Admin\UserManagementController::class, 'create'])->name('create');
+            Route::post('/store', [App\Http\Controllers\Admin\UserManagementController::class, 'store'])->name('store');
+            Route::get('/{user}/edit', [App\Http\Controllers\Admin\UserManagementController::class, 'edit'])->name('edit');
+            Route::put('/{user}/update', [App\Http\Controllers\Admin\UserManagementController::class, 'update'])->name('update');
+            Route::delete('/{user}/destroy', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('destroy');
+        });
+        
+        Route::prefix('admin/orders')->name('admin.orders.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\OrderManagementController::class, 'index'])->name('index');
+            Route::get('/{order}', [App\Http\Controllers\Admin\OrderManagementController::class, 'show'])->name('show');
+            Route::put('/{order}/status', [App\Http\Controllers\Admin\OrderManagementController::class, 'updateStatus'])->name('status');
         });
     });
 });

@@ -127,7 +127,6 @@
             <img src="{{ asset('cardboard-assets/img/billie-eilish.jpg') }}" alt="Billie Eilish" class="img-fluid">
           </a>
         </div>
-
       </div>
 
       <div class="row mt-5">
