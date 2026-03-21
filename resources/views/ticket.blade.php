@@ -104,19 +104,20 @@
     <!-- header-end -->
 
     <!-- bradcam_area_start -->
-    <div class="bradcam_area" style="background-image: url('https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&q=80&w=2070'); background-size: cover; background-position: center; padding: 150px 0; position: relative; z-index: 1;">
+    <div class="bradcam_area" style="background-image: url('{{ asset('cardboard-assets/img/' . $data['image']) }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">
                     <div class="bradcam_text text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
-                        <h3 class="text-white font-weight-bold" style="font-size: 60px;">Ticket Details</h3>
-                        <p class="text-white" style="font-size: 20px;">Secure your spot at the biggest event of the year</p>
+                        <span class="text-white text-uppercase" style="letter-spacing: 5px; font-weight: 600; margin-bottom: 20px; display: block;">Official Ticket Selection</span>
+                        <h3 class="text-white font-weight-bold" style="font-size: 70px; font-family: 'DM Serif Display', serif;">{{ $data['title'] }}</h3>
+                        <p class="text-white lead" style="font-size: 24px;"><i class="fa fa-calendar-o mr-2"></i> {{ $data['date'] }} | <i class="fa fa-map-marker mr-2"></i> {{ $data['location'] }}</p>
                     </div>
                 </div>
             </div>
         </div>
         <!-- overlay mask -->
-        <div style="position: absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:-1;"></div>
+        <div style="position: absolute; top:0; left:0; right:0; bottom:0; background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.9)); z-index:-1;"></div>
     </div>
     <!-- bradcam_area_end -->
 
@@ -126,53 +127,56 @@
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="section_title text-center mb-80">
-                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s" style="color:#fff;">Choose Your Experience</h3>
+                        <span class="d-block text-primary text-uppercase mb-2" style="letter-spacing: 2px;">Premium Packages</span>
+                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s" style="color:#fff; font-size: 45px;">Choose Your Experience</h3>
+                        <div class="line mx-auto" style="width: 80px; height: 3px; background: #ff00c1; margin-top: 20px;"></div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <!-- Regular Ticket -->
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
                         <div class="ticket-title">General Admission</div>
-                        <div class="ticket-price">RP 1.500.000</div>
+                        <div class="ticket-price">RP {{ $data['reg'] }}</div>
                         <p>Enjoy the concert from the festival area with a great crowd vibe.</p>
                         <ul class="ticket-features text-left mt-4">
                             <li><i class="fa fa-check"></i> Standing area access</li>
                             <li><i class="fa fa-check"></i> Food & Beverage counter access</li>
-                            <li><i class="fa fa-check"></i> Standard entry gate</li>
+                            <li><i class="fa fa-check"></i> Official Tour Poster (Digital)</li>
                         </ul>
-                        <a href="javascript:alert('Thank you for your interest! Ticket purchasing feature is coming soon.');" class="buy-btn mt-3">Buy Now</a>
+                        <a href="{{ route('checkout', ['type' => request('type', 'concert1'), 'category' => 'reg']) }}" class="buy-btn mt-3">Select Ticket</a>
                     </div>
                 </div>
                 <!-- VIP Ticket -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s" style="border-color: #ff00c1;">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s" style="border-color: #ff00c1; box-shadow: 0 10px 40px rgba(255, 0, 193, 0.15);">
+                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #ff00c1; color: white; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Most Popular</div>
                         <div class="ticket-title" style="color: #ff00c1;">VIP Experience</div>
-                        <div class="ticket-price">RP 3.500.000</div>
+                        <div class="ticket-price">RP {{ $data['vip'] }}</div>
                         <p>Get closer to the stage and enjoy exclusive VIP perks.</p>
                         <ul class="ticket-features text-left mt-4">
                             <li><i class="fa fa-check"></i> Premium standing area (Front Row)</li>
                             <li><i class="fa fa-check"></i> Dedicated VIP entry gate</li>
                             <li><i class="fa fa-check"></i> Exclusive concert merchandise</li>
-                            <li><i class="fa fa-check"></i> Free Welcome Drink</li>
+                            <li><i class="fa fa-check"></i> 1x Free Welcome Drink</li>
                         </ul>
-                        <a href="javascript:alert('Thank you for your interest! Ticket purchasing feature is coming soon.');" class="buy-btn mt-3">Buy Now</a>
+                        <a href="{{ route('checkout', ['type' => request('type', 'concert1'), 'category' => 'vip']) }}" class="buy-btn mt-3">Select VIP</a>
                     </div>
                 </div>
                 <!-- VVIP Ticket -->
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
                         <div class="ticket-title">VVIP Suite</div>
-                        <div class="ticket-price">RP 7.500.000</div>
+                        <div class="ticket-price">RP {{ $data['vvip'] }}</div>
                         <p>The ultimate luxury concert experience with full hospitality.</p>
                         <ul class="ticket-features text-left mt-4">
                             <li><i class="fa fa-check"></i> Private suite viewing area</li>
                             <li><i class="fa fa-check"></i> All-inclusive Food & Beverage</li>
-                            <li><i class="fa fa-check"></i> Backstage tour pass</li>
-                            <li><i class="fa fa-check"></i> VIP Parking slot</li>
+                            <li><i class="fa fa-check"></i> Backstage tour pass (Limited)</li>
+                            <li><i class="fa fa-check"></i> VIP Parking slot & Lounge</li>
                         </ul>
-                        <a href="javascript:alert('Thank you for your interest! Ticket purchasing feature is coming soon.');" class="buy-btn mt-3">Buy Now</a>
+                        <a href="{{ route('checkout', ['type' => request('type', 'concert1'), 'category' => 'vvip']) }}" class="buy-btn mt-3">Select VVIP</a>
                     </div>
                 </div>
             </div>

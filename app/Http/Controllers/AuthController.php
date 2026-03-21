@@ -42,7 +42,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('dashboard')->with('success', 'Welcome to LuxTix, ' . $user->name . '!');
+        return redirect()->route('home')->with('success', 'Welcome to LuxTix, ' . $user->name . '!');
     }
 
     // Handle login

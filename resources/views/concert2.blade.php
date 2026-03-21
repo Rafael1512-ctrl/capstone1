@@ -274,7 +274,7 @@
         'footerSlogan' => 'Believe in Love.',
         'footerSloganClass' => '',
         'footerButtonText' => 'Get Your Ticket',
-        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerButtonLink' => route('ticket', ['type' => 'concert2']),
         'footerCopyright' => ($event->title ?? 'Coldplay') . ' Official Tours. All rights reserved.'
     ])
 

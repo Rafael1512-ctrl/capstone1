@@ -315,7 +315,7 @@
         'footerSlogan' => 'Do I Wanna Know? Yes, You Do.',
         'footerSloganClass' => 'text-light',
         'footerButtonText' => 'Get Your Ticket',
-        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerButtonLink' => route('ticket', ['type' => 'concert4']),
         'footerCopyright' => ($event->title ?? 'Arctic Monkeys') . ' | The Car World Tour Jakarta. All rights reserved.'
     ])
 

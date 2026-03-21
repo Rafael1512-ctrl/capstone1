@@ -315,6 +315,7 @@
         'footerSlogan' => 'Till Dawn.',
         'footerSloganClass' => 'text-light',
         'footerButtonText' => 'Get Your Ticket',
+        'footerButtonLink' => route('ticket', ['type' => 'concert6']),
         'footerCopyright' => 'The Weeknd | After Hours Til Dawn Tour Jakarta. All rights reserved.'
     ])
 

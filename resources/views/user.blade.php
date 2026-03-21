@@ -21,6 +21,86 @@
         right: 0 !important;
         bottom: 0 !important;
     }
+
+    /* New Elegant Concert Cards */
+    .concert-card {
+        background: #fff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 30px;
+        border: 1px solid rgba(0,0,0,0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    .concert-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+    .concert-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+    }
+    .concert-card-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .concert-card-title {
+        font-family: 'DM Serif Display', serif;
+        font-size: 1.4rem;
+        color: #333;
+        margin-bottom: 12px;
+        font-weight: 400;
+    }
+    .concert-meta {
+        font-size: 0.9rem;
+        color: #777;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    .concert-meta i {
+        margin-right: 8px;
+        color: #9d50bb;
+        width: 16px;
+    }
+    .concert-price-box {
+        margin-top: auto;
+        padding-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+    .price-label {
+        font-size: 0.8rem;
+        color: #999;
+        display: block;
+    }
+    .price-value {
+        font-weight: bold;
+        color: #333;
+        font-size: 1.1rem;
+    }
+    .btn-buy {
+        background: linear-gradient(to right, #9d50bb, #6e48aa);
+        color: #fff !important;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+    .btn-buy:hover {
+        opacity: 0.9;
+        box-shadow: 0 4px 15px rgba(157, 80, 187, 0.3);
+    }
   </style>
   <div class="slider-item overlay" data-stellar-background-ratio="0.5"
     style="background-image: url('{{ asset('cardboard-assets/img/hero_2.jpg') }}');">
@@ -34,6 +114,26 @@
       </div>
     </div>
   </div>
+  @auth
+  <div class="section pb-0" data-aos="fade-up">
+    <div class="container">
+        <div class="promo-banner-container" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('cardboard-assets/img/hero_1.jpg') }}'); background-size: cover; background-position: center; border-radius: 20px; padding: 60px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
+            <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(90deg, #9d50bb, transparent); opacity: 0.6;"></div>
+            <div class="row align-items-center" style="position: relative; z-index: 2;">
+                <div class="col-md-7">
+                    <span class="badge badge-danger mb-3 px-3 py-2" style="border-radius: 50px; font-weight: 600;">UPCOMING DEALS</span>
+                    <h2 class="display-4 font-weight-bold mb-4" style="font-family: 'DM Serif Display', serif; color: #fff;">Special Ticket Pre-Sale!</h2>
+                    <p class="lead mb-4">Exclusive for registered members. Get early access to the most anticipated concerts of 2026/2027 before everyone else.</p>
+                    <a href="{{ route('ticket') }}" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse Available Tickets</a>
+                </div>
+                <div class="col-md-5 d-none d-md-block text-right">
+                    <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Featured" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  @endauth
 
   <div class="section portfolio-section">
     <div class="container">
@@ -48,84 +148,180 @@
     </div>
     <div class="container-fluid">
       <div class="row mb-5 no-gutters">
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="100">
-          <a href="{{ route('concert1') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>Radiohead</h2>
-              <p>Jakarta International Stadium, Indonesia</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Radiohead">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Radiohead</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 12 Oct 2026
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> JIS, Jakarta
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 850.000</span>
+                </div>
+                <a href="{{ route('concert1') }}" class="btn-buy">Detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Radiohead" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="200">
-          <a href="{{ route('concert2') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>Coldplay</h2>
-              <p>Music of the Spheres World Tour - Jakarta</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/coldplay.png') }}" alt="Coldplay">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Coldplay</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 15 Nov 2026
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> Gelora Bung Karno
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 1.200.000</span>
+                </div>
+                <a href="{{ route('concert2') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/coldplay.png') }}" alt="Coldplay" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="300">
-          <a href="{{ route('concert3') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>Taylor Swift</h2>
-              <p>The Eras Tour - Exclusive Access</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/taylorswift.png') }}" alt="Taylor Swift">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Taylor Swift</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 20 Dec 2026
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> Exclusive Arena
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 2.500.000</span>
+                </div>
+                <a href="{{ route('concert3') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/taylorswift.png') }}" alt="Taylor Swift" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="400">
-          <a href="{{ route('concert4') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>Arctic Monkeys</h2>
-              <p>Live in Jakarta - 2023 Asia Tour</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/arcticmonkeys.png') }}" alt="Arctic Monkeys">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Arctic Monkeys</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 10 Jan 2027
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> Stadium Jakarta
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 650.000</span>
+                </div>
+                <a href="{{ route('concert4') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/arcticmonkeys.png') }}" alt="Arctic Monkeys" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="500">
-          <a href="{{ route('concert5') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>Bruno Mars</h2>
-              <p>Bruno Mars brings the groove.</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/BrunoMars.png') }}" alt="Bruno Mars">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Bruno Mars</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 22 Feb 2027
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> Sentul International
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 950.000</span>
+                </div>
+                <a href="{{ route('concert5') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/BrunoMars.png') }}" alt="BrunoMars" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="600">
-          <a href="{{ route('concert6') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>The Weeknd</h2>
-              <p>After Hours Til Dawn Tour - Global Event</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/the-weeknd.jpg') }}" alt="The Weeknd">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">The Weeknd</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 30 Mar 2027
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> GBK Madya Stadium
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 1.100.000</span>
+                </div>
+                <a href="{{ route('concert6') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/the-weeknd.jpg') }}" alt="The Weeknd" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="700">
-          <a href="{{ route('concert7') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>edsheeran</h2>
-              <p>sings straight from the heart.</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="700">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/edsheeran.jpg') }}" alt="Ed Sheeran">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Ed Sheeran</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 15 May 2027
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> JIS, Jakarta
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 900.000</span>
+                </div>
+                <a href="{{ route('concert7') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/edsheeran.jpg') }}" alt="edsheeran" class="img-fluid">
-          </a>
+          </div>
         </div>
 
-        <div class="col-sm-6 col-md-6 col-lg-6" data-aos="fade" data-aos-delay="800">
-          <a href="{{ route('concert8') }}" class="work-thumb">
-            <div class="work-text">
-              <h2>Billie Eilish</h2>
-              <p>Billie Eilish owns the stage</p>
+        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="800">
+          <div class="concert-card">
+            <img src="{{ asset('cardboard-assets/img/billie-eilish.jpg') }}" alt="Billie Eilish">
+            <div class="concert-card-body">
+              <h3 class="concert-card-title">Billie Eilish</h3>
+              <div class="concert-meta">
+                <i class="fa fa-calendar"></i> 20 Jun 2027
+              </div>
+              <div class="concert-meta">
+                <i class="fa fa-map-marker"></i> ICE BSD, Tangerang
+              </div>
+              <div class="concert-price-box">
+                <div>
+                  <span class="price-label">Mulai dari</span>
+                  <span class="price-value">Rp. 1.300.000</span>
+                </div>
+                <a href="{{ route('concert8') }}" class="btn-buy">detail</a>
+              </div>
             </div>
-            <img src="{{ asset('cardboard-assets/img/billie-eilish.jpg') }}" alt="Billie Eilish" class="img-fluid">
-          </a>
+          </div>
         </div>
       </div>
 
@@ -304,7 +500,9 @@
 
     </div>
   </div>
+
 @endsection
+
 
 @section("ExtraJS2")
 @endsection

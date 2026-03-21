@@ -27,7 +27,7 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">My Tickets</a>
+                        <a class="nav-link" href="{{ route('tickets.index') }}">My Tickets</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contact</a>
@@ -54,6 +54,7 @@
                                 @if (Auth::user()->role === 'Admin')
                                     <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
                                 @endif
+                                <a class="dropdown-item" href="{{ route('tickets.index') }}">Purchase History</a>
                                 <a class="dropdown-item" href="#"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     Logout

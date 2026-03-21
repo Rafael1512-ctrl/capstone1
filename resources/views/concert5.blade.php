@@ -316,6 +316,7 @@
         'footerSlogan' => '24K Magic in the Air.',
         'footerSloganClass' => 'text-light',
         'footerButtonText' => 'Get Your Ticket',
+        'footerButtonLink' => route('ticket', ['type' => 'concert5']),
         'footerCopyright' => 'Bruno Mars | 24K Magic World Tour Jakarta. All rights reserved.'
     ])
 

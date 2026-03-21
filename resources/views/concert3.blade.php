@@ -344,7 +344,7 @@
         'footerSlogan' => 'Are you ready for it?',
         'footerSloganClass' => '',
         'footerButtonText' => 'Get Your Ticket',
-        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerButtonLink' => route('ticket', ['type' => 'concert3']),
         'footerCopyright' => ($event->title ?? 'Taylor Swift') . ' | The Eras Tour Jakarta. All rights reserved.'
     ])
     <!-- footer_end  -->

@@ -316,6 +316,7 @@
         'footerSlogan' => 'Multiply the Love.',
         'footerSloganClass' => 'text-light',
         'footerButtonText' => 'Get Your Ticket',
+        'footerButtonLink' => route('ticket', ['type' => 'concert7']),
         'footerCopyright' => 'Ed Sheeran | + - = ÷ x Tour Jakarta. All rights reserved.'
     ])
 

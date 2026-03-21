@@ -74,9 +74,52 @@ Route::get('/concert8', function () {
     return view('concert8');
 })->name('concert8');
 
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+Route::get('/ticket', function () {
+    $type = request('type', 'concert1');
+    
+    // Map data konser
+    $concerts = [
+        'concert1' => ['title' => 'Radiohead', 'date' => '12 Oct 2026', 'location' => 'JIS, Jakarta', 'image' => 'concert_1.jpg', 'reg' => '850.000', 'vip' => '2.500.000', 'vvip' => '5.000.000'],
+        'concert2' => ['title' => 'Coldplay', 'date' => '15 Nov 2026', 'location' => 'Gelora Bung Karno', 'image' => 'coldplay.png', 'reg' => '1.200.000', 'vip' => '3.500.000', 'vvip' => '7.500.000'],
+        'concert3' => ['title' => 'Taylor Swift', 'date' => '20 Dec 2026', 'location' => 'Exclusive Arena', 'image' => 'taylorswift.png', 'reg' => '2.500.000', 'vip' => '5.500.000', 'vvip' => '12.000.000'],
+        'concert4' => ['title' => 'Arctic Monkeys', 'date' => '10 Jan 2027', 'location' => 'Stadium Jakarta', 'image' => 'arcticmonkeys.png', 'reg' => '650.000', 'vip' => '1.800.000', 'vvip' => '3.500.000'],
+        'concert5' => ['title' => 'Bruno Mars', 'date' => '22 Feb 2027', 'location' => 'Sentul International', 'image' => 'BrunoMars.png', 'reg' => '950.000', 'vip' => '2.800.000', 'vvip' => '5.500.000'],
+        'concert6' => ['title' => 'The Weeknd', 'date' => '30 Mar 2027', 'location' => 'GBK Madya Stadium', 'image' => 'the-weeknd.jpg', 'reg' => '1.100.000', 'vip' => '3.200.000', 'vvip' => '6.000.000'],
+        'concert7' => ['title' => 'Ed Sheeran', 'date' => '15 May 2027', 'location' => 'JIS, Jakarta', 'image' => 'edsheeran.jpg', 'reg' => '900.000', 'vip' => '2.600.000', 'vvip' => '4.800.000'],
+        'concert8' => ['title' => 'Billie Eilish', 'date' => '20 Jun 2027', 'location' => 'ICE BSD, Tangerang', 'image' => 'billie-eilish.jpg', 'reg' => '1.300.000', 'vip' => '3.800.000', 'vvip' => '7.000.000'],
+    ];
+
+    $data = $concerts[$type] ?? $concerts['concert1'];
+
+    return view('ticket', compact('data'));
+})->name('ticket');
+
+Route::get('/checkout', function () {
+    $type = request('type', 'concert1');
+    $category = request('category', 'reg');
+    
+    $concerts = [
+        'concert1' => ['title' => 'Radiohead', 'date' => '12 Oct 2026', 'location' => 'JIS, Jakarta', 'image' => 'concert_1.jpg', 'reg' => '850.000', 'vip' => '2.500.000', 'vvip' => '5.000.000'],
+        'concert2' => ['title' => 'Coldplay', 'date' => '15 Nov 2026', 'location' => 'Gelora Bung Karno', 'image' => 'coldplay.png', 'reg' => '1.200.000', 'vip' => '3.500.000', 'vvip' => '7.500.000'],
+        'concert3' => ['title' => 'Taylor Swift', 'date' => '20 Dec 2026', 'location' => 'Exclusive Arena', 'image' => 'taylorswift.png', 'reg' => '2.500.000', 'vip' => '5.500.000', 'vvip' => '12.000.000'],
+        'concert4' => ['title' => 'Arctic Monkeys', 'date' => '10 Jan 2027', 'location' => 'Stadium Jakarta', 'image' => 'arcticmonkeys.png', 'reg' => '650.000', 'vip' => '1.800.000', 'vvip' => '3.500.000'],
+        'concert5' => ['title' => 'Bruno Mars', 'date' => '22 Feb 2027', 'location' => 'Sentul International', 'image' => 'BrunoMars.png', 'reg' => '950.000', 'vip' => '2.800.000', 'vvip' => '5.500.000'],
+        'concert6' => ['title' => 'The Weeknd', 'date' => '30 Mar 2027', 'location' => 'GBK Madya Stadium', 'image' => 'the-weeknd.jpg', 'reg' => '1.100.000', 'vip' => '3.200.000', 'vvip' => '6.000.000'],
+        'concert7' => ['title' => 'Ed Sheeran', 'date' => '15 May 2027', 'location' => 'JIS, Jakarta', 'image' => 'edsheeran.jpg', 'reg' => '900.000', 'vip' => '2.600.000', 'vvip' => '4.800.000'],
+        'concert8' => ['title' => 'Billie Eilish', 'date' => '20 Jun 2027', 'location' => 'ICE BSD, Tangerang', 'image' => 'billie-eilish.jpg', 'reg' => '1.300.000', 'vip' => '3.800.000', 'vvip' => '7.000.000'],
+    ];
+
+    $data = $concerts[$type] ?? $concerts['concert1'];
+    $categoryNames = ['reg' => 'General Admission', 'vip' => 'VIP Experience', 'vvip' => 'VVIP Suite'];
+    
+    $selected = [
+        'category' => $categoryNames[$category] ?? 'General Admission',
+        'price' => $data[$category] ?? $data['reg'],
+        'type' => $type
+    ];
+
+    return view('checkout', compact('data', 'selected'));
+})->name('checkout');
 
 // ============================================================
 // AUTHENTICATION ROUTES

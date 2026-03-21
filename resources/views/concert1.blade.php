@@ -431,7 +431,7 @@
         'footerSlogan' => 'Everything in its right place.',
         'footerSloganClass' => '',
         'footerButtonText' => 'Get Your Ticket',
-        'footerButtonLink' => isset($event) ? route('orders.create', $event->id) : '#',
+        'footerButtonLink' => route('ticket', ['type' => 'concert1']),
         'footerCopyright' => ($event->title ?? 'Radiohead') . ' Official Tours. All rights reserved.'
     ])
     <!-- footer_end  -->

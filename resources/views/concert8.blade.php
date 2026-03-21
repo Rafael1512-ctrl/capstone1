@@ -320,6 +320,7 @@
         'footerSlogan' => 'Hit Me Hard and Soft.',
         'footerSloganClass' => 'text-light',
         'footerButtonText' => 'Get Your Ticket',
+        'footerButtonLink' => route('ticket', ['type' => 'concert8']),
         'footerCopyright' => 'Billie Eilish | Hit Me Hard and Soft Tour Jakarta. All rights reserved.'
     ])
 
