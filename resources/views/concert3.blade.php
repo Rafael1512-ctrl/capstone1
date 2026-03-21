@@ -1,65 +1,31 @@
-<!doctype html>
-<html class="no-js" lang="zxx">
+@extends('layouts.headerconcert.masterconcert')
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>{{ $event->title ?? 'Taylor Swift' }} | The Eras Tour</title>
-    <meta name="description" content="{{ $event->description ?? 'Taylor Swift Live in Jakarta' }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@section('title', (isset($event) ? $event->title : 'Taylor Swift') . ' | The Eras Tour')
+@section('meta_description', isset($event) ? $event->description : 'Taylor Swift Live in Jakarta')
 
-    <!-- <link rel="manifest" href="site.webmanifest"> -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('concert-assets/img/favicon.png') }}">
-    <!-- Place favicon.ico in the root directory -->
+@section('ExtraCSS')
+<style>
+    /* Taylor Swift Eras Tour Vibe */
+    .cosmic-vibe {
+        background: linear-gradient(to bottom, #f8fafc, #ffe4fa);
+        position: relative;
+        overflow: hidden;
+    }
 
-    <!-- CSS here -->
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/magnific-popup.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/themify-icons.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/gijgo.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/nice-select.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/animate.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/flaticon.css') }}">
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/slicknav.css') }}">
+    .overlay::before {
+        background: linear-gradient(45deg, rgba(255, 192, 203, 0.5), rgba(138, 43, 226, 0.4)) !important;
+    }
 
-    <link rel="stylesheet" href="{{ asset('concert-assets/css/style.css') }}">
-    <!-- <link rel="stylesheet" href="{{ asset('concert-assets/css/responsive.css') }}"> -->
-    <style>
-        .slider_bg_1 {
-            background-image: url("{{ (isset($event) && $event->banner_url) ? Storage::url($event->banner_url) : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=2070' }}");
-            background-size: cover;
-            background-position: center;
-        }
+    .boxed-btn3 {
+        background: linear-gradient(90deg, #ffb6c1, #8a2be2) !important;
+        border: none !important;
+    }
+</style>
+@endsection
 
-        /* Taylor Swift Eras Tour Vibe */
-        .cosmic-vibe {
-            background: linear-gradient(to bottom, #f8fafc, #ffe4fa);
-            position: relative;
-            overflow: hidden;
-        }
+@section('banner_url', (isset($event) && $event->banner_url) ? Storage::url($event->banner_url) : 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&q=80&w=2070')
 
-        .overlay::before {
-            background: linear-gradient(45deg, rgba(255, 192, 203, 0.5), rgba(138, 43, 226, 0.4)) !important;
-        }
-
-        .boxed-btn3 {
-            background: linear-gradient(90deg, #ffb6c1, #8a2be2) !important;
-            border: none !important;
-        }
-    </style>
-</head>
-
-<body>
-    <!--[if lte IE 9]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-        <![endif]-->
-
-    <!-- header-start -->
-    @include('layouts.headerconcert.header')
-    <!-- header-end -->
-
+@section('content')
     <!-- slider_area_start -->
     <div class="slider_area">
         <div class="single_slider  d-flex align-items-center slider_bg_1 overlay">
@@ -169,59 +135,46 @@
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">07:00
-                                        PM</span>
-                                    <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">Doors Open
-                                    </h4>
+                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">07:00 PM</span>
+                                    <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">Doors Open</h4>
                                 </div>
                                 <div class="thumb wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&q=80&w=400"
-                                        alt="">
+                                    <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&q=80&w=400" alt="">
                                 </div>
-                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Preshow Ambience
-                                </h4>
+                                <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">Preshow Ambience</h4>
                             </div>
                         </div>
                         <div class="single_propram">
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">08:00
-                                        PM</span>
-                                    <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Opening Act
-                                    </h4>
+                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">08:00 PM</span>
+                                    <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Opening Act</h4>
                                 </div>
-                        
                             </div>
                         </div>
                         <div class="single_propram">
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">09:15
-                                        PM</span>
+                                    <span class=" wow fadeInLeft" data-wow-duration="1s" data-wow-delay=".3s">09:15 PM</span>
                                     <h4 class=" wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">Taylor Swift</h4>
                                 </div>
                                 <div class="thumb  wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="https://images.unsplash.com/photo-1501612722273-30ad506f52de?auto=format&fit=crop&q=80&w=400"
-                                        alt="">
+                                    <img src="https://images.unsplash.com/photo-1501612722273-30ad506f52de?auto=format&fit=crop&q=80&w=400" alt="">
                                 </div>
-                
                             </div>
                         </div>
                         <div class="single_propram">
                             <div class="inner_wrap">
                                 <div class="circle_img"></div>
                                 <div class="porgram_top">
-                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">11:00
-                                        PM</span>
+                                    <span class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">11:00 PM</span>
                                     <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">Encore</h4>
                                 </div>
                                 <div class="thumb wow fadeInRight" data-wow-duration="1s" data-wow-delay=".5s">
-                                    <img src="https://images.unsplash.com/photo-1514525253361-b83f859b71c0?auto=format&fit=crop&q=80&w=400"
-                                        alt="">
+                                    <img src="https://images.unsplash.com/photo-1514525253361-b83f859b71c0?auto=format&fit=crop&q=80&w=400" alt="">
                                 </div>
-                                   
                             </div>
                         </div>
                     </div>
@@ -231,153 +184,29 @@
     </div>
 
     <!-- map_area_start  -->
-    <div id="venue" class="map_area">
-        <div id="map" style="height: 600px; position: relative; overflow: hidden;">
-
-        </div>
-        <script>
-            function initMap() {
-                var uluru = {
-                    lat: -6.1245,
-                    lng: 106.8211
-                };
-                var grayStyles = [{
-                    featureType: "all",
-                    stylers: [{
-                        saturation: -90
-                    },
-                    {
-                        lightness: 50
-                    }
-                    ]
-                },
-                {
-                    elementType: 'labels.text.fill',
-                    stylers: [{
-                        color: '#ccdee9'
-                    }]
-                }
-                ];
-                var map = new google.maps.Map(document.getElementById('map'), {
-                    center: uluru,
-                    zoom: 15,
-                    styles: grayStyles,
-                    scrollwheel: false
-                });
-                var marker = new google.maps.Marker({
-                    position: uluru,
-                    map: map,
-                    title: 'Jakarta International Stadium'
-                });
-            }
-        </script>
-        <script
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpfS1oRGreGSBU5HHjMmQ3o5NLw7VdJ6I&amp;callback=initMap">
-            </script>
-        <div class="location_information black_bg wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
-            <h3 class="text-info">Gelora Bung Karno Main Stadium</h3>
-            <div class="info_wrap">
-                <div class="single_info">
-                    <span>Venue:</span>
-                    <p>Gelora, Tanah Abang <br>Central Jakarta, 10270</p>
-                </div>
-                <div class="single_info">
-                    <span>Phone:</span>
-                    <p>+62 (21) 573 4070</p>
-                </div>
-                <div class="single_info">
-                    <span>Email:</span>
-                    <p>info@taylorswift.com</p>
+    <div id="venue" class="map_area pt-120">
+         <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="section_title text-center mb-80">
+                        <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">The Venue</h3>
+                    </div>
                 </div>
             </div>
+        </div>
+        <div id="map" style="height: 600px; position: relative; overflow: hidden;">
+             <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4529322676063!2d106.80001!3d-6.2185!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f14d3066042b%3A0x6b42b6d194565735!2sGelora%20Bung%20Karno%20Main%20Stadium!5e0!3m2!1sen!2sid!4v1653556050510!5m2!1sen!2sid" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </div>
     <!-- map_area_end  -->
+@endsection
 
-    <!-- brand_area_start  -->
-    <div class="brand_area black_bg" style="display:none;">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section_title text-center mb-80">
-                        <h4 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">Tour Partners</h4>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="brand_wrap">
-                        <div class="brand_active owl-carousel">
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/1.png') }}" alt="">
-                            </div>
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/2.png') }}" alt="">
-                            </div>
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/3.png') }}" alt="">
-                            </div>
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/4.png') }}" alt="">
-                            </div>
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/5.png') }}" alt="">
-                            </div>
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/1.png') }}" alt="">
-                            </div>
-                            <div class="single_brand text-center">
-                                <img src="{{ asset('concert-assets/img/brand/2.png') }}" alt="">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- brand_area_end  -->
-    <!-- footer_start  -->
-    @include('layouts.headerconcert.footer', [
-        'footerDate' => isset($event) ? $event->date->format('d M, Y') : 'March 20, 2027',
-        'footerLocation' => $event->location ?? 'GBK Stadium, Jakarta',
-        'footerLocationClass' => 'text-info',
-        'footerSlogan' => 'Are you ready for it?',
-        'footerSloganClass' => '',
-        'footerButtonText' => 'Get Your Ticket',
-        'footerButtonLink' => route('ticket', ['type' => 'concert3']),
-        'footerCopyright' => ($event->title ?? 'Taylor Swift') . ' | The Eras Tour Jakarta. All rights reserved.'
-    ])
-    <!-- footer_end  -->
-
-    <!-- JS here -->
-    <script src="{{ asset('concert-assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/popper.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/isotope.pkgd.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/ajax-form.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/waypoints.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.counterup.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/imagesloaded.pkgd.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/scrollIt.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.scrollUp.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/wow.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/gijgo.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/nice-select.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.slicknav.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.magnific-popup.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/tilt.jquery.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/plugins.js') }}"></script>
-
-    <!--contact js-->
-    <script src="{{ asset('concert-assets/js/contact.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.ajaxchimp.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.form.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/jquery.validate.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/mail-script.js') }}"></script>
-
-    <script src="{{ asset('concert-assets/js/main.js') }}"></script>
-</body>
-
-</html>
+@php
+    $footerDate = isset($event) ? $event->date->format('d M, Y') : 'March 20, 2027';
+    $footerLocation = $event->location ?? 'GBK Stadium, Jakarta';
+    $footerLocationClass = 'text-info';
+    $footerSlogan = 'Are you ready for it?';
+    $footerButtonLink = route('ticket', ['type' => 'concert3']);
+    $footerButtonText = 'Get Your Ticket';
+    $footerCopyright = ($event->title ?? 'Taylor Swift') . ' | The Eras Tour Jakarta';
+@endphp
