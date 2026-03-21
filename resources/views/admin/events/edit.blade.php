@@ -39,9 +39,9 @@
                             <select class="form-select @error('organizer_id') is-invalid @enderror" name="organizer_id"
                                 id="organizer_id" required>
                                 @foreach ($organizers as $org)
-                                    <option value="{{ $org->id }}"
-                                        {{ $event->organizer_id == $org->id ? 'selected' : '' }}>
-                                        {{ $org->name }} ({{ $org->email }})
+                                    <option value="{{ $org->user_id }}"
+                                        {{ $event->organizer_id == $org->user_id ? 'selected' : '' }}>
+                                        {{ $org->nama_lengkap }} ({{ $org->email }})
                                     </option>
                                 @endforeach
                             </select>
@@ -55,8 +55,8 @@
                             <select class="form-select @error('category_id') is-invalid @enderror" name="category_id"
                                 id="category_id" required>
                                 @foreach ($categories as $cat)
-                                    <option value="{{ $cat->id }}"
-                                        {{ $event->category_id == $cat->id ? 'selected' : '' }}>
+                                    <option value="{{ $cat->category_id }}"
+                                        {{ $event->category_id == $cat->category_id ? 'selected' : '' }}>
                                         {{ $cat->name }}
                                     </option>
                                 @endforeach
@@ -78,10 +78,11 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label for="date" class="form-label">Tanggal & Waktu *</label>
-                            <input type="datetime-local" class="form-control @error('date') is-invalid @enderror"
-                                name="date" id="date" value="{{ $event->date->format('Y-m-d\TH:i') }}" required>
-                            @error('date')
+                            <label for="schedule_time" class="form-label">Tanggal & Waktu *</label>
+                            <input type="datetime-local" class="form-control @error('schedule_time') is-invalid @enderror"
+                                name="schedule_time" id="schedule_time"
+                                value="{{ $event->schedule_time->format('Y-m-d\TH:i') }}" required>
+                            @error('schedule_time')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
                         </div>
@@ -106,7 +107,16 @@
                     </div>
 
                     <div class="row mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
+                            <label for="ticket_quota" class="form-label">Kuota Tiket *</label>
+                            <input type="number" class="form-control @error('ticket_quota') is-invalid @enderror" name="ticket_quota"
+                                id="ticket_quota" value="{{ $event->ticket_quota }}" min="1" required>
+                            @error('ticket_quota')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-3">
                             <label for="banner" class="form-label">Banner Event</label>
                             @if ($event->banner_url)
                                 <div class="mb-2">

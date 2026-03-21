@@ -35,9 +35,9 @@ class EventManagementController extends Controller
 
         // Search
         if ($request->has('search') && $request->search) {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('location', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')  // Keep title search correct
+                    ->orWhere('location', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -71,6 +71,7 @@ class EventManagementController extends Controller
             'description' => 'required|string',
             'schedule_time' => 'required|date|after:today',
             'location' => 'required|string|max:150',
+            'ticket_quota' => 'required|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
         ]);
@@ -110,7 +111,7 @@ class EventManagementController extends Controller
     public function update(Request $request, $event_id)
     {
         $event = Event::findOrFail($event_id);
-        
+
         $validated = $request->validate([
             'organizer_id' => 'required|exists:users,user_id',
             'category_id' => 'required|exists:kategori_acara,category_id',
@@ -118,6 +119,7 @@ class EventManagementController extends Controller
             'description' => 'required|string',
             'schedule_time' => 'required|date',
             'location' => 'required|string|max:150',
+            'ticket_quota' => 'required|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
         ]);

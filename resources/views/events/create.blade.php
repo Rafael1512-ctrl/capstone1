@@ -1,84 +1,224 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="container">
-    <div class="page-inner">
-        <div class="page-header">
-            <h4 class="page-title">Create New Event</h4>
-        </div>
+    <div class="container">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">Buat Event Baru</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="{{ route('organizer.dashboard') }}">
+                            <span class="icon-breadcrumb">/</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('events.index') }}">Events</a>
+                    </li>
+                    <li class="separator">
+                        <i class="flaticon-right-arrow"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">Buat Event Baru</a>
+                    </li>
+                </ul>
+            </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Event Information</div>
-                    </div>
-                    <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-8">
-                                    <div class="form-group">
-                                        <label for="title">Event Title</label>
-                                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" placeholder="Enter Event Title" required value="{{ old('title') }}">
-                                        @error('title')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Informasi Event</div>
+                        </div>
+
+                        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data"
+                            id="eventForm">
+                            @csrf
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <!-- Judul Event -->
+                                        <div class="form-group">
+                                            <label for="name">Judul Event <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                                id="name" name="name" placeholder="Contoh: Tulus Concert 2026"
+                                                required maxlength="200" value="{{ old('name') }}">
+                                            @error('name')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                            <small class="form-text text-muted">Max 200 karakter</small>
+                                        </div>
+
+                                        <!-- Deskripsi Event -->
+                                        <div class="form-group">
+                                            <label for="description">Deskripsi Event <span
+                                                    class="text-danger">*</span></label>
+                                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
+                                                rows="6" placeholder="Jelaskan detail event Anda..." required maxlength="1000">{{ old('description') }}</textarea>
+                                            @error('description')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                            <small class="form-text text-muted">Max 1000 karakter</small>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="description">Description</label>
-                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="5" placeholder="Enter Event Description" required>{{ old('description') }}</textarea>
-                                        @error('description')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+
+                                    <div class="col-md-4">
+                                        <!-- Banner Upload -->
+                                        <div class="form-group">
+                                            <label for="banner_url">Banner Event <span
+                                                    class="text-muted">(Opsional)</span></label>
+                                            <div class="custom-file-upload">
+                                                <input type="file"
+                                                    class="form-control-file @error('banner_url') is-invalid @enderror"
+                                                    id="banner_url" name="banner_url"
+                                                    accept="image/jpeg,image/png,image/jpg,image/gif,image/webp">
+                                                <small class="form-text text-muted d-block mt-2">
+                                                    Format: JPG, PNG, GIF, WebP | Max 5MB
+                                                </small>
+                                            </div>
+                                            @error('banner_url')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+
+                                            <!-- Preview Banner -->
+                                            <div id="bannerPreview" style="margin-top: 15px;">
+                                                <img id="previewImg"
+                                                    style="max-height: 160px; max-width: 100%; border-radius: 4px; display: none;">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="date">Event Date</label>
-                                        <input type="datetime-local" class="form-control @error('date') is-invalid @enderror" id="date" name="date" required value="{{ old('date') }}">
-                                        @error('date')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+
+                                <hr class="my-4">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- Kategori Event -->
+                                        <div class="form-group">
+                                            <label for="category_id">Kategori Event <span
+                                                    class="text-muted">(Opsional)</span></label>
+                                            <select class="form-control @error('category_id') is-invalid @enderror"
+                                                id="category_id" name="category_id">
+                                                <option value="">-- Pilih Kategori --</option>
+                                                @foreach ($categories as $category)
+                                                    <option value="{{ $category->category_id }}"
+                                                        {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
+                                                        {{ $category->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('category_id')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="location">Location</label>
-                                        <input type="text" class="form-control @error('location') is-invalid @enderror" id="location" name="location" placeholder="Enter Location" required value="{{ old('location') }}">
-                                        @error('location')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+
+                                    <div class="col-md-6">
+                                        <!-- Kuota Tiket -->
+                                        <div class="form-group">
+                                            <label for="ticket_quota">Kuota Tiket <span class="text-danger">*</span></label>
+                                            <input type="number"
+                                                class="form-control @error('ticket_quota') is-invalid @enderror"
+                                                id="ticket_quota" name="ticket_quota" placeholder="Jumlah tiket tersedia"
+                                                required min="1" max="999999" value="{{ old('ticket_quota') }}">
+                                            @error('ticket_quota')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                            <small class="form-text text-muted">Total tiket yang akan dijual</small>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="template_id">Event Page Design (Template)</label>
-                                        <select class="form-control @error('template_id') is-invalid @enderror" id="template_id" name="template_id" required>
-                                            <option value="1" {{ old('template_id') == '1' ? 'selected' : '' }}>Template 1 (Radiohead Style)</option>
-                                            <option value="2" {{ old('template_id') == '2' ? 'selected' : '' }}>Template 2 (Coldplay Style)</option>
-                                            <option value="3" {{ old('template_id') == '3' ? 'selected' : '' }}>Template 3 (Taylor Swift Style)</option>
-                                            <option value="4" {{ old('template_id') == '4' ? 'selected' : '' }}>Template 4 (Arctic Monkeys Style)</option>
-                                            <option value="5" {{ old('template_id') == '5' ? 'selected' : '' }}>Template 5 (Bruno Mars Style)</option>
-                                            <option value="6" {{ old('template_id') == '6' ? 'selected' : '' }}>Template 6 (The Weeknd Style)</option>
-                                            <option value="7" {{ old('template_id') == '7' ? 'selected' : '' }}>Template 7 (Ed Sheeran Style)</option>
-                                            <option value="8" {{ old('template_id') == '8' ? 'selected' : '' }}>Template 8 (Billie Eilish Style)</option>
-                                        </select>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <!-- Tanggal & Waktu -->
+                                        <div class="form-group">
+                                            <label for="schedule_time">Tanggal & Waktu Event <span
+                                                    class="text-danger">*</span></label>
+                                            <input type="datetime-local"
+                                                class="form-control @error('schedule_time') is-invalid @enderror"
+                                                id="schedule_time" name="schedule_time" required
+                                                value="{{ old('schedule_time') }}">
+                                            @error('schedule_time')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                            <small class="form-text text-muted">Harus waktu yang akan datang</small>
+                                        </div>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="banner">Banner Image</label>
-                                        <input type="file" class="form-control-file @error('banner') is-invalid @enderror" id="banner" name="banner">
-                                        @error('banner')
-                                            <small class="text-danger">{{ $message }}</small>
-                                        @enderror
+
+                                    <div class="col-md-6">
+                                        <!-- Lokasi -->
+                                        <div class="form-group">
+                                            <label for="location">Lokasi Event <span class="text-danger">*</span></label>
+                                            <input type="text"
+                                                class="form-control @error('location') is-invalid @enderror"
+                                                id="location" name="location"
+                                                placeholder="Contoh: Jakarta International Expo, Jakarta" required
+                                                maxlength="255" value="{{ old('location') }}">
+                                            @error('location')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-action">
-                            <button type="submit" class="btn btn-success">Create Event</button>
-                            <a href="{{ route('events.index') }}" class="btn btn-danger">Cancel</a>
-                        </div>
-                    </form>
+
+                            <div class="card-action">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa fa-save"></i> Buat Event
+                                </button>
+                                <a href="{{ route('organizer.dashboard') }}" class="btn btn-secondary">
+                                    <i class="fa fa-times"></i> Batal
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <style>
+        .custom-file-upload {
+            position: relative;
+            display: inline-block;
+        }
+
+        .custom-file-upload input[type="file"] {
+            position: relative;
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .custom-file-upload input[type="file"]:hover {
+            border-color: #3B82F6;
+        }
+    </style>
+
+    <script>
+        // Preview banner image
+        document.getElementById('banner_url').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const preview = document.getElementById('previewImg');
+                    preview.src = event.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Set minimum date to today
+        const todayDate = new Date().toISOString().slice(0, 16);
+        document.getElementById('schedule_time').min = todayDate;
+    </script>
 @endsection

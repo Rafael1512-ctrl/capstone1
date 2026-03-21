@@ -10,7 +10,7 @@ class Event extends Model
     use HasFactory;
 
     protected $table = 'acara';
-    
+
     protected $primaryKey = 'event_id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -20,7 +20,7 @@ class Event extends Model
         'event_id',
         'organizer_id',
         'category_id',
-        'name',
+        'title',
         'description',
         'location',
         'schedule_time',
@@ -28,16 +28,6 @@ class Event extends Model
         'banner_url',
         'status',
     ];
-
-    public function getTitleAttribute()
-    {
-        return $this->name;
-    }
-
-    public function setTitleAttribute($value)
-    {
-        $this->attributes['name'] = $value;
-    }
 
     protected $casts = [
         'schedule_time' => 'datetime',
