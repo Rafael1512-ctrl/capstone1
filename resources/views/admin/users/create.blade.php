@@ -33,13 +33,13 @@
                                         @enderror
                                     </div>
                                     <div class="form-group">
-                                        <label for="role">Role</label>
-                                        <select class="form-control @error('role') is-invalid @enderror" id="role" name="role" required>
-                                            <option value="user" {{ (old('role', $role) == 'user') ? 'selected' : '' }}>User (Customer)</option>
-                                            <option value="organizer" {{ (old('role', $role) == 'organizer') ? 'selected' : '' }}>Organizer</option>
-                                            <option value="admin" {{ (old('role', $role) == 'admin') ? 'selected' : '' }}>Admin</option>
+                                        <label for="role_id">Role</label>
+                                        <select class="form-control @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
+                                            <option value="3" {{ (old('role_id', $role_id) == 3) ? 'selected' : '' }}>User (Customer)</option>
+                                            <option value="2" {{ (old('role_id', $role_id) == 2) ? 'selected' : '' }}>Organizer</option>
+                                            <option value="1" {{ (old('role_id', $role_id) == 1) ? 'selected' : '' }}>Admin</option>
                                         </select>
-                                        @error('role')
+                                        @error('role_id')
                                             <small class="text-danger">{{ $message }}</small>
                                         @enderror
                                     </div>

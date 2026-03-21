@@ -10,20 +10,22 @@ class OrderManagementController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'event'])->orderBy('created_at', 'desc')->paginate(20);
+        $orders = Order::with(['user', 'event'])->orderBy('transaction_date', 'desc')->paginate(20);
         return view('admin.orders.index', compact('orders'));
     }
 
-    public function show(Order $order)
+    public function show($transaction_id)
     {
-        $order->load(['user', 'event', 'items.ticketType', 'payments']);
+        $order = Order::with(['user', 'event', 'tickets.ticketType'])->findOrFail($transaction_id);
         return view('admin.orders.show', compact('order'));
     }
 
-    public function updateStatus(Request $request, Order $order)
+    public function updateStatus(Request $request, $transaction_id)
     {
+        $order = Order::findOrFail($transaction_id);
+        
         $request->validate([
-            'status' => 'required|in:pending,paid,failed,expired,cancelled',
+            'status' => 'required|in:Belum Lunas,Lunas,Batal',
         ]);
 
         $order->update(['status' => $request->status]);

@@ -12,8 +12,8 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Total pendapatan dari order yang sudah paid
-        $totalRevenue = Order::where('status', 'paid')->sum('total_amount');
+        // Total pendapatan dari order yang sudah Lunas
+        $totalRevenue = Order::where('status', 'Lunas')->sum('total_amount') ?? 0;
 
         // Jumlah event
         $totalEvents = Event::count();
@@ -22,25 +22,25 @@ class DashboardController extends Controller
         $totalTicketsSold = Ticket::count();
 
         // Jumlah user biasa
-        $totalUsers = User::where('role', 'user')->count();
+        $totalUsers = User::where('role_id', 3)->count();
 
         // Jumlah organizer
-        $totalOrganizers = User::where('role', 'organizer')->count();
+        $totalOrganizers = User::where('role_id', 2)->count();
 
         // 5 event terlaris (berdasarkan jumlah tiket terjual)
         $topEvents = Event::withCount(['tickets as tickets_sold' => function ($query) {
                 $query->whereHas('order', function ($q) {
-                    $q->where('status', 'paid');
+                    $q->where('status', 'Lunas');
                 });
             }])
             ->orderByDesc('tickets_sold')
             ->limit(5)
-            ->get(['id', 'title']);
+            ->get(['event_id', 'name']);
 
         // Grafik penjualan 7 hari terakhir
-        $dailySales = Order::where('status', 'paid')
-            ->where('created_at', '>=', now()->subDays(7))
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as revenue'))
+        $dailySales = Order::where('status', 'Lunas')
+            ->where('transaction_date', '>=', now()->subDays(7))
+            ->select(DB::raw('DATE(transaction_date) as date'), DB::raw('SUM(total_amount) as revenue'))
             ->groupBy('date')
             ->orderBy('date')
             ->get();

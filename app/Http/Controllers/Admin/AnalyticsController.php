@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Event;
 use App\Models\Order;
 use App\Models\User;
-use App\Models\Payment;
 use App\Models\Ticket;
-use App\Models\EventCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -20,44 +18,45 @@ class AnalyticsController extends Controller
     public function dashboard()
     {
         // Basic Statistics
-        $totalRevenue = Order::where('status', 'paid')->sum('total_amount');
+        $totalRevenue = Order::where('payment_status', 'Verified')->sum('total_amount') ?? 0;
         $totalEvents = Event::count();
-        $totalOrganizers = User::where('role', 'organizer')->count();
-        $totalUsers = User::where('role', 'user')->count();
+        $totalOrganizers = User::where('role_id', 2)->count();
+        $totalUsers = User::where('role_id', 3)->count();
         $totalOrders = Order::count();
-        $paidOrders = Order::where('status', 'paid')->count();
-        $pendingOrders = Order::where('status', 'pending')->count();
+        $paidOrders = Order::where('payment_status', 'Verified')->count();
+        $pendingOrders = Order::where('payment_status', 'Pending')->count();
 
         // Revenue Stats
-        $todayRevenue = Order::where('status', 'paid')
-            ->whereDate('created_at', today())
-            ->sum('total_amount');
+        $todayRevenue = Order::where('payment_status', 'Verified')
+            ->whereDate('payment_date', today())
+            ->sum('total_amount') ?? 0;
 
-        $monthRevenue = Order::where('status', 'paid')
-            ->whereMonth('created_at', date('m'))
-            ->whereYear('created_at', date('Y'))
-            ->sum('total_amount');
+        $monthRevenue = Order::where('payment_status', 'Verified')
+            ->whereMonth('payment_date', date('m'))
+            ->whereYear('payment_date', date('Y'))
+            ->sum('total_amount') ?? 0;
 
         // Top Events
-        $topEvents = Event::withCount(['orders' => function ($q) {
-            $q->where('status', 'paid');
-        }])
+        $topEvents = Event::withCount([
+            'orders' => function ($q) {
+                $q->where('payment_status', 'Verified');
+            }
+        ])
             ->orderByDesc('orders_count')
             ->limit(5)
-            ->with('category')
             ->get();
 
         // Top Organizers
-        $topOrganizers = User::where('role', 'organizer')
+        $topOrganizers = User::where('role_id', 2)
             ->withCount(['events'])
             ->orderByDesc('events_count')
             ->limit(5)
             ->get();
 
         // Daily Sales (Last 7 Days)
-        $dailySales = Order::where('status', 'paid')
-            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as orders'), DB::raw('SUM(total_amount) as revenue'))
+        $dailySales = Order::where('payment_status', 'Verified')
+            ->where('payment_date', '>=', now()->subDays(6)->startOfDay())
+            ->select(DB::raw('DATE(payment_date) as date'), DB::raw('COUNT(*) as orders'), DB::raw('SUM(total_amount) as revenue'))
             ->groupBy('date')
             ->orderBy('date')
             ->get();
@@ -93,9 +92,9 @@ class AnalyticsController extends Controller
             default => '%Y-%m',
         };
 
-        $salasData = Order::where('status', 'paid')
+        $salasData = Order::where('payment_status', 'Verified')
             ->select(
-                DB::raw("DATE_FORMAT(created_at, '$dateFormat') as period"),
+                DB::raw("DATE_FORMAT(payment_date, '$dateFormat') as period"),
                 DB::raw('COUNT(*) as total_orders'),
                 DB::raw('SUM(total_amount) as total_revenue')
             )
@@ -113,29 +112,19 @@ class AnalyticsController extends Controller
     {
         $days = $request->input('days', 30);
 
-        $transactionData = Order::where('created_at', '>=', now()->subDays($days))
+        $transactionData = Order::where('payment_date', '>=', now()->subDays($days))
             ->select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw("'pending' as status"),
+                DB::raw('DATE(payment_date) as date'),
+                DB::raw('payment_status as status'),
                 DB::raw('COUNT(*) as count')
             )
-            ->where('status', 'pending')
             ->groupBy('date', 'status')
-            ->union(
-                Order::where('created_at', '>=', now()->subDays($days))
-                    ->select(
-                        DB::raw('DATE(created_at) as date'),
-                        DB::raw("'paid' as status"),
-                        DB::raw('COUNT(*) as count')
-                    )
-                    ->where('status', 'paid')
-                    ->groupBy('date', 'status')
-            )
             ->orderBy('date')
             ->get();
 
-        $paymentMethods = Payment::where('created_at', '>=', now()->subDays($days))
-            ->select('payment_method', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total'))
+        // Payment Methods stats
+        $paymentMethods = Order::where('payment_date', '>=', now()->subDays($days))
+            ->select('payment_method', DB::raw('COUNT(*) as count'), DB::raw('SUM(total_amount) as total'))
             ->groupBy('payment_method')
             ->get();
 
@@ -153,33 +142,35 @@ class AnalyticsController extends Controller
             $query->where('category_id', $request->category);
         }
 
-        $events = $query->with(['category', 'ticketTypes'])
+        $events = $query->with(['ticketTypes'])
             ->get()
             ->map(function ($event) {
-                $totalTicketsAvailable = $event->ticketTypes->sum('quantity_total');
-                $totalTicketsSold = $event->ticketTypes->sum('quantity_sold');
+                // In db_tixly, ticket_quota is on the event (acara) too?
+                // Let's check ticket_quota.
+                $totalTicketsAvailable = $event->ticket_quota;
+                // tickets() relationship on Event
+                $totalTicketsSold = $event->tickets()->count();
                 $soldPercentage = $totalTicketsAvailable > 0 ? ($totalTicketsSold / $totalTicketsAvailable) * 100 : 0;
 
                 $revenue = $event->orders()
-                    ->where('status', 'paid')
-                    ->sum('total_amount');
+                    ->where('payment_status', 'Verified')
+                    ->sum('total_amount') ?? 0;
 
                 return [
-                    'id' => $event->id,
-                    'title' => $event->title,
-                    'category' => $event->category?->name,
-                    'date' => $event->date,
+                    'event_id' => $event->event_id,
+                    'name' => $event->name,
+                    'date' => $event->schedule_time,
                     'location' => $event->location,
                     'status' => $event->status,
                     'total_available' => $totalTicketsAvailable,
                     'total_sold' => $totalTicketsSold,
                     'availability_rate' => round($soldPercentage, 2),
                     'revenue' => $revenue,
-                    'orders_count' => $event->orders()->where('status', 'paid')->count(),
+                    'orders_count' => $event->orders()->where('payment_status', 'Verified')->count(),
                 ];
             });
 
-        $categories = \App\Models\EventCategory::where('is_active', true)->get();
+        $categories = DB::table('kategori_acara')->get();
 
         return view('admin.analytics.event-performance', compact('events', 'categories'));
     }
@@ -189,22 +180,19 @@ class AnalyticsController extends Controller
      */
     public function revenueByCategory()
     {
-        $data = \App\Models\EventCategory::with(['events' => function ($q) {
-            $q->with(['orders' => function ($q2) {
-                $q2->where('status', 'paid');
-            }]);
-        }])
+        $data = DB::table('kategori_acara')
             ->get()
             ->map(function ($category) {
-                $revenue = $category->events
-                    ->flatMap(fn($event) => $event->orders)
-                    ->sum('total_amount');
+                $revenue = DB::table('transaksi')
+                    ->join('acara', 'transaksi.event_id', '=', 'acara.event_id')
+                    ->where('acara.category_id', $category->category_id)
+                    ->where('transaksi.payment_status', 'Verified')
+                    ->sum('transaksi.total_amount') ?? 0;
 
                 return [
                     'category' => $category->name,
                     'revenue' => $revenue,
-                    'color' => $category->color,
-                    'event_count' => $category->events->count(),
+                    'event_count' => DB::table('acara')->where('category_id', $category->category_id)->count(),
                 ];
             });
 
@@ -216,21 +204,23 @@ class AnalyticsController extends Controller
      */
     public function userStats()
     {
-        $totalUsers = User::where('role', 'user')->count();
-        $totalOrganizers = User::where('role', 'organizer')->count();
-        $totalAdmins = User::where('role', 'admin')->count();
+        $totalUsers = User::where('role_id', 3)->count();
+        $totalOrganizers = User::where('role_id', 2)->count();
+        $totalAdmins = User::where('role_id', 1)->count();
 
-        $usersGrowth = User::where('role', 'user')
-            ->where('created_at', '>=', now()->subDays(30))
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+        $usersGrowth = collect();
 
-        $topBuyers = User::where('role', 'user')
-            ->withCount(['orders' => function ($q) {
-                $q->where('status', 'paid');
-            }])
+        $topBuyers = User::where('role_id', 3)
+            ->withCount([
+                'orders' => function ($q) {
+                    $q->where('payment_status', 'Verified');
+                }
+            ])
+            ->withSum([
+                'orders as total_spent' => function ($q) {
+                    $q->where('payment_status', 'Verified');
+                }
+            ], 'total_amount')
             ->orderByDesc('orders_count')
             ->limit(10)
             ->get();

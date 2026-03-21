@@ -9,56 +9,46 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $table = 'transaksi';
+
+    protected $primaryKey = 'transaction_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = false; // Based on your db_tixly structure
+
     protected $fillable = [
-        'user_id', 'event_id', 'order_number', 'total_amount', 'status'
+        'transaction_id',
+        'user_id',
+        'ticket_id',
+        'payment_date',
+        'payment_method',
+        'payment_status',
+        'total_ticket',
+        'total_amount',
     ];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
+        'payment_date' => 'datetime',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function event()
-    {
-        return $this->belongsTo(Event::class);
-    }
-
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class);
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
     public function tickets()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(Ticket::class, 'transaction_id', 'transaction_id');
     }
 
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
-    }
-
+    // Helper methods for controller logic
     public function isPaid()
     {
-        return $this->status === 'paid';
+        return $this->payment_status === 'Verified';
     }
 
     public function isPending()
     {
-        return $this->status === 'pending';
-    }
-
-    public function markAsPaid()
-    {
-        $this->update(['status' => 'paid']);
-        
-        $this->payments()->where('status', 'pending')->update([
-            'status' => 'success',
-            'paid_at' => now(),
-        ]);
+        return $this->payment_status === 'Pending';
     }
 }

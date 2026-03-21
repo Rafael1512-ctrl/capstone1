@@ -11,12 +11,12 @@ use App\Http\Controllers\Controller;
 class ExportController extends Controller
 {
     /**
-     * Export events to Excel
+     * Export events to Excel (CSV)
      */
     public function exportEvents(Request $request)
     {
         $events = Event::with('category', 'organizer', 'ticketTypes')
-            ->orderBy('date', 'desc')
+            ->orderBy('schedule_time', 'desc')
             ->get();
 
         // Create CSV
@@ -25,13 +25,13 @@ class ExportController extends Controller
         foreach ($events as $event) {
             $totalTickets = $event->ticketTypes->sum('quantity_total');
             $soldTickets = $event->ticketTypes->sum('quantity_sold');
-            $revenue = $event->orders()->where('status', 'paid')->sum('total_amount');
+            $revenue = $event->orders()->where('status', 'Lunas')->sum('total_amount');
 
-            $csv .= "\"{$event->id}\"";
-            $csv .= ",\"" . str_replace('"', '""', $event->title) . "\"";
-            $csv .= ",\"" . $event->organizer->name . "\"";
+            $csv .= "\"{$event->event_id}\"";
+            $csv .= ",\"" . str_replace('"', '""', $event->name) . "\"";
+            $csv .= ",\"" . ($event->organizer->name ?? '-') . "\"";
             $csv .= ",\"" . ($event->category?->name ?? '-') . "\"";
-            $csv .= ",\"" . $event->date->format('Y-m-d') . "\"";
+            $csv .= ",\"" . ($event->schedule_time ? $event->schedule_time->format('Y-m-d') : '-') . "\"";
             $csv .= ",\"" . str_replace('"', '""', $event->location) . "\"";
             $csv .= "," . $event->status;
             $csv .= "," . $soldTickets;
@@ -45,24 +45,24 @@ class ExportController extends Controller
     }
 
     /**
-     * Export orders to Excel
+     * Export orders to Excel (CSV)
      */
     public function exportOrders(Request $request)
     {
         $orders = Order::with('user', 'event')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('transaction_date', 'desc')
             ->get();
 
         $csv = "ID,Order Number,User,Event,Amount,Status,Created\n";
 
         foreach ($orders as $order) {
-            $csv .= "\"" . $order->id . "\"";
-            $csv .= ",\"" . $order->order_number . "\"";
-            $csv .= ",\"" . $order->user->name . "\"";
-            $csv .= ",\"" . str_replace('"', '""', $order->event->title) . "\"";
+            $csv .= "\"" . $order->transaction_id . "\"";
+            $csv .= ",\"" . ($order->transaction_id) . "\""; // db_tixly uses ID as number too
+            $csv .= ",\"" . ($order->user->name ?? '-') . "\"";
+            $csv .= ",\"" . str_replace('"', '""', $order->event->name ?? '-') . "\"";
             $csv .= "," . number_format($order->total_amount, 2, ',', '.');
             $csv .= "," . $order->status;
-            $csv .= ",\"" . $order->created_at->format('Y-m-d H:i:s') . "\"\n";
+            $csv .= ",\"" . ($order->transaction_date ? $order->transaction_date->format('Y-m-d H:i:s') : '-') . "\"\n";
         }
 
         return response($csv, 200)
@@ -78,14 +78,14 @@ class ExportController extends Controller
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        $query = Order::where('status', 'paid');
+        $query = Order::where('status', 'Lunas');
 
         if ($startDate) {
-            $query->where('created_at', '>=', $startDate);
+            $query->where('transaction_date', '>=', $startDate);
         }
 
         if ($endDate) {
-            $query->where('created_at', '<=', $endDate . ' 23:59:59');
+            $query->where('transaction_date', '<=', $endDate . ' 23:59:59');
         }
 
         $orders = $query->with('user', 'event')->get();
@@ -94,10 +94,10 @@ class ExportController extends Controller
         $totalRevenue = 0;
 
         foreach ($orders as $order) {
-            $csv .= "\"" . $order->created_at->format('Y-m-d H:i:s') . "\"";
-            $csv .= ",\"" . str_replace('"', '""', $order->event->title) . "\"";
-            $csv .= ",\"" . $order->user->name . "\"";
-            $csv .= ",\"" . $order->order_number . "\"";
+            $csv .= "\"" . ($order->transaction_date ? $order->transaction_date->format('Y-m-d H:i:s') : '-') . "\"";
+            $csv .= ",\"" . str_replace('"', '""', $order->event->name ?? '-') . "\"";
+            $csv .= ",\"" . ($order->user->name ?? '-') . "\"";
+            $csv .= ",\"" . $order->transaction_id . "\"";
             $csv .= "," . number_format($order->total_amount, 2, ',', '.');
             $csv .= "," . $order->status . "\n";
 
@@ -125,11 +125,11 @@ class ExportController extends Controller
             $totalTickets = $event->ticketTypes->sum('quantity_total');
             $soldTickets = $event->ticketTypes->sum('quantity_sold');
             $availability = $totalTickets > 0 ? round((($totalTickets - $soldTickets) / $totalTickets) * 100, 2) : 0;
-            $revenue = $event->orders()->where('status', 'paid')->sum('total_amount');
-            $ordersCount = $event->orders()->where('status', 'paid')->count();
+            $revenue = $event->orders()->where('status', 'Lunas')->sum('total_amount');
+            $ordersCount = $event->orders()->where('status', 'Lunas')->count();
 
-            $csv .= "\"" . $event->id . "\"";
-            $csv .= ",\"" . str_replace('"', '""', $event->title) . "\"";
+            $csv .= "\"" . $event->event_id . "\"";
+            $csv .= ",\"" . str_replace('"', '""', $event->name) . "\"";
             $csv .= ",\"" . ($event->category?->name ?? '-') . "\"";
             $csv .= "," . $event->status;
             $csv .= "," . $totalTickets;

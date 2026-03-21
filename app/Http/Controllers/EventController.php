@@ -5,93 +5,83 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
-    /**
-     * Listing semua event yang published
-     */
     public function index()
     {
         $events = Event::where('status', 'published')
             ->with('ticketTypes')
-            ->orderBy('date')
+            ->orderBy('schedule_time')
             ->paginate(15);
 
         return view('events.index', compact('events'));
     }
 
-    /**
-     * Detail event
-     */
-    public function show(Event $event)
+    public function show($id)
     {
-        $event->load(['organizer', 'ticketTypes']);
-
+        $event = Event::with(['organizer', 'ticketTypes'])->findOrFail($id);
         return view('events.show', compact('event'));
     }
 
-    /**
-     * Form buat event baru (Organizer)
-     */
     public function create()
     {
         return view('events.create');
     }
 
-    /**
-     * Simpan event baru
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'date'        => ['required', 'date', 'after:now'],
-            'location'    => ['required', 'string'],
+            'title'       => ['required', 'string', 'max:100'],
+            'description' => ['required', 'string', 'max:300'],
+            'schedule_time'=> ['required', 'date', 'after:now'],
+            'location'    => ['required', 'string', 'max:100'],
+            'ticket_quota'=> ['required', 'integer', 'min:1'],
             'banner'      => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-            'template_id' => ['nullable', 'integer', 'min:1', 'max:8'],
         ]);
 
         $data = $request->except('banner');
-        $data['organizer_id'] = Auth::id();
+        $data['organizer_id'] = Auth::user()->user_id;
         $data['status'] = 'draft';
 
         if ($request->hasFile('banner')) {
             $data['banner_url'] = $request->file('banner')->store('events', 'public');
         }
 
+        // Generate ID using User's SP
+        DB::statement('CALL GenerateEventID(@new_id)');
+        $result = DB::select('SELECT @new_id AS new_id')[0];
+        $data['event_id'] = $result->new_id;
+
         $event = Event::create($data);
 
-        return redirect()->route('events.show', $event)
+        return redirect()->route('events.show', $event->event_id)
             ->with('success', 'Event berhasil dibuat! Tambahkan tipe tiket sekarang.');
     }
 
-    /**
-     * Form edit event
-     */
-    public function edit(Event $event)
+    public function edit($id)
     {
-        $this->authorize('update', $event);
+        $event = Event::findOrFail($id);
+        if ($event->organizer_id !== Auth::user()->user_id) abort(403);
+
         return view('events.edit', compact('event'));
     }
 
-    /**
-     * Update event
-     */
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $id)
     {
-        $this->authorize('update', $event);
+        $event = Event::findOrFail($id);
+        if ($event->organizer_id !== Auth::user()->user_id) abort(403);
 
         $validated = $request->validate([
-            'title'       => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
-            'date'        => ['required', 'date'],
-            'location'    => ['required', 'string'],
+            'title'       => ['required', 'string', 'max:100'],
+            'description' => ['required', 'string', 'max:300'],
+            'schedule_time'=> ['required', 'date'],
+            'location'    => ['required', 'string', 'max:100'],
+            'ticket_quota'=> ['required', 'integer', 'min:1'],
             'status'      => ['required', 'in:draft,published,cancelled'],
             'banner'      => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
-            'template_id' => ['nullable', 'integer', 'min:1', 'max:8'],
         ]);
 
         $data = $request->except('banner');
@@ -105,16 +95,14 @@ class EventController extends Controller
 
         $event->update($data);
 
-        return redirect()->route('events.show', $event)
+        return redirect()->route('events.show', $event->event_id)
             ->with('success', 'Event berhasil diupdate!');
     }
 
-    /**
-     * Hapus event
-     */
-    public function destroy(Event $event)
+    public function destroy($id)
     {
-        $this->authorize('delete', $event);
+        $event = Event::findOrFail($id);
+        if ($event->organizer_id !== Auth::user()->user_id) abort(403);
 
         if ($event->banner_url && Storage::disk('public')->exists($event->banner_url)) {
             Storage::disk('public')->delete($event->banner_url);
@@ -125,12 +113,10 @@ class EventController extends Controller
         return back()->with('success', 'Event berhasil dihapus!');
     }
 
-    /**
-     * Publish event
-     */
-    public function publish(Event $event)
+    public function publish($id)
     {
-        $this->authorize('update', $event);
+        $event = Event::findOrFail($id);
+        if ($event->organizer_id !== Auth::user()->user_id) abort(403);
 
         if ($event->ticketTypes()->count() === 0) {
             return back()->with('error', 'Tambahkan tipe tiket terlebih dahulu sebelum mempublish event.');

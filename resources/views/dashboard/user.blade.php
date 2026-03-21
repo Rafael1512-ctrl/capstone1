@@ -9,18 +9,18 @@
 
             <!-- Statistics Row -->
             <div class="row">
-                <div class="col-sm-6 col-md-4">
-                    <div class="card card-stats card-primary card-round">
+                <div class="col-sm-6 col-md-3">
+                    <div class="card card-stats card-primary card-round shadow-sm">
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row align-items-center">
                                 <div class="col-3">
                                     <div class="icon-big text-center">
                                         <i class="fas fa-ticket-alt"></i>
                                     </div>
                                 </div>
                                 <div class="col-9 col-stats">
-                                    <div class="numbers">
-                                        <p class="card-category">My Tickets</p>
+                                    <div class="numbers text-end">
+                                        <p class="card-category">Tiket Saya</p>
                                         <h4 class="card-title">{{ $stats['total_tickets'] ?? 0 }}</h4>
                                     </div>
                                 </div>
@@ -29,18 +29,18 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6 col-md-4">
-                    <div class="card card-stats card-success card-round">
+                <div class="col-sm-6 col-md-3">
+                    <div class="card card-stats card-success card-round shadow-sm">
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row align-items-center">
                                 <div class="col-3">
                                     <div class="icon-big text-center">
                                         <i class="fas fa-check-circle"></i>
                                     </div>
                                 </div>
                                 <div class="col-9 col-stats">
-                                    <div class="numbers">
-                                        <p class="card-category">Used Tickets</p>
+                                    <div class="numbers text-end">
+                                        <p class="card-category">Sudah Dipakai</p>
                                         <h4 class="card-title">{{ $stats['used_tickets'] ?? 0 }}</h4>
                                     </div>
                                 </div>
@@ -49,19 +49,39 @@
                     </div>
                 </div>
 
-                <div class="col-sm-6 col-md-4">
-                    <div class="card card-stats card-info card-round">
+                <div class="col-sm-6 col-md-3">
+                    <div class="card card-stats card-info card-round shadow-sm">
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row align-items-center">
                                 <div class="col-3">
                                     <div class="icon-big text-center">
-                                        <i class="fas fa-calendar"></i>
+                                        <i class="fas fa-hourglass-half"></i>
                                     </div>
                                 </div>
                                 <div class="col-9 col-stats">
-                                    <div class="numbers">
-                                        <p class="card-category">Upcoming Events</p>
-                                        <h4 class="card-title">{{ $stats['upcoming_events'] ?? 0 }}</h4>
+                                    <div class="numbers text-end">
+                                        <p class="card-category">Tiket Aktif</p>
+                                        <h4 class="card-title">{{ $stats['active_tickets'] ?? 0 }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-md-3">
+                    <div class="card card-stats card-warning card-round shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-3">
+                                    <div class="icon-big text-center">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                </div>
+                                <div class="col-9 col-stats">
+                                    <div class="numbers text-end">
+                                        <p class="card-category">Pesanan</p>
+                                        <h4 class="card-title">{{ $stats['total_orders'] ?? 0 }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -70,47 +90,50 @@
                 </div>
             </div>
 
-            <!-- Tickets and Orders -->
             <div class="row mt-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
+                <!-- Recent Tickets -->
+                <div class="col-md-7">
+                    <div class="card card-round border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title">My Tickets</h5>
-                                <a href="{{ route('tickets.index') }}" class="btn btn-sm btn-link">View All</a>
+                                <h5 class="card-title mb-0">Tiket Terbaru</h5>
+                                <a href="{{ route('tickets.index') }}" class="btn btn-primary btn-xs px-3">Lihat Semua</a>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
+                                <table class="table table-hover mb-0 align-middle">
+                                    <thead class="bg-light">
                                         <tr>
-                                            <th>Ticket #</th>
+                                            <th class="ps-4">Tiket #</th>
                                             <th>Event</th>
-                                            <th>Category</th>
+                                            <th>Tipe</th>
                                             <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($tickets->take(5) ?? [] as $ticket)
                                             <tr>
-                                                <td>
-                                                    <a href="{{ route('tickets.view', $ticket) }}">
-                                                        {{ substr($ticket->ticket_number, -6) }}
+                                                <td class="ps-4">
+                                                    <a href="{{ route('tickets.view', $ticket->ticket_id) }}" class="fw-bold">
+                                                        {{ substr($ticket->ticket_id, -8) }}
                                                     </a>
                                                 </td>
-                                                <td>{{ $ticket->event->title }}</td>
-                                                <td>{{ $ticket->ticketCategory->name }}</td>
                                                 <td>
-                                                    <span
-                                                        class="badge bg-{{ $ticket->status === 'used' ? 'success' : 'primary' }}">
-                                                        {{ ucfirst($ticket->status) }}
+                                                    <div class="text-truncate" style="max-width: 151px;">
+                                                        {{ $ticket->event->name ?? 'N/A' }}
+                                                    </div>
+                                                </td>
+                                                <td><span class="small">{{ $ticket->ticketType->name ?? 'N/A' }}</span></td>
+                                                <td>
+                                                    <span class="badge rounded-pill bg-{{ $ticket->ticket_status === 'Active' ? 'success' : 'secondary' }}">
+                                                        {{ $ticket->ticket_status }}
                                                     </span>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted">No tickets yet</td>
+                                                <td colspan="4" class="text-center py-5 text-muted">Belum ada tiket terjual</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -120,45 +143,45 @@
                     </div>
                 </div>
 
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-header">
+                <!-- Recent Orders -->
+                <div class="col-md-5">
+                    <div class="card card-round border-0 shadow-sm">
+                        <div class="card-header bg-white py-3">
                             <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="card-title">My Orders</h5>
-                                <a href="{{ route('orders.index') }}" class="btn btn-sm btn-link">View All</a>
+                                <h5 class="card-title mb-0">Pesanan Terakhir</h5>
+                                <a href="{{ route('orders.index') }}" class="btn btn-outline-primary btn-xs px-3">Riwayat</a>
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
+                                <table class="table table-hover mb-0 align-middle">
+                                    <thead class="bg-light">
                                         <tr>
-                                            <th>Order #</th>
-                                            <th>Event</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
+                                            <th class="ps-4">ID Transaksi</th>
+                                            <th class="text-end pe-4">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse($orders->take(5) ?? [] as $order)
                                             <tr>
-                                                <td>
-                                                    <a href="{{ route('orders.show', $order) }}">
-                                                        {{ substr($order->order_number, -6) }}
+                                                <td class="ps-4">
+                                                    <a href="{{ route('orders.show', $order->transaction_id) }}" class="small">
+                                                        #{{ $order->transaction_id }}
                                                     </a>
+                                                    <br>
+                                                    <small class="text-muted smaller">
+                                                        {{ $order->payment_date->format('d M, H:i') }}
+                                                    </small>
                                                 </td>
-                                                <td>{{ $order->event->title }}</td>
-                                                <td>${{ number_format($order->total_price, 2) }}</td>
-                                                <td>
-                                                    <span
-                                                        class="badge bg-{{ $order->status === 'paid' ? 'success' : 'warning' }}">
-                                                        {{ ucfirst($order->status) }}
+                                                <td class="text-end pe-4">
+                                                    <span class="badge {{ $order->payment_status === 'Verified' ? 'bg-success' : 'bg-warning text-dark' }} px-3">
+                                                        {{ $order->payment_status }}
                                                     </span>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted">No orders yet</td>
+                                                <td colspan="2" class="text-center py-5 text-muted">Belum ada pesanan</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -169,16 +192,14 @@
                 </div>
             </div>
 
-            <!-- Explore Events -->
+            <!-- Quick Action -->
             <div class="row mt-4">
                 <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">Explore Events</h5>
-                        </div>
-                        <div class="card-body">
-                            <a href="{{ route('events.index') }}" class="btn btn-primary">Browse All Events</a>
-                            <a href="{{ route('landingconcert') }}" class="btn btn-secondary">Back to Home</a>
+                    <div class="card card-round bg-primary d-flex align-items-center py-4 border-0 shadow-sm">
+                        <div class="card-body text-center text-white">
+                            <h4 class="mb-3">Ingin nonton konser lagi?</h4>
+                            <p class="mb-4 opacity-75">Temukan event-event menarik lainnya dan pesan tiketnya sekarang!</p>
+                            <a href="{{ route('events.index') }}" class="btn btn-white btn-round px-4 text-primary fw-bold">Jelajahi Event</a>
                         </div>
                     </div>
                 </div>

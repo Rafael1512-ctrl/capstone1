@@ -9,41 +9,45 @@ class Ticket extends Model
 {
     use HasFactory;
 
+    protected $table = 'ticket';
+
+    protected $primaryKey = 'ticket_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = false;
+
     protected $fillable = [
-        'order_id', 'ticket_type_id', 'unique_code', 
-        'qr_code_url', 'is_used', 'used_at'
+        'ticket_id',
+        'qr_code',
+        'event_id',
+        'ticket_type_id',
+        'ticket_status',
+        'transaction_id',
+        'qr_code_url'
     ];
 
-    protected $casts = [
-        'is_used' => 'boolean',
-        'used_at' => 'datetime',
-    ];
-
-    public function order()
+    public function event()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(Event::class, 'event_id', 'event_id');
     }
 
     public function ticketType()
     {
-        return $this->belongsTo(TicketType::class, 'ticket_type_id');
+        return $this->belongsTo(TicketType::class, 'ticket_type_id', 'id');
     }
 
-    public function event()
+    public function order()
     {
-        return $this->ticketType->event(); // Access event through ticket type
+        return $this->belongsTo(Order::class, 'transaction_id', 'transaction_id');
     }
 
     public function isActive()
     {
-        return !$this->is_used;
+        return $this->ticket_status === 'Active';
     }
 
-    public function validate($validatedBy = null)
+    public function validate()
     {
-        $this->update([
-            'is_used' => true,
-            'used_at' => now(),
-        ]);
+        $this->update(['ticket_status' => 'Used']);
     }
 }

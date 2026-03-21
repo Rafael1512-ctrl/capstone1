@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -25,17 +26,19 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role'     => 'user', // default: semua registrasi adalah user biasa
-        ]);
+        $hashedPassword = Hash::make($validated['password']);
+
+        DB::statement(
+            "CALL AddUser(?, ?, ?, ?)",
+            [$validated['name'], $validated['email'], $hashedPassword, 3] // role_id 3 = user
+        );
+
+        $user = User::where('email', $validated['email'])->first();
 
         Auth::login($user);
 
@@ -45,17 +48,20 @@ class AuthController extends Controller
     // Handle login
     public function login(Request $request)
     {
-        $credentials = $request->validate([
-            'email'    => 'required|email',
+        $request->validate([
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
+        $credentials = $request->only('email', 'password');
         $remember = $request->boolean('remember');
 
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        // Bypassing Auth::attempt to avoid issues with custom 'pass' column and missing remember_token
+        $user = User::where('email', $credentials['email'])->first();
 
-            $user = Auth::user();
+        if ($user && Hash::check($credentials['password'], $user->pass)) {
+            Auth::login($user, $remember);
+            $request->session()->regenerate();
 
             // Redirect based on role
             if ($user->isAdmin()) {
@@ -64,8 +70,7 @@ class AuthController extends Controller
                 return redirect()->route('organizer.dashboard');
             }
 
-            // Default: regular user → landing page
-            return redirect()->route('landing');
+            return redirect()->route('home');
         }
 
         return back()->withErrors([
@@ -81,6 +86,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('home')->with('success', 'You have been logged out.');
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
 }

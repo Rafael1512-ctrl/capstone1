@@ -31,9 +31,9 @@ class EventCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:100|unique:event_categories',
+            'name' => 'required|string|max:100|unique:kategori_acara',
             'description' => 'nullable|string',
-            'color' => 'required|regex:/^#[0-9A-F]{6}$/i',
+            'color' => 'nullable|regex:/^#[0-9A-F]{6}$/i',
             'icon' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
@@ -46,20 +46,23 @@ class EventCategoryController extends Controller
     /**
      * Show the form for editing a category
      */
-    public function edit(EventCategory $category)
+    public function edit($category_id)
     {
+        $category = EventCategory::findOrFail($category_id);
         return view('admin.categories.edit', compact('category'));
     }
 
     /**
      * Update a category
      */
-    public function update(Request $request, EventCategory $category)
+    public function update(Request $request, $category_id)
     {
+        $category = EventCategory::findOrFail($category_id);
+        
         $validated = $request->validate([
-            'name' => 'required|string|max:100|unique:event_categories,name,' . $category->id,
+            'name' => 'required|string|max:100|unique:kategori_acara,name,' . $category_id . ',category_id',
             'description' => 'nullable|string',
-            'color' => 'required|regex:/^#[0-9A-F]{6}$/i',
+            'color' => 'nullable|regex:/^#[0-9A-F]{6}$/i',
             'icon' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
@@ -72,8 +75,9 @@ class EventCategoryController extends Controller
     /**
      * Delete a category
      */
-    public function destroy(EventCategory $category)
+    public function destroy($category_id)
     {
+        $category = EventCategory::findOrFail($category_id);
         // Check if category has events
         if ($category->events()->exists()) {
             return back()->with('error', 'Tidak dapat menghapus kategori yang memiliki event');

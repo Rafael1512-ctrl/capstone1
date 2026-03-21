@@ -1,177 +1,108 @@
 @extends('layouts.master')
 
 @section('content')
-    <div class="container-fluid">
-        <div class="page-inner">
-            <div class="page-header">
-                <h4 class="page-title">Order Details</h4>
-            </div>
-
-            <div class="row">
-                <div class="col-md-8">
-                    <!-- Order Info Card -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title">Order #{{ $order->order_number }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <p class="mb-2">
-                                        <strong>Event:</strong> {{ $order->event->title }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <strong>Event Date:</strong> {{ $order->event->date->format('F d, Y') }}
-                                    </p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="mb-2">
-                                        <strong>Order Date:</strong> {{ $order->created_at->format('F d, Y H:i') }}
-                                    </p>
-                                    <p class="mb-2">
-                                        <strong>Status:</strong>
-                                        <span
-                                            class="badge bg-{{ $order->status === 'paid' ? 'success' : ($order->status === 'pending' ? 'warning' : 'danger') }}">
-                                            {{ ucfirst($order->status) }}
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Tickets -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title">Tickets ({{ $order->tickets->count() }})</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Ticket #</th>
-                                            <th>Type</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($order->tickets ?? [] as $ticket)
-                                            <tr>
-                                                <td><strong>{{ Str::limit($ticket->unique_code, 8, '') }}</strong></td>
-                                                <td>{{ $ticket->ticketType->name }}</td>
-                                                <td>
-                                                    <span
-                                                        class="badge bg-{{ $ticket->is_used ? 'success' : 'primary' }}">
-                                                        {{ $ticket->is_used ? 'Used' : 'Active' }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('tickets.view', $ticket) }}"
-                                                        class="btn btn-sm btn-primary">
-                                                        View
-                                                    </a>
-                                                    <a href="{{ route('tickets.download', $ticket) }}"
-                                                        class="btn btn-sm btn-success">
-                                                        Download
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center text-muted">No tickets in this order
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-4">
+                    <h4 class="mb-0"><i class="fas fa-receipt me-2"></i> Detail Pesanan #{{ $order->transaction_id }}</h4>
+                    <span class="badge {{ $order->payment_status === 'Verified' ? 'bg-success' : ($order->payment_status === 'Pending' ? 'bg-warning text-dark' : 'bg-danger') }} px-3 py-2">
+                        {{ $order->payment_status }}
+                    </span>
                 </div>
-
-                <!-- Sidebar -->
-                <div class="col-md-4">
-                    <!-- Price Summary -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <h5 class="card-title">Order Summary</h5>
+                <div class="card-body p-5">
+                    <div class="row mb-5">
+                        <div class="col-md-6">
+                            <h5 class="text-muted text-uppercase small mb-3">Informasi Pembeli</h5>
+                            <p class="mb-1"><strong>Nama:</strong> {{ $order->user->name }}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{ $order->user->email }}</p>
+                            <p class="mb-1"><strong>Metode:</strong> {{ $order->payment_method }}</p>
                         </div>
-                        <div class="card-body">
-                            <div class="mb-3">
-                                @foreach($order->items as $item)
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span>{{ $item->ticketType->name }} (x{{ $item->quantity }})</span>
-                                    <strong>${{ number_format($item->subtotal, 2) }}</strong>
-                                </div>
-                                @endforeach
-                                <hr>
-                                <div class="d-flex justify-content-between">
-                                    <strong>Total:</strong>
-                                    <strong class="text-primary">${{ number_format($order->total_amount, 2) }}</strong>
-                                </div>
-                            </div>
+                        <div class="col-md-6 text-md-end">
+                            <h5 class="text-muted text-uppercase small mb-3">Tanggal Transaksi</h5>
+                            <p class="h5">{{ $order->payment_date->format('d M Y, H:i') }}</p>
                         </div>
                     </div>
 
-                    <!-- Payment Section -->
-                    @if ($order->isPending())
-                        <div class="card mb-4 border-warning">
-                            <div class="card-header bg-warning text-white">
-                                <h5 class="card-title mb-0">Payment Pending</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small">This order requires payment. Complete payment to confirm your
-                                    tickets.</p>
-                                <a href="{{ route('payments.show', $order) }}" class="btn btn-warning w-100">
-                                    <i class="fas fa-credit-card"></i> Complete Payment
-                                </a>
+                    <div class="table-responsive mb-5">
+                        <table class="table table-borderless">
+                            <thead class="border-bottom">
+                                <tr>
+                                    <th class="ps-0">Deskripsi Item</th>
+                                    <th class="text-center">Jumlah</th>
+                                    <th class="text-end pe-0">Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-0 py-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded p-3 me-3">
+                                                <i class="fas fa-ticket-alt fa-2x text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ $ticket->name ?? 'Tiket Acara' }}</h6>
+                                                <small class="text-muted">{{ $order->event->name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center py-3 align-middle">{{ $order->total_ticket }}</td>
+                                    <td class="text-end pe-0 py-3 align-middle"><strong>Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong></td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="border-top">
+                                <tr>
+                                    <td colspan="2" class="text-end h5 py-4">Total Bayar:</td>
+                                    <td class="text-end h5 py-4 pe-0 text-primary">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    @if ($order->payment_status === 'Verified')
+                        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center p-4">
+                            <i class="fas fa-check-circle fa-3x me-4 text-success"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Pembayaran Berhasil!</h5>
+                                <p class="mb-0">Tiket Anda Anda sudah aktif. Silakan tunjukkan QR Code saat masuk ke lokasi acara.</p>
                             </div>
                         </div>
-                    @elseif($order->isPaid())
-                        <div class="card mb-4 border-success">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="card-title mb-0">Payment Confirmed</h5>
+                        
+                        <div class="text-center mt-5">
+                            <h5 class="mb-4">Digital Ticket & QR Code</h5>
+                            <div class="d-inline-block bg-white p-4 rounded shadow-sm border">
+                                <i class="fas fa-qrcode fa-10x"></i>
+                                <p class="mt-3 mb-0 font-monospace small text-uppercase">Code: {{ $ticket->ticket_id ?? 'N/A' }}</p>
                             </div>
-                            <div class="card-body">
-                                <p class="text-muted small">Payment has been processed. Your e-tickets are ready!</p>
+                            <div class="mt-4">
+                                <a href="#" class="btn btn-outline-primary me-2"><i class="fas fa-download me-1"></i> Simpan Ticket</a>
+                                <a href="{{ route('events.index') }}" class="btn btn-primary">Kembali ke Beranda</a>
+                            </div>
+                        </div>
+                    @else
+                        <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center p-4">
+                            <i class="fas fa-exclamation-triangle fa-3x me-4 text-warning"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Menunggu Pembayaran</h5>
+                                <p class="mb-0">Pesanan telah dibuat. Silakan selesaikan pembayaran melalui <strong>{{ $order->payment_method }}</strong> Anda.</p>
+                            </div>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-md-6">
+                                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100">Cek Status Pesanan</a>
+                            </div>
+                            <div class="col-md-6">
+                                <form action="{{ route('orders.simulate-payment', $order->transaction_id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary w-100">Simulasi Bayar Sekarang</button>
+                                </form>
                             </div>
                         </div>
                     @endif
-
-                    <!-- Actions -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title">Actions</h5>
-                        </div>
-                        <div class="card-body">
-                            <a href="{{ route('tickets.index') }}" class="btn btn-primary btn-sm w-100 mb-2">
-                                All Tickets
-                            </a>
-                            @if ($order->isPending())
-                                <form method="POST" action="{{ route('orders.cancel', $order) }}"
-                                    style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-sm w-100"
-                                        onclick="return confirm('Cancel this order?')">
-                                        Cancel Order
-                                    </button>
-                                </form>
-                            @elseif($order->isPaid())
-                                <form method="POST" action="{{ route('payments.refund', $order) }}"
-                                    style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-warning btn-sm w-100"
-                                        onclick="return confirm('Request refund? This cannot be undone.')">
-                                        Request Refund
-                                    </button>
-                                </form>
-                            @endif
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection

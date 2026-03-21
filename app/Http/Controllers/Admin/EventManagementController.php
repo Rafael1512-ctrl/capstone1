@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Event;
-use App\Models\EventCategory;
+use App\Models\TicketType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class EventManagementController extends Controller
 {
@@ -16,30 +17,35 @@ class EventManagementController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Event::with(['organizer', 'category', 'ticketTypes']);
+        $query = Event::with(['organizer']);
 
         // Filter by category
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
         }
 
-        // Filter by status
+        // Filter by status (active/non-active mapping)
         if ($request->has('status') && $request->status) {
-            $query->where('status', $request->status);
+            if ($request->status == 'active') {
+                $query->where('status', 'published');
+            } elseif ($request->status == 'non-active') {
+                $query->whereIn('status', ['draft', 'cancelled']);
+            }
         }
 
         // Search
         if ($request->has('search') && $request->search) {
-            $query->where('title', 'like', '%' . $request->search . '%')
-                ->orWhere('location', 'like', '%' . $request->search . '%');
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('location', 'like', '%' . $request->search . '%');
+            });
         }
 
         // Sort by date descending
-        $events = $query->orderBy('date', 'desc')->paginate(15);
-        $categories = EventCategory::where('is_active', true)->get();
-        $statuses = ['draft', 'published', 'cancelled'];
+        $events = $query->orderBy('schedule_time', 'desc')->paginate(15);
+        $categories = DB::table('kategori_acara')->get();
 
-        return view('admin.events.index', compact('events', 'categories', 'statuses'));
+        return view('admin.events.index', compact('events', 'categories'));
     }
 
     /**
@@ -47,8 +53,8 @@ class EventManagementController extends Controller
      */
     public function create()
     {
-        $categories = EventCategory::where('is_active', true)->get();
-        $organizers = User::where('role', 'organizer')->get();
+        $categories = DB::table('kategori_acara')->get();
+        $organizers = User::where('role_id', 2)->get();
 
         return view('admin.events.create', compact('categories', 'organizers'));
     }
@@ -59,12 +65,12 @@ class EventManagementController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'organizer_id' => 'required|exists:users,id',
-            'category_id' => 'required|exists:event_categories,id',
-            'title' => 'required|string|max:255',
+            'organizer_id' => 'required|exists:users,user_id',
+            'category_id' => 'required|exists:kategori_acara,category_id',
+            'title' => 'required|string|max:100',
             'description' => 'required|string',
-            'date' => 'required|date|after:today',
-            'location' => 'required|string|max:255',
+            'schedule_time' => 'required|date|after:today',
+            'location' => 'required|string|max:150',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
         ]);
@@ -76,6 +82,11 @@ class EventManagementController extends Controller
             $validated['banner_url'] = '/storage/' . $path;
         }
 
+        // Generate Event ID via SP
+        DB::statement('CALL GenerateEventID(@new_id)');
+        $newIdResult = DB::select('SELECT @new_id AS new_id');
+        $validated['event_id'] = $newIdResult[0]->new_id;
+
         Event::create($validated);
 
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dibuat');
@@ -84,11 +95,11 @@ class EventManagementController extends Controller
     /**
      * Show the form for editing an event
      */
-    public function edit(Event $event)
+    public function edit($event_id)
     {
-        $event->load(['organizer', 'category', 'ticketTypes']);
-        $categories = EventCategory::where('is_active', true)->get();
-        $organizers = User::where('role', 'organizer')->get();
+        $event = Event::findOrFail($event_id);
+        $categories = DB::table('kategori_acara')->get();
+        $organizers = User::where('role_id', 2)->get();
 
         return view('admin.events.edit', compact('event', 'categories', 'organizers'));
     }
@@ -96,22 +107,23 @@ class EventManagementController extends Controller
     /**
      * Update an event
      */
-    public function update(Request $request, Event $event)
+    public function update(Request $request, $event_id)
     {
+        $event = Event::findOrFail($event_id);
+        
         $validated = $request->validate([
-            'organizer_id' => 'required|exists:users,id',
-            'category_id' => 'required|exists:event_categories,id',
-            'title' => 'required|string|max:255',
+            'organizer_id' => 'required|exists:users,user_id',
+            'category_id' => 'required|exists:kategori_acara,category_id',
+            'title' => 'required|string|max:100',
             'description' => 'required|string',
-            'date' => 'required|date',
-            'location' => 'required|string|max:255',
+            'schedule_time' => 'required|date',
+            'location' => 'required|string|max:150',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
         ]);
 
         // Handle banner upload
         if ($request->hasFile('banner')) {
-            // Delete old banner
             if ($event->banner_url) {
                 $oldPath = str_replace('/storage/', '', $event->banner_url);
                 Storage::disk('public')->delete($oldPath);
@@ -130,9 +142,9 @@ class EventManagementController extends Controller
     /**
      * Delete an event
      */
-    public function destroy(Event $event)
+    public function destroy($event_id)
     {
-        // Delete banner
+        $event = Event::findOrFail($event_id);
         if ($event->banner_url) {
             $path = str_replace('/storage/', '', $event->banner_url);
             Storage::disk('public')->delete($path);
@@ -146,98 +158,17 @@ class EventManagementController extends Controller
     /**
      * Show event detail
      */
-    public function show(Event $event)
+    public function show($event_id)
     {
-        $event->load(['organizer', 'category', 'ticketTypes', 'orders']);
+        $event = Event::with(['organizer', 'ticketTypes'])->findOrFail($event_id);
 
-        // Calculate statistics
-        $totalTicketsSold = $event->ticketTypes()->sum('quantity_sold');
-        $totalTicketsAvailable = $event->ticketTypes()->sum('quantity_total');
-        $totalRevenue = $event->orders()
-            ->where('status', 'paid')
+        $totalTicketsSold = DB::table('ticket_type')->where('event_id', $event_id)->sum('quantity_sold');
+        $totalTicketsAvailable = DB::table('ticket_type')->where('event_id', $event_id)->sum('quantity_total');
+        $totalRevenue = DB::table('transaksi')
+            ->where('event_id', $event_id)
+            ->where('payment_status', 'Verified')
             ->sum('total_amount');
 
-        // Revenue by ticket type
-        $revenueByType = $event->ticketTypes()
-            ->with(['orderItems'])
-            ->get()
-            ->map(function ($type) {
-                return [
-                    'name' => $type->name,
-                    'sold' => $type->quantity_sold,
-                    'available' => $type->availableStock(),
-                    'revenue' => $type->orderItems->sum('subtotal'),
-                ];
-            });
-
-        return view('admin.events.show', compact(
-            'event',
-            'totalTicketsSold',
-            'totalTicketsAvailable',
-            'totalRevenue',
-            'revenueByType'
-        ));
-    }
-
-    /**
-     * Manage ticket types for an event
-     */
-    public function manageTickets(Event $event)
-    {
-        $event->load('ticketTypes');
-        return view('admin.events.manage-tickets', compact('event'));
-    }
-
-    /**
-     * Store ticket type
-     */
-    public function storeTicket(Request $request, Event $event)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'quantity_total' => 'required|integer|min:1',
-        ]);
-
-        $event->ticketTypes()->create($validated);
-
-        return back()->with('success', 'Ticket type berhasil ditambahkan');
-    }
-
-    /**
-     * Update ticket type
-     */
-    public function updateTicket(Request $request, Event $event)
-    {
-        $validated = $request->validate([
-            'ticket_id' => 'required|exists:ticket_types,id',
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'quantity_total' => 'required|integer|min:0',
-        ]);
-
-        $ticket = $event->ticketTypes()->find($validated['ticket_id']);
-        $ticket->update([
-            'name' => $validated['name'],
-            'price' => $validated['price'],
-            'quantity_total' => $validated['quantity_total'],
-        ]);
-
-        return back()->with('success', 'Ticket type berhasil diupdate');
-    }
-
-    /**
-     * Delete ticket type
-     */
-    public function deleteTicket(Event $event, $ticketId)
-    {
-        $ticket = $event->ticketTypes()->find($ticketId);
-        if ($ticket) {
-            $ticket->delete();
-            return back()->with('success', 'Ticket type berhasil dihapus');
-        }
-
-        return back()->with('error', 'Ticket type tidak ditemukan');
+        return view('admin.events.show', compact('event', 'totalTicketsSold', 'totalTicketsAvailable', 'totalRevenue'));
     }
 }

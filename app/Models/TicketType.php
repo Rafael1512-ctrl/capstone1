@@ -9,41 +9,22 @@ class TicketType extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'event_id', 'name', 'description', 'price', 
-        'quantity_total', 'quantity_sold'
-    ];
+    protected $table = 'ticket_type';
+    public $timestamps = false;
 
-    protected $casts = [
-        'price' => 'decimal:2',
+    protected $fillable = [
+        'event_id',
+        'name',
+        'price',
+        'quantity_total',
+        'quantity_sold',
     ];
 
     public function event()
     {
-        return $this->belongsTo(Event::class);
+        return $this->belongsTo(Event::class, 'event_id', 'event_id');
     }
 
-    public function orderItems()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
-    public function tickets()
-    {
-        return $this->hasMany(Ticket::class);
-    }
-
-    public function waitingLists()
-    {
-        return $this->hasMany(WaitingList::class);
-    }
-
-    public function reservations()
-    {
-        return $this->hasMany(TicketReservation::class);
-    }
-
-    // Hitung stok tersedia
     public function availableStock()
     {
         return $this->quantity_total - $this->quantity_sold;

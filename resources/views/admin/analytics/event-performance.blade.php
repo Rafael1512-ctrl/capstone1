@@ -22,7 +22,7 @@
                         <select class="form-select" name="category" onchange="this.form.submit()">
                             <option value="">Semua Kategori</option>
                             @foreach ($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
+                                <option value="{{ $cat->category_id }}" {{ request('category') == $cat->category_id ? 'selected' : '' }}>
                                     {{ $cat->name }}
                                 </option>
                             @endforeach
@@ -42,7 +42,7 @@
                             <th>Kategori</th>
                             <th>Tanggal</th>
                             <th>Status</th>
-                            <th>Tiket Tersedia</th>
+                            <th>Tiket Kuota</th>
                             <th>Tiket Terjual</th>
                             <th>Fill Rate</th>
                             <th>Revenue</th>
@@ -53,19 +53,21 @@
                         @forelse($events as $event)
                             <tr>
                                 <td>
-                                    <a href="{{ route('admin.events.show', $event['id']) }}">
-                                        <strong>{{ $event['title'] }}</strong>
+                                    <a href="{{ route('admin.events.show', $event['event_id']) }}">
+                                        <strong>{{ $event['name'] }}</strong>
                                     </a>
                                 </td>
                                 <td>{{ $event['category'] ?? '-' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($event['date'])->format('d M Y') }}</td>
                                 <td>
-                                    @if ($event['status'] === 'published')
-                                        <span class="badge bg-success">Published</span>
-                                    @elseif($event['status'] === 'draft')
+                                    @if ($event['status'] === 'Tersedia')
+                                        <span class="badge bg-success">Tersedia</span>
+                                    @elseif($event['status'] === 'Draft')
                                         <span class="badge bg-warning">Draft</span>
+                                    @elseif($event['status'] === 'Selesai')
+                                        <span class="badge bg-info">Selesai</span>
                                     @else
-                                        <span class="badge bg-danger">Cancelled</span>
+                                        <span class="badge bg-danger">Batal</span>
                                     @endif
                                 </td>
                                 <td>{{ $event['total_available'] }}</td>

@@ -9,6 +9,10 @@ class EventCategory extends Model
 {
     use HasFactory;
 
+    protected $table = 'kategori_acara';
+    protected $primaryKey = 'category_id';
+    public $timestamps = false; // kategori_acara table doesn't have timestamps
+
     protected $fillable = [
         'name',
         'description',
@@ -23,6 +27,6 @@ class EventCategory extends Model
 
     public function events()
     {
-        return $this->hasMany(Event::class, 'category_id');
+        return $this->hasMany(Event::class, 'category_id', 'category_id');
     }
 }

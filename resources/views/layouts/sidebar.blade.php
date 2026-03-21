@@ -168,12 +168,12 @@
                     <div class="collapse" id="events">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="{{ route('events.index') }}">
+                                <a href="{{ route('admin.events.index') }}">
                                     <span class="sub-item">All Events</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('events.create') }}">
+                                <a href="{{ route('admin.events.create') }}">
                                     <span class="sub-item">Add Event</span>
                                 </a>
                             </li>

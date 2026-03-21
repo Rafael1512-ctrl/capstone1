@@ -4,175 +4,100 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Order;
-use App\Models\OrderItem;
 use App\Models\TicketType;
-use App\Models\WaitingList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
-    /**
-     * Show order form
-     */
     public function create(Event $event)
     {
-        $ticketTypes = $event->ticketTypes()->get()->filter(function ($type) {
-            return $type->availableStock() > 0;
-        });
-
-        if ($ticketTypes->isEmpty()) {
-            return view('orders.create', compact('event', 'ticketTypes'))->with('info', 'No tickets available. You can join the waiting list.');
-        }
+        $ticketTypes = DB::table('ticket_type')
+            ->where('event_id', $event->event_id)
+            ->get();
 
         return view('orders.create', compact('event', 'ticketTypes'));
     }
 
-    /**
-     * Store new order
-     */
     public function store(Request $request, Event $event)
     {
         $validated = $request->validate([
-            'ticket_type_id' => ['required', 'exists:ticket_types,id'],
+            'ticket_type_id' => ['required', 'integer'],
+            'payment_method' => ['required', 'in:Virtual Account,QRIS'],
             'quantity' => ['required', 'integer', 'min:1', 'max:10'],
-            'join_waiting_list' => ['sometimes', 'boolean'],
         ]);
 
-        $ticketType = TicketType::findOrFail($validated['ticket_type_id']);
-
-        return DB::transaction(function () use ($validated, $event, $ticketType, $request) {
-            $quantity = $validated['quantity'];
-
-            // Check if tickets are available
-            if ($ticketType->availableStock() >= $quantity) {
-                return $this->createOrder($validated, $event, $ticketType, $quantity);
-            } elseif ($request->has('join_waiting_list')) {
-                // Add to waiting list
-                return $this->addToWaitingList($event, $ticketType, $quantity);
-            } else {
-                return back()->with('error', 'Not enough tickets available. Would you like to join the waiting list?');
-            }
-        });
-    }
-
-    /**
-     * Create order
-     */
-    private function createOrder($validated, $event, $ticketType, $quantity)
-    {
-        $total_amount = $ticketType->price * $quantity;
-
-        $order = Order::create([
-            'user_id' => Auth::id(),
-            'event_id' => $event->id,
-            'order_number' => 'ORD-' . strtoupper(Str::random(10)),
-            'total_amount' => $total_amount,
-            'status' => 'pending',
-        ]);
-
-        // Create Order Item
-        OrderItem::create([
-            'order_id' => $order->id,
-            'ticket_type_id' => $ticketType->id,
-            'quantity' => $quantity,
-            'unit_price' => $ticketType->price,
-        ]);
-
-        // Update quantity_sold
-        $ticketType->increment('quantity_sold', $quantity);
-
-        // Generate tickets as active (or wait until payment is done)
-        $this->generateTickets($order, $event, $ticketType, $quantity);
-
-        return redirect()->route('orders.show', $order)->with('success', 'Order created successfully! Proceed to payment.');
-    }
-
-    /**
-     * Add to waiting list
-     */
-    private function addToWaitingList($event, $ticketType, $quantity)
-    {
-        WaitingList::updateOrCreate(
-            [
-                'event_id' => $event->id,
-                'ticket_type_id' => $ticketType->id,
-                'user_email' => Auth::user()->email,
-            ],
-            [
-                'notified' => false,
-            ]
-        );
-
-        return redirect()->route('dashboard')
-            ->with('success', 'You have been added to the waiting list. We will notify you when tickets become available.');
-    }
-
-    /**
-     * Generate tickets for order
-     */
-    private function generateTickets($order, $event, $ticketType, $quantity)
-    {
-        for ($i = 0; $i < $quantity; $i++) {
-            \App\Models\Ticket::create([
-                'order_id' => $order->id,
-                'ticket_type_id' => $ticketType->id,
-                'unique_code' => Str::uuid(),
-                'is_used' => false,
+        try {
+            DB::statement("CALL AddTransaction(?, ?, ?, ?, ?, ?)", [
+                Auth::user()->user_id,
+                $event->event_id,
+                $validated['ticket_type_id'],
+                $validated['payment_method'],
+                'Pending', 
+                $validated['quantity']
             ]);
+
+            $order = Order::where('user_id', Auth::user()->user_id)
+                ->orderBy('payment_date', 'desc')
+                ->first();
+
+            return redirect()->route('orders.show', $order->transaction_id)->with('success', 'Order created successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to create order. ' . $e->getMessage());
         }
     }
 
-    /**
-     * Show order details
-     */
-    public function show(Order $order)
+    public function show($transaction_id)
     {
-        // Simple manual authorization or use Policy if it exists
-        if ($order->user_id !== Auth::id()) {
+        $order = Order::with(['user'])->findOrFail($transaction_id);
+
+        if ($order->user_id !== Auth::user()->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
         
-        $order->load(['event', 'tickets', 'items.ticketType']);
+        $ticket = DB::table('ticket')
+            ->join('ticket_type', 'ticket.ticket_type_id', '=', 'ticket_type.id')
+            ->join('acara', 'ticket.event_id', '=', 'acara.event_id')
+            ->where('ticket.transaction_id', $transaction_id)
+            ->select('ticket.*', 'ticket_type.name as ticket_type_name', 'acara.title as event_title')
+            ->first();
 
-        return view('orders.show', compact('order'));
+        return view('orders.show', compact('order', 'ticket'));
     }
 
-    /**
-     * View user orders
-     */
     public function index()
     {
-        $orders = Auth::user()->orders()->with(['event', 'items'])->orderBy('created_at', 'desc')->paginate(10);
+        $orders = Order::where('user_id', Auth::user()->user_id)
+            ->orderBy('payment_date', 'desc')
+            ->paginate(10);
+            
         return view('orders.index', compact('orders'));
     }
 
-    /**
-     * Cancel order
-     */
-    public function cancel(Order $order)
+    public function simulatePayment($transaction_id)
     {
-        if ($order->user_id !== Auth::id()) {
+        $order = Order::findOrFail($transaction_id);
+
+        if ($order->user_id !== Auth::user()->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
 
-        if (!in_array($order->status, ['pending', 'failed'])) {
-            return back()->with('error', 'Cannot cancel this order.');
+        if ($order->payment_status !== 'Pending') {
+            return back()->with('error', 'Pesanan sudah diproses sebelumnya.');
         }
 
-        return DB::transaction(function () use ($order) {
-            // Refund quantities back to ticket types
-            foreach ($order->items as $item) {
-                $item->ticketType->decrement('quantity_sold', $item->quantity);
-            }
+        // Update status to Verified
+        $order->update(['payment_status' => 'Verified']);
 
-            // Update status
-            $order->tickets()->update(['status' => 'cancelled']);
-            $order->update(['status' => 'cancelled']);
+        // Update Stock via TicketType
+        $ticket = DB::table('ticket')->where('transaction_id', $transaction_id)->first();
+        if ($ticket) {
+            DB::table('ticket_type')
+                ->where('id', $ticket->ticket_type_id)
+                ->increment('quantity_sold', $order->total_ticket);
+        }
 
-            return back()->with('success', 'Order cancelled successfully. Tickets refunded.');
-        });
+        return back()->with('success', 'Pembayaran berhasil disimulasi! Tiket Anda sudah aktif sekarang.');
     }
 }

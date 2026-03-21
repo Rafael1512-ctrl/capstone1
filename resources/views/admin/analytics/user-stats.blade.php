@@ -79,12 +79,7 @@
                                             <span class="badge bg-primary">{{ $buyer->orders_count }}</span>
                                         </td>
                                         <td>
-                                            @php
-                                                $spent = \App\Models\Order::where('user_id', $buyer->id)
-                                                    ->where('status', 'paid')
-                                                    ->sum('total_amount');
-                                            @endphp
-                                            Rp {{ number_format($spent, 0, ',', '.') }}
+                                            Rp {{ number_format($buyer->total_spent ?? 0, 0, ',', '.') }}
                                         </td>
                                     </tr>
                                 @empty

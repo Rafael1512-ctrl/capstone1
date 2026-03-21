@@ -20,16 +20,16 @@ class TicketController extends Controller
         }
 
         try {
-            $qrCode = QrCode::format('png')->size(300)->generate($ticket->unique_code);
+            $qrCode = QrCode::format('png')->size(300)->generate($ticket->ticket_id);
 
-            $filename = 'qr-codes/' . $ticket->unique_code . '.png';
+            $filename = 'qr-codes/' . $ticket->ticket_id . '.png';
             Storage::disk('public')->put($filename, $qrCode);
 
-            $ticket->update(['qr_code_url' => $filename]);
+            $ticket->update(['qr_code' => $filename]);
 
             return response($qrCode)
                 ->header('Content-Type', 'image/png')
-                ->header('Content-Disposition', 'inline; filename="' . $ticket->unique_code . '.png"');
+                ->header('Content-Disposition', 'inline; filename="' . $ticket->ticket_id . '.png"');
         } catch (\Exception $e) {
             return response()->json(['error' => 'Gagal membuat QR code: ' . $e->getMessage()], 500);
         }
@@ -45,14 +45,14 @@ class TicketController extends Controller
         }
 
         // Generate QR jika belum ada
-        if (!$ticket->qr_code_url || !Storage::disk('public')->exists($ticket->qr_code_url)) {
+        if (!$ticket->qr_code || !Storage::disk('public')->exists($ticket->qr_code)) {
             $this->generateQrCode($ticket);
             $ticket->refresh(); // reload data setelah update
         }
 
-        $path = Storage::disk('public')->path($ticket->qr_code_url);
+        $path = Storage::disk('public')->path($ticket->qr_code);
 
-        return response()->download($path, $ticket->unique_code . '.png');
+        return response()->download($path, $ticket->ticket_id . '.png');
     }
 
     /**
@@ -65,7 +65,7 @@ class TicketController extends Controller
         }
 
         // Generate QR jika belum ada
-        if (!$ticket->qr_code_url || !Storage::disk('public')->exists($ticket->qr_code_url)) {
+        if (!$ticket->qr_code || !Storage::disk('public')->exists($ticket->qr_code)) {
             $this->generateQrCode($ticket);
             $ticket->refresh();
         }
@@ -73,7 +73,7 @@ class TicketController extends Controller
         $ticket->load('ticketType.event', 'order');
 
         // Gunakan asset() dengan path relatif ke public disk
-        $qrCodeUrl = asset('storage/' . $ticket->qr_code_url);
+        $qrCodeUrl = asset('storage/' . $ticket->qr_code);
 
         return view('tickets.view', compact('ticket', 'qrCodeUrl'));
     }
@@ -81,7 +81,7 @@ class TicketController extends Controller
     /**
      * Validasi tiket via scan QR (Admin/Organizer)
      */
-    public function validate(Request $request)
+    public function verifyTicket(Request $request)
     {
         $user = Auth::user();
 
@@ -95,7 +95,7 @@ class TicketController extends Controller
             return response()->json(['error' => 'Kode unik diperlukan'], 400);
         }
 
-        $ticket = Ticket::where('unique_code', $uniqueCode)->first();
+        $ticket = Ticket::where('ticket_id', $uniqueCode)->first(); // Wait, unique_code is now ticket_id?
 
         if (!$ticket) {
             return response()->json(['error' => 'Tiket tidak ditemukan'], 404);
@@ -104,12 +104,12 @@ class TicketController extends Controller
         $event = $ticket->ticketType->event;
 
         // Organizer hanya bisa validasi tiket eventnya sendiri
-        if ($user->isOrganizer() && $event->organizer_id !== $user->id) {
+        if ($user->isOrganizer() && $event->organizer_id !== $user->user_id) {
             return response()->json(['error' => 'Anda hanya bisa memvalidasi tiket event Anda'], 403);
         }
 
         if (!$ticket->isActive()) {
-            return response()->json(['error' => 'Tiket sudah digunakan'], 400);
+            return response()->json(['error' => 'Tiket sudah digunakan/kadaluwarsa'], 400);
         }
 
         $ticket->validate();
@@ -118,20 +118,19 @@ class TicketController extends Controller
             'success' => true,
             'message' => 'Tiket berhasil divalidasi',
             'ticket'  => [
-                'unique_code'  => $ticket->unique_code,
+                'unique_code'  => $ticket->ticket_id,
                 'event'        => $event->title,
                 'ticket_type'  => $ticket->ticketType->name,
-                'used_at'      => $ticket->used_at,
             ],
         ]);
     }
 
     /**
-     * Alias scan → validate
+     * Alias scan → verifyTicket
      */
     public function scan(Request $request)
     {
-        return $this->validate($request);
+        return $this->verifyTicket($request);
     }
 
     /**

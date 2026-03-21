@@ -36,8 +36,8 @@
                                             <td>{{ $user->email }}</td>
                                             <td><span class="badge badge-warning">{{ ucfirst($user->role) }}</span></td>
                                             <td>
-                                                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-info">Edit</a>
-                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                                <a href="{{ route('admin.users.edit', $user->user_id) }}" class="btn btn-sm btn-info">Edit</a>
+                                                <form action="{{ route('admin.users.destroy', $user->user_id) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>

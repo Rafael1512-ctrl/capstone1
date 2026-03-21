@@ -9,44 +9,62 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $table = 'acara';
+    
+    protected $primaryKey = 'event_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = false;
+
     protected $fillable = [
+        'event_id',
         'organizer_id',
         'category_id',
-        'title',
+        'name',
         'description',
-        'date',
         'location',
+        'schedule_time',
+        'ticket_quota',
         'banner_url',
         'status',
-        'template_id'
     ];
 
+    public function getTitleAttribute()
+    {
+        return $this->name;
+    }
+
+    public function setTitleAttribute($value)
+    {
+        $this->attributes['name'] = $value;
+    }
+
     protected $casts = [
-        'date' => 'datetime',
+        'schedule_time' => 'datetime',
     ];
 
     public function organizer()
     {
-        return $this->belongsTo(User::class, 'organizer_id');
+        return $this->belongsTo(User::class, 'organizer_id', 'user_id');
     }
 
     public function category()
     {
-        return $this->belongsTo(EventCategory::class, 'category_id');
+        return $this->belongsTo(EventCategory::class, 'category_id', 'category_id');
     }
 
     public function ticketTypes()
     {
-        return $this->hasMany(TicketType::class);
+        return $this->hasMany(TicketType::class, 'event_id', 'event_id');
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'event_id', 'event_id');
     }
 
     public function orders()
     {
-        return $this->hasMany(Order::class);
-    }
-
-    public function waitingLists()
-    {
-        return $this->hasMany(WaitingList::class);
+        return $this->hasMany(Order::class, 'event_id', 'event_id');
     }
 }
