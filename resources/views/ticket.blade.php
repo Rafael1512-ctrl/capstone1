@@ -104,23 +104,14 @@
     <!-- header-end -->
 
     <!-- bradcam_area_start -->
-<<<<<<< HEAD
     <div class="bradcam_area" style="background-image: url('{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_1.jpg') }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
-=======
-    <div class="bradcam_area" style="background-image: url('{{ asset('cardboard-assets/img/' . $data['image']) }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">
                     <div class="bradcam_text text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">
                         <span class="text-white text-uppercase" style="letter-spacing: 5px; font-weight: 600; margin-bottom: 20px; display: block;">Official Ticket Selection</span>
-<<<<<<< HEAD
                         <h3 class="text-white font-weight-bold" style="font-size: 70px; font-family: 'DM Serif Display', serif;">{{ $event->title }}</h3>
                         <p class="text-white lead" style="font-size: 24px;"><i class="fa fa-calendar-o mr-2"></i> {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }} | <i class="fa fa-map-marker mr-2"></i> {{ $event->location }}</p>
-=======
-                        <h3 class="text-white font-weight-bold" style="font-size: 70px; font-family: 'DM Serif Display', serif;">{{ $data['title'] }}</h3>
-                        <p class="text-white lead" style="font-size: 24px;"><i class="fa fa-calendar-o mr-2"></i> {{ $data['date'] }} | <i class="fa fa-map-marker mr-2"></i> {{ $data['location'] }}</p>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                     </div>
                 </div>
             </div>
@@ -143,7 +134,6 @@
                 </div>
             </div>
             <div class="row">
-<<<<<<< HEAD
                 @forelse($event->ticketTypes as $type)
                 <!-- Dynamic Ticket Category -->
                 <div class="col-lg-4 col-md-6 mb-4">
@@ -174,53 +164,6 @@
                     <h4>No ticket categories found for this event.</h4>
                 </div>
                 @endforelse
-=======
-                <!-- Regular Ticket -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
-                        <div class="ticket-title">General Admission</div>
-                        <div class="ticket-price">RP {{ $data['reg'] }}</div>
-                        <p>Enjoy the concert from the festival area with a great crowd vibe.</p>
-                        <ul class="ticket-features text-left mt-4">
-                            <li><i class="fa fa-check"></i> Standing area access</li>
-                            <li><i class="fa fa-check"></i> Food & Beverage counter access</li>
-                            <li><i class="fa fa-check"></i> Official Tour Poster (Digital)</li>
-                        </ul>
-                        <a href="{{ route('checkout', ['type' => request('type', 'concert1'), 'category' => 'reg']) }}" class="buy-btn mt-3">Select Ticket</a>
-                    </div>
-                </div>
-                <!-- VIP Ticket -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s" style="border-color: #ff00c1; box-shadow: 0 10px 40px rgba(255, 0, 193, 0.15);">
-                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #ff00c1; color: white; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Most Popular</div>
-                        <div class="ticket-title" style="color: #ff00c1;">VIP Experience</div>
-                        <div class="ticket-price">RP {{ $data['vip'] }}</div>
-                        <p>Get closer to the stage and enjoy exclusive VIP perks.</p>
-                        <ul class="ticket-features text-left mt-4">
-                            <li><i class="fa fa-check"></i> Premium standing area (Front Row)</li>
-                            <li><i class="fa fa-check"></i> Dedicated VIP entry gate</li>
-                            <li><i class="fa fa-check"></i> Exclusive concert merchandise</li>
-                            <li><i class="fa fa-check"></i> 1x Free Welcome Drink</li>
-                        </ul>
-                        <a href="{{ route('checkout', ['type' => request('type', 'concert1'), 'category' => 'vip']) }}" class="buy-btn mt-3">Select VIP</a>
-                    </div>
-                </div>
-                <!-- VVIP Ticket -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
-                        <div class="ticket-title">VVIP Suite</div>
-                        <div class="ticket-price">RP {{ $data['vvip'] }}</div>
-                        <p>The ultimate luxury concert experience with full hospitality.</p>
-                        <ul class="ticket-features text-left mt-4">
-                            <li><i class="fa fa-check"></i> Private suite viewing area</li>
-                            <li><i class="fa fa-check"></i> All-inclusive Food & Beverage</li>
-                            <li><i class="fa fa-check"></i> Backstage tour pass (Limited)</li>
-                            <li><i class="fa fa-check"></i> VIP Parking slot & Lounge</li>
-                        </ul>
-                        <a href="{{ route('checkout', ['type' => request('type', 'concert1'), 'category' => 'vvip']) }}" class="buy-btn mt-3">Select VVIP</a>
-                    </div>
-                </div>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
             </div>
         </div>
     </div>

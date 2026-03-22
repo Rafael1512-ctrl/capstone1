@@ -124,11 +124,7 @@
                     <span class="badge badge-danger mb-3 px-3 py-2" style="border-radius: 50px; font-weight: 600;">UPCOMING DEALS</span>
                     <h2 class="display-4 font-weight-bold mb-4" style="font-family: 'DM Serif Display', serif; color: #fff;">Special Ticket Pre-Sale!</h2>
                     <p class="lead mb-4">Exclusive for registered members. Get early access to the most anticipated concerts of 2026/2027 before everyone else.</p>
-<<<<<<< HEAD
                     <a href="#concert" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse Available Tickets</a>
-=======
-                    <a href="{{ route('ticket') }}" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse Available Tickets</a>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                 </div>
                 <div class="col-md-5 d-none d-md-block text-right">
                     <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Featured" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
@@ -139,10 +135,7 @@
   </div>
   @endauth
 
-<<<<<<< HEAD
   @auth
-=======
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
   <div class="section portfolio-section">
     <div class="container">
       <div class="row mb-5 justify-content-center" data-aos="fade-up">
@@ -154,7 +147,6 @@
         </div>
       </div>
     </div>
-<<<<<<< HEAD
     <div class="container-fluid" id="concerts">
       <div class="row mb-5 no-gutters">
         @forelse($events as $event)
@@ -175,193 +167,15 @@
                   <span class="price-value">Rp. {{ number_format($event->ticket_price ?? 0, 0, ',', '.') }}</span>
                 </div>
                 <a href="{{ route('public.event.show', $event->event_id) }}" class="btn-buy">Detail</a>
-=======
-    <div class="container-fluid">
-      <div class="row mb-5 no-gutters">
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Radiohead">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Radiohead</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 12 Oct 2026
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> JIS, Jakarta
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 850.000</span>
-                </div>
-                <a href="{{ route('concert1') }}" class="btn-buy">Detail</a>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
               </div>
             </div>
           </div>
         </div>
-<<<<<<< HEAD
         @empty
         <div class="col-12 text-center py-5">
            <p class="text-muted">No featured concerts available at moment. Please check back later!</p>
         </div>
         @endforelse
-=======
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/coldplay.png') }}" alt="Coldplay">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Coldplay</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 15 Nov 2026
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> Gelora Bung Karno
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 1.200.000</span>
-                </div>
-                <a href="{{ route('concert2') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/taylorswift.png') }}" alt="Taylor Swift">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Taylor Swift</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 20 Dec 2026
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> Exclusive Arena
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 2.500.000</span>
-                </div>
-                <a href="{{ route('concert3') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/arcticmonkeys.png') }}" alt="Arctic Monkeys">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Arctic Monkeys</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 10 Jan 2027
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> Stadium Jakarta
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 650.000</span>
-                </div>
-                <a href="{{ route('concert4') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="500">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/BrunoMars.png') }}" alt="Bruno Mars">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Bruno Mars</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 22 Feb 2027
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> Sentul International
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 950.000</span>
-                </div>
-                <a href="{{ route('concert5') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="600">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/the-weeknd.jpg') }}" alt="The Weeknd">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">The Weeknd</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 30 Mar 2027
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> GBK Madya Stadium
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 1.100.000</span>
-                </div>
-                <a href="{{ route('concert6') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="700">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/edsheeran.jpg') }}" alt="Ed Sheeran">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Ed Sheeran</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 15 May 2027
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> JIS, Jakarta
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 900.000</span>
-                </div>
-                <a href="{{ route('concert7') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="800">
-          <div class="concert-card">
-            <img src="{{ asset('cardboard-assets/img/billie-eilish.jpg') }}" alt="Billie Eilish">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">Billie Eilish</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> 20 Jun 2027
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> ICE BSD, Tangerang
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Mulai dari</span>
-                  <span class="price-value">Rp. 1.300.000</span>
-                </div>
-                <a href="{{ route('concert8') }}" class="btn-buy">detail</a>
-              </div>
-            </div>
-          </div>
-        </div>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
       </div>
 
       <div class="row mt-5">
@@ -371,7 +185,6 @@
       </div>
     </div>
   </div>
-<<<<<<< HEAD
   @endauth
 
   <div class="section" id="my-tickets">
@@ -451,33 +264,6 @@
           </div>
         </div>
       @endauth
-=======
-
-  <div class="section">
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-5 ml-auto mb-5 order-2">
-          <span class="d-block text-uppercase text-primary">Unforgettable Experiences</span>
-          <h2 class="mb-4 section-title">Bringing You Closer to the Artists You Love.</h2>
-          <p>At LuxTix, we believe that music is more than just sound—it's a memory in the making. Our platform is
-            designed to provide seamless access to the most sought-after concerts with an emphasis on elegance and
-            security.</p>
-          <p class="mb-5">We curate only the best events, ensuring that every seat is a gateway to an extraordinary night.
-          </p>
-          <p><a href="#" class="btn btn-outline-black">Our Mission</a></p>
-        </div>
-        <div class="col-lg-6 order-1">
-          <figure class="img-dotted-bg">
-            <img src="{{ asset('cardboard-assets/img/niki.png') }}" alt="NIKI Concert" class="img-fluid">
-
-            <img src="{{ asset('cardboard-assets/img/work_1.jpg') }}" alt="Concert Atmosphere"
-              class="img-fluid img-absolute" data-aos="fade-left">
-
-          </figure>
-
-        </div>
-      </div>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
     </div>
   </div>
 

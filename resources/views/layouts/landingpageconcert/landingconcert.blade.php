@@ -91,10 +91,7 @@
   <script src="{{ asset('cardboard-assets/js/jquery.fancybox.min.js') }}"></script>
   <script src="{{ asset('cardboard-assets/js/jquery.stellar.min.js') }}"></script>
   <script src="{{ asset('cardboard-assets/js/aos.js') }}"></script>
-<<<<<<< HEAD
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-=======
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
   <script src="{{ asset('cardboard-assets/js/main.js') }}"></script>
   @yield('ExtraJS2')
 </body>

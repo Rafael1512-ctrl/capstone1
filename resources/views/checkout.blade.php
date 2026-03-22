@@ -4,11 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-<<<<<<< HEAD
     <title>Secure Checkout | {{ $event->title }}</title>
-=======
-    <title>Secure Checkout | {{ $data['title'] }}</title>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
     <meta name="description" content="Complete your purchase.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -178,38 +174,22 @@
                     <div class="checkout-card wow fadeInRight">
                         <h3 class="mb-4">Order Summary</h3>
                         <div class="event-summary d-flex align-items-start">
-<<<<<<< HEAD
                             <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_1.jpg') }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
                             <div>
                                 <h5 class="mb-1 text-white">{{ $event->title }}</h5>
                                 <p class="small text-muted mb-0"><i class="fa fa-calendar mr-1"></i> {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }}</p>
                                 <p class="small text-muted mb-0"><i class="fa fa-map-marker mr-1"></i> {{ $event->location }}</p>
-=======
-                            <img src="{{ asset('cardboard-assets/img/' . $data['image']) }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
-                            <div>
-                                <h5 class="mb-1 text-white">{{ $data['title'] }}</h5>
-                                <p class="small text-muted mb-0"><i class="fa fa-calendar mr-1"></i> {{ $data['date'] }}</p>
-                                <p class="small text-muted mb-0"><i class="fa fa-map-marker mr-1"></i> {{ $data['location'] }}</p>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                             </div>
                         </div>
 
                         <div class="order-total-box">
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Ticket Category</span>
-<<<<<<< HEAD
                                 <span class="font-weight-bold">{{ $ticketType->name }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Unit Price</span>
                                 <span>RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
-=======
-                                <span class="font-weight-bold">{{ $selected['category'] }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted">Unit Price</span>
-                                <span>RP {{ $selected['price'] }}</span>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Quantity</span>
@@ -218,11 +198,7 @@
                             <hr style="border-color: #333;">
                             <div class="d-flex justify-content-between mb-0">
                                 <h4 class="mb-0">Total Amount</h4>
-<<<<<<< HEAD
                                 <h4 class="mb-0 text-primary" id="total-amount">RP {{ number_format($ticketType->price, 0, ',', '.') }}</h4>
-=======
-                                <h4 class="mb-0 text-primary" id="total-amount">RP {{ $selected['price'] }}</h4>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                             </div>
                         </div>
 
@@ -284,13 +260,8 @@
                     <h2 class="font-weight-bold mb-2" style="color: #333 !important;">Pembayaran Berhasil!</h2>
                     <p class="text-muted" style="color: #666 !important;">E-Tiket Anda telah dikirim ke email dan tersedia di menu History.</p>
                     <div class="order-summary-mini mt-4 p-3 rounded text-left" style="background: #f8f9fa !important; color: #333 !important; border: 1px solid #eee;">
-<<<<<<< HEAD
                         <p class="mb-1"><strong>{{ $event->title }}</strong></p>
                         <p class="small text-muted mb-0" style="color: #777 !important;">{{ $ticketType->name }} | RP {{ number_format($ticketType->price, 0, ',', '.') }}</p>
-=======
-                        <p class="mb-1"><strong>{{ $data['title'] }}</strong></p>
-                        <p class="small text-muted mb-0" style="color: #777 !important;">{{ $selected['category'] }} | {{ $selected['price'] }}</p>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                     </div>
                     <button type="button" class="btn btn-primary w-100 py-3 mt-4" style="border-radius: 50px; background: #28a745 !important; border: none; color: white !important; font-weight: bold; cursor: pointer;" onclick="window.location.href='{{ route('home') }}'">Kembali ke Beranda</button>
                     <a href="{{ route('tickets.index') }}" class="d-block mt-3 font-weight-bold" style="color: #9d50bb !important; text-decoration: none; cursor: pointer;">Lihat History Tiket</a>
@@ -306,11 +277,7 @@
         'footerSlogan' => 'Easy and Secure Payment',
         'footerSloganClass' => '',
         'footerButtonText' => 'Cancel Order',
-<<<<<<< HEAD
         'footerButtonLink' => route('public.ticket.show', $event->event_id),
-=======
-        'footerButtonLink' => route('ticket', ['type' => $selected['type']]),
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
         'footerCopyright' => 'LuxTix © 2026. All rights reserved.'
     ])
 
@@ -318,115 +285,7 @@
     <script src="{{ asset('concert-assets/js/bootstrap.min.js') }}"></script>
     <script>
         let qty = 1;
-<<<<<<< HEAD
         let pricePerUnit = {{ $ticketType->price }};
-=======
-        let pricePerUnit = parseInt("{{ str_replace('.', '', $selected['price']) }}");
-        let selectedMethod = 'qris';
-        let paymentDetected = false;
-
-        $('#plus').click(function() {
-            if(qty < 5) {
-                qty++;
-                updateOrder();
-            }
-        });
-
-        $('#minus').click(function() {
-            if(qty > 1) {
-                qty--;
-                updateOrder();
-            }
-        });
-
-        function updateOrder() {
-            $('#qty-val').text(qty);
-            $('#summary-qty').text(qty + 'x');
-            let total = qty * pricePerUnit;
-            $('#total-amount').text('RP ' + total.toLocaleString('id-ID'));
-        }
-
-        function selectPayment(el, method) {
-            $('.payment-option').removeClass('active').find('i.fa-check-circle').replaceWith('<i class="fa fa-circle-thin text-muted"></i>');
-            $(el).addClass('active').find('i.fa-circle-thin').replaceWith('<i class="fa fa-check-circle text-primary"></i>');
-            selectedMethod = method;
-        }
-
-        function confirmPurchase() {
-            // Reset modal steps
-            $('#p-step-1').show();
-            $('#p-step-2').hide();
-            $('#closeModalBtn').show();
-            paymentDetected = false;
-
-            if(selectedMethod === 'qris') {
-                $('#qrisSection').show();
-                $('#vaSection').hide();
-            } else {
-                $('#qrisSection').hide();
-                $('#vaSection').show();
-            }
-            
-            $('#paymentModal').modal('show');
-            startTimer(15 * 60);
-
-            // SIMULASI DETEKSI OTOMATIS (Setelah 7 detik)
-            setTimeout(function() {
-                simulateSuccess();
-            }, 7000);
-        }
-
-        function simulateSuccess() {
-            if(paymentDetected) return;
-            paymentDetected = true;
-            
-            $('#detection-status').html('<i class="fa fa-check-circle mr-2"></i> Pembayaran Terdeteksi!').css({'background-color': '#d4edda', 'color': '#155724'});
-            
-            setTimeout(function() {
-                $('#p-step-1').fadeOut(400, function() {
-                    $('#p-step-2').fadeIn();
-                    $('#closeModalBtn').hide(); // Paksa user liat sukses
-                });
-            }, 1500);
-        }
-
-        function startTimer(duration) {
-            let timer = duration, minutes, seconds;
-            let timerInterval = setInterval(function () {
-                if(paymentDetected) {
-                    clearInterval(timerInterval);
-                    return;
-                }
-                minutes = parseInt(timer / 60, 10)
-                seconds = parseInt(timer % 60, 10);
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                $('#countdown').text(minutes + ":" + seconds);
-                if (--timer < 0) {
-                    clearInterval(timerInterval);
-                    timer = 0;
-                }
-            }, 1000);
-        }
-    </script>
-
-    @include('layouts.headerconcert.footer', [
-        'footerDate' => 'Secure Transaction',
-        'footerLocation' => 'LuxTix Official',
-        'footerLocationClass' => 'text-warning',
-        'footerSlogan' => 'Easy and Secure Payment',
-        'footerSloganClass' => '',
-        'footerButtonText' => 'Cancel Order',
-        'footerButtonLink' => route('ticket', ['type' => $selected['type']]),
-        'footerCopyright' => 'LuxTix © 2026. All rights reserved.'
-    ])
-
-    <script src="{{ asset('concert-assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
-    <script src="{{ asset('concert-assets/js/bootstrap.min.js') }}"></script>
-    <script>
-        let qty = 1;
-        let pricePerUnit = parseInt("{{ str_replace('.', '', $selected['price']) }}");
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
         let selectedMethod = 'qris';
         let paymentDetected = false;
 
