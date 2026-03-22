@@ -1,0 +1,11 @@
+﻿Field	Type	Null	Key	Default	Extra
+event_id	varchar(14)	NO	PRI	NULL	
+organizer_id	varchar(7)	YES	MUL	NULL	
+category_id	int(11)	YES		NULL	
+banner_url	varchar(255)	YES		NULL	
+status	enum('draft','published','cancelled')	YES		draft	
+title	varchar(100)	NO		NULL	
+description	varchar(300)	YES		NULL	
+location	varchar(100)	NO		NULL	
+schedule_time	datetime	NO		NULL	
+ticket_quota	int(11)	NO		NULL	

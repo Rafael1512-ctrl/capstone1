@@ -282,7 +282,10 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Account Setting</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Logout</a>
+                                <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger" style="border:none; background:none; padding:0; margin:0;">Logout</button>
+                                </form>
                             </li>
                         </div>
                     </ul>

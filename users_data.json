@@ -1,0 +1,20 @@
+[
+    {
+        "user_id": "T-00001",
+        "name": "Errvin",
+        "email": "2472024@maranatha.ac.id",
+        "role_id": 1
+    },
+    {
+        "user_id": "T-00002",
+        "name": "Juan",
+        "email": "2472020@maranatha.ac.id",
+        "role_id": 1
+    },
+    {
+        "user_id": "T-00003",
+        "name": "Rafael",
+        "email": "2472025@maranatha.ac.id",
+        "role_id": 1
+    }
+]

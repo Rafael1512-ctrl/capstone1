@@ -1,0 +1,6 @@
+﻿name	email	role_id
+Errvin	2472024@maranatha.ac.id	1
+Juan	2472020@maranatha.ac.id	1
+Rafael	2472025@maranatha.ac.id	1
+Budi	user@gmail.com	3
+Budi Santoso	user@example.com	3

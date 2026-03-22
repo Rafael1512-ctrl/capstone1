@@ -1,7 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\TicketCategoryController;
+use App\Http\Controllers\TicketController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrganizerController;
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 Route::get('/', function () {
 =======
@@ -22,14 +31,88 @@ Route::get('/starter-template', function () {
 });
 
 <<<<<<< Updated upstream
+=======
+// ============================================================
+Route::get('/', function () {
+    return view('user');
+})->name('home');
+Route::get('/event/{event}', [\App\Http\Controllers\PublicController::class, 'showEvent'])->name('public.event.show');
+// Route::get('/', function () {
+//     if (auth()->check()) {
+//         $user = auth()->user();
+//         if ($user->isAdmin()) {
+//             return redirect()->route('admin.starter');
+//         }
+//         if ($user->isOrganizer()) {
+//             return redirect()->route('organizer.dashboard');
+//         }
+//         return redirect()->route('landing');
+//     }
+//     return redirect()->route('login');
+// })->name('landingconcert');
+
+Route::get('/admin', function () {
+    return view('dashboard.admin');
+})->name('dashboard.admin')->middleware(['auth', 'role:admin']);
+
+// Starter Template (Admin Only)
+Route::get('/starter-template', function () {
+    return view('starter-template');
+})->name('admin.starter')->middleware(['auth', 'role:admin']);
+
+// Landing Page (User & Organizer)
+Route::get('/landing', function () {
+    return view('user');
+})->name('landing')->middleware('auth');
+
+// Organizer Dashboard
+Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
+    ->name('organizer.dashboard')
+    ->middleware(['auth', 'role:organizer,admin']);
+
+// Concert Pages (Public)
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
 Route::get('/concert1', function () {
     return view('concert1');
 })->name('concert1');
+Route::get('/concert2', function () {
+    return view('concert2');
+})->name('concert2');
+Route::get('/concert3', function () {
+    return view('concert3');
+})->name('concert3');
+Route::get('/concert4', function () {
+    return view('concert4');
+})->name('concert4');
+Route::get('/concert5', function () {
+    return view('concert5');
+})->name('concert5');
+Route::get('/concert6', function () {
+    return view('concert6');
+})->name('concert6');
+Route::get('/concert7', function () {
+    return view('concert7');
+})->name('concert7');
+Route::get('/concert8', function () {
+    return view('concert8');
+})->name('concert8');
 
-Route::get('/landingconcert', function () {
-    return view('landingconcert');
-})->name('landingconcert');
+Route::get('/ticket', function () {
+    $type = request('type', 'concert1');
+    
+    // Map data konser
+    $concerts = [
+        'concert1' => ['title' => 'Radiohead', 'date' => '12 Oct 2026', 'location' => 'JIS, Jakarta', 'image' => 'concert_1.jpg', 'reg' => '850.000', 'vip' => '2.500.000', 'vvip' => '5.000.000'],
+        'concert2' => ['title' => 'Coldplay', 'date' => '15 Nov 2026', 'location' => 'Gelora Bung Karno', 'image' => 'coldplay.png', 'reg' => '1.200.000', 'vip' => '3.500.000', 'vvip' => '7.500.000'],
+        'concert3' => ['title' => 'Taylor Swift', 'date' => '20 Dec 2026', 'location' => 'Exclusive Arena', 'image' => 'taylorswift.png', 'reg' => '2.500.000', 'vip' => '5.500.000', 'vvip' => '12.000.000'],
+        'concert4' => ['title' => 'Arctic Monkeys', 'date' => '10 Jan 2027', 'location' => 'Stadium Jakarta', 'image' => 'arcticmonkeys.png', 'reg' => '650.000', 'vip' => '1.800.000', 'vvip' => '3.500.000'],
+        'concert5' => ['title' => 'Bruno Mars', 'date' => '22 Feb 2027', 'location' => 'Sentul International', 'image' => 'BrunoMars.png', 'reg' => '950.000', 'vip' => '2.800.000', 'vvip' => '5.500.000'],
+        'concert6' => ['title' => 'The Weeknd', 'date' => '30 Mar 2027', 'location' => 'GBK Madya Stadium', 'image' => 'the-weeknd.jpg', 'reg' => '1.100.000', 'vip' => '3.200.000', 'vvip' => '6.000.000'],
+        'concert7' => ['title' => 'Ed Sheeran', 'date' => '15 May 2027', 'location' => 'JIS, Jakarta', 'image' => 'edsheeran.jpg', 'reg' => '900.000', 'vip' => '2.600.000', 'vvip' => '4.800.000'],
+        'concert8' => ['title' => 'Billie Eilish', 'date' => '20 Jun 2027', 'location' => 'ICE BSD, Tangerang', 'image' => 'billie-eilish.jpg', 'reg' => '1.300.000', 'vip' => '3.800.000', 'vvip' => '7.000.000'],
+    ];
 
+<<<<<<< HEAD
 Route::get('/about', function () {
     return view('about');
 })->name('about');
@@ -41,6 +124,39 @@ Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
 Route::get('/concert/{event}/ticket', [\App\Http\Controllers\PublicController::class, 'showTicket'])->name('public.ticket.show');
 
 Route::get('/concert/{event}/checkout/{ticketType}', [\App\Http\Controllers\PublicController::class, 'showCheckout'])->name('public.checkout.show');
+=======
+    $data = $concerts[$type] ?? $concerts['concert1'];
+
+    return view('ticket', compact('data'));
+})->name('ticket');
+
+Route::get('/checkout', function () {
+    $type = request('type', 'concert1');
+    $category = request('category', 'reg');
+    
+    $concerts = [
+        'concert1' => ['title' => 'Radiohead', 'date' => '12 Oct 2026', 'location' => 'JIS, Jakarta', 'image' => 'concert_1.jpg', 'reg' => '850.000', 'vip' => '2.500.000', 'vvip' => '5.000.000'],
+        'concert2' => ['title' => 'Coldplay', 'date' => '15 Nov 2026', 'location' => 'Gelora Bung Karno', 'image' => 'coldplay.png', 'reg' => '1.200.000', 'vip' => '3.500.000', 'vvip' => '7.500.000'],
+        'concert3' => ['title' => 'Taylor Swift', 'date' => '20 Dec 2026', 'location' => 'Exclusive Arena', 'image' => 'taylorswift.png', 'reg' => '2.500.000', 'vip' => '5.500.000', 'vvip' => '12.000.000'],
+        'concert4' => ['title' => 'Arctic Monkeys', 'date' => '10 Jan 2027', 'location' => 'Stadium Jakarta', 'image' => 'arcticmonkeys.png', 'reg' => '650.000', 'vip' => '1.800.000', 'vvip' => '3.500.000'],
+        'concert5' => ['title' => 'Bruno Mars', 'date' => '22 Feb 2027', 'location' => 'Sentul International', 'image' => 'BrunoMars.png', 'reg' => '950.000', 'vip' => '2.800.000', 'vvip' => '5.500.000'],
+        'concert6' => ['title' => 'The Weeknd', 'date' => '30 Mar 2027', 'location' => 'GBK Madya Stadium', 'image' => 'the-weeknd.jpg', 'reg' => '1.100.000', 'vip' => '3.200.000', 'vvip' => '6.000.000'],
+        'concert7' => ['title' => 'Ed Sheeran', 'date' => '15 May 2027', 'location' => 'JIS, Jakarta', 'image' => 'edsheeran.jpg', 'reg' => '900.000', 'vip' => '2.600.000', 'vvip' => '4.800.000'],
+        'concert8' => ['title' => 'Billie Eilish', 'date' => '20 Jun 2027', 'location' => 'ICE BSD, Tangerang', 'image' => 'billie-eilish.jpg', 'reg' => '1.300.000', 'vip' => '3.800.000', 'vvip' => '7.000.000'],
+    ];
+
+    $data = $concerts[$type] ?? $concerts['concert1'];
+    $categoryNames = ['reg' => 'General Admission', 'vip' => 'VIP Experience', 'vvip' => 'VVIP Suite'];
+    
+    $selected = [
+        'category' => $categoryNames[$category] ?? 'General Admission',
+        'price' => $data[$category] ?? $data['reg'],
+        'type' => $type
+    ];
+
+    return view('checkout', compact('data', 'selected'));
+})->name('checkout');
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
 
 // ============================================================
 // AUTHENTICATION ROUTES
@@ -188,4 +304,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
