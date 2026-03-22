@@ -46,8 +46,11 @@
         <div class="main-panel">
             @include('layouts.header')
 
-
-            @yield('content')
+            <div class="container">
+                <div class="page-inner">
+                    @yield('content')
+                </div>
+            </div>
 
             @include('layouts.footer')
 

@@ -5,6 +5,32 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
+<<<<<<< Updated upstream
+=======
+    return view('user');
+})->name('home');
+Route::get('/event/{event}', [\App\Http\Controllers\PublicController::class, 'showEvent'])->name('public.event.show');
+// Route::get('/', function () {
+//     if (auth()->check()) {
+//         $user = auth()->user();
+//         if ($user->isAdmin()) {
+//             return redirect()->route('admin.starter');
+//         }
+//         if ($user->isOrganizer()) {
+//             return redirect()->route('organizer.dashboard');
+//         }
+//         return redirect()->route('landing');
+//     }
+//     return redirect()->route('login');
+// })->name('landingconcert');
+
+Route::get('/admin', function () {
+    return redirect()->route('admin.dashboard');
+})->name('dashboard.admin')->middleware(['auth', 'role:admin']);
+
+// Starter Template (Admin Only)
+Route::get('/starter-template', function () {
+>>>>>>> Stashed changes
     return view('starter-template');
 });
 

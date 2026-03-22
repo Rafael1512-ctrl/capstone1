@@ -28,6 +28,7 @@
         <div class="sidebar-wrapper scrollbar scrollbar-inner">
           <div class="sidebar-content">
             <ul class="nav nav-secondary">
+<<<<<<< Updated upstream
               <li class="nav-item active">
                 <a
                   data-bs-toggle="collapse"
@@ -250,6 +251,33 @@
                               <span class="sub-item">Level 2</span>
                             </a>
                           </li>
+=======
+                <li class="nav-item {{ Request::is('admin*') ? 'active' : '' }}">
+                    <a data-bs-toggle="collapse" href="#adminDashboard" 
+                       class="{{ Request::is('admin*') ? '' : 'collapsed' }}"
+                       aria-expanded="{{ Request::is('admin*') ? 'true' : 'false' }}">
+                        <i class="fas fa-home"></i>
+                        <p>Admin</p>
+                        <span class="caret"></span>
+                    </a>
+                    <div class="collapse {{ Request::is('admin*') ? 'show' : '' }}" id="adminDashboard">
+                        <ul class="nav nav-collapse">
+                            <li>
+                                <a href="{{ route('admin.dashboard') }}">
+                                    <span class="sub-item">📊 Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.events.index') }}">
+                                    <span class="sub-item">🎪 Event Management</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.categories.index') }}">
+                                    <span class="sub-item">🏷️ Event Categories</span>
+                                </a>
+                            </li>
+>>>>>>> Stashed changes
                         </ul>
                       </div>
                     </li>
