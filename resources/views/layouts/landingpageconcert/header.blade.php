@@ -14,11 +14,7 @@
                         <a class="nav-link active" href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-<<<<<<< HEAD
-                        <a class="nav-link" href="#concerts">Discover</a>
-=======
                         <a class="nav-link" href="#">Discover</a>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
@@ -31,17 +27,10 @@
                         </div>
                     </li>
                     <li class="nav-item">
-<<<<<<< HEAD
-                        <a class="nav-link" href="#my-tickets">My Tickets</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#footer">Contact</a>
-=======
                         <a class="nav-link" href="{{ route('tickets.index') }}">My Tickets</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Contact</a>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                     </li>
                 </ul>
 
@@ -66,28 +55,8 @@
                                     <a class="dropdown-item" href="{{ route('admin.dashboard') }}">Dashboard</a>
                                 @endif
                                 <a class="dropdown-item" href="{{ route('tickets.index') }}">Purchase History</a>
-<<<<<<< HEAD
-                                <a class="dropdown-item text-danger" href="#"
-                                    onclick="event.preventDefault(); 
-                                    Swal.fire({
-                                        title: 'Ready to Leave?',
-                                        text: 'Are you sure you want to log out from LuxTix?',
-                                        icon: 'warning',
-                                        showCancelButton: true,
-                                        confirmButtonColor: '#9d50bb',
-                                        cancelButtonColor: '#d33',
-                                        confirmButtonText: 'Yes, Log Out!',
-                                        cancelButtonText: 'Stay Here',
-                                        reverseButtons: true
-                                    }).then((result) => {
-                                        if (result.isConfirmed) {
-                                            document.getElementById('logout-form').submit();
-                                        }
-                                    });">
-=======
                                 <a class="dropdown-item" href="#"
                                     onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                                     Logout
                                 </a>
 

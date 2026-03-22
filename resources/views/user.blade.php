@@ -124,11 +124,7 @@
                     <span class="badge badge-danger mb-3 px-3 py-2" style="border-radius: 50px; font-weight: 600;">UPCOMING DEALS</span>
                     <h2 class="display-4 font-weight-bold mb-4" style="font-family: 'DM Serif Display', serif; color: #fff;">Special Ticket Pre-Sale!</h2>
                     <p class="lead mb-4">Exclusive for registered members. Get early access to the most anticipated concerts of 2026/2027 before everyone else.</p>
-<<<<<<< HEAD
-                    <a href="#concert" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse Available Tickets</a>
-=======
                     <a href="{{ route('ticket') }}" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse Available Tickets</a>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                 </div>
                 <div class="col-md-5 d-none d-md-block text-right">
                     <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Featured" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
@@ -139,10 +135,6 @@
   </div>
   @endauth
 
-<<<<<<< HEAD
-  @auth
-=======
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
   <div class="section portfolio-section">
     <div class="container">
       <div class="row mb-5 justify-content-center" data-aos="fade-up">
@@ -154,28 +146,6 @@
         </div>
       </div>
     </div>
-<<<<<<< HEAD
-    <div class="container-fluid" id="concerts">
-      <div class="row mb-5 no-gutters">
-        @forelse($events as $event)
-        <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
-          <div class="concert-card">
-            <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_' . (($loop->iteration % 4) + 1) . '.jpg') }}" alt="{{ $event->title }}">
-            <div class="concert-card-body">
-              <h3 class="concert-card-title">{{ $event->title }}</h3>
-              <div class="concert-meta">
-                <i class="fa fa-calendar"></i> {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }}
-              </div>
-              <div class="concert-meta">
-                <i class="fa fa-map-marker"></i> {{ $event->location ?? 'Venue TBD' }}
-              </div>
-              <div class="concert-price-box">
-                <div>
-                  <span class="price-label">Starting from</span>
-                  <span class="price-value">Rp. {{ number_format($event->ticket_price ?? 0, 0, ',', '.') }}</span>
-                </div>
-                <a href="{{ route('public.event.show', $event->event_id) }}" class="btn-buy">Detail</a>
-=======
     <div class="container-fluid">
       <div class="row mb-5 no-gutters">
         <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
@@ -195,18 +165,10 @@
                   <span class="price-value">Rp. 850.000</span>
                 </div>
                 <a href="{{ route('concert1') }}" class="btn-buy">Detail</a>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
               </div>
             </div>
           </div>
         </div>
-<<<<<<< HEAD
-        @empty
-        <div class="col-12 text-center py-5">
-           <p class="text-muted">No featured concerts available at moment. Please check back later!</p>
-        </div>
-        @endforelse
-=======
 
         <div class="col-sm-6 col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
           <div class="concert-card">
@@ -361,7 +323,6 @@
             </div>
           </div>
         </div>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
       </div>
 
       <div class="row mt-5">
@@ -371,87 +332,6 @@
       </div>
     </div>
   </div>
-<<<<<<< HEAD
-  @endauth
-
-  <div class="section" id="my-tickets">
-    <div class="container">
-      @auth
-        <div class="row mb-5" data-aos="fade-up">
-          <div class="col-md-8">
-            <h2 class="mb-4 section-title" style="font-family: 'DM Serif Display', serif;">My Tickets</h2>
-            <p>Your current and past concert experiences are gathered here. Access your tickets anytime with ease.</p>
-          </div>
-        </div>
-
-        @if($myTickets->isEmpty())
-        <div class="row" data-aos="fade-up">
-          <div class="col-md-12 text-center py-5 bg-white rounded-lg shadow-sm" style="border: 1px dashed #ccc;">
-            <div class="mb-3">
-              <i class="fa fa-ticket text-muted" style="font-size: 50px; opacity: 0.3;"></i>
-            </div>
-            <h4 class="text-muted">You haven't ordered any tickets yet.</h4>
-            <p>Discover our featured concerts above to start your musical journey!</p>
-            <a href="#concerts" class="btn btn-primary btn-sm px-4 py-2 mt-2" style="border-radius: 50px; background: #9d50bb; border: none;">Browse Concerts</a>
-          </div>
-        </div>
-        @else
-        <div class="row no-gutters" data-aos="fade-up">
-          @foreach($myTickets as $ticket)
-          <div class="col-lg-4 col-md-6 mb-4 px-2">
-            <div class="ticket-history-card p-4 rounded-lg bg-white" style="box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eee; transition: all 0.3s ease; height: 100%;">
-                <div class="d-flex justify-content-between mb-3 align-items-center">
-                    <span class="badge {{ $ticket->isActive() ? 'badge-success' : 'badge-secondary' }} px-3 py-1" style="border-radius: 20px;">
-                        {{ $ticket->ticket_status }}
-                    </span>
-                    <small class="text-muted">{{ $ticket->created_at ? $ticket->created_at->format('d M Y') : 'N/A' }}</small>
-                </div>
-                
-                <h4 class="font-weight-bold mb-1" style="color: #333; font-size: 1.1rem;">{{ $ticket->ticketType->event->title ?? 'Concert Event' }}</h4>
-                <p class="small text-muted mb-3"><i class="fa fa-map-marker mr-1"></i> {{ $ticket->ticketType->event->location ?? 'Venue Location' }}</p>
-                
-                <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
-                    <div>
-                        <p class="mb-0 small text-uppercase font-weight-bold text-muted" style="font-size: 0.7rem;">Category</p>
-                        <p class="mb-0 font-weight-bold" style="color: #9d50bb;">{{ $ticket->ticketType->name }}</p>
-                    </div>
-                    <a href="{{ route('tickets.view', $ticket->ticket_id) }}" class="btn btn-outline-primary btn-sm" style="border-radius: 20px; border-color: #9d50bb; color: #9d50bb;">View Detail</a>
-                </div>
-            </div>
-          </div>
-          @endforeach
-        </div>
-        @endif
-        
-        <style>
-          .ticket-history-card:hover {
-              transform: translateY(-5px);
-              box-shadow: 0 15px 45px rgba(0,0,0,0.1) !important;
-              border-color: #9d50bb !important;
-          }
-        </style>
-      @else
-        <div class="row">
-          <div class="col-lg-5 ml-auto mb-5 order-2">
-            <span class="d-block text-uppercase text-primary">Unforgettable Experiences</span>
-            <h2 class="mb-4 section-title">Bringing You Closer to the Artists You Love.</h2>
-            <p>At LuxTix, we believe that music is more than just sound—it's a memory in the making. Our platform is
-              designed to provide seamless access to the most sought-after concerts with an emphasis on elegance and
-              security.</p>
-            <p class="mb-5">We curate only the best events, ensuring that every seat is a gateway to an extraordinary night.
-            </p>
-            <p><a href="#" class="btn btn-outline-black">Our Mission</a></p>
-          </div>
-          <div class="col-lg-6 order-1">
-            <figure class="img-dotted-bg">
-              <img src="{{ asset('cardboard-assets/img/niki.png') }}" alt="NIKI Concert" class="img-fluid">
-              <img src="{{ asset('cardboard-assets/img/work_1.jpg') }}" alt="Concert Atmosphere"
-                class="img-fluid img-absolute" data-aos="fade-left">
-            </figure>
-          </div>
-        </div>
-      @endauth
-=======
 
   <div class="section">
     <div class="container">
@@ -477,7 +357,6 @@
 
         </div>
       </div>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
     </div>
   </div>
 
@@ -606,8 +485,6 @@
   <!-- END .block-4 -->
   </div>
 
-<<<<<<< HEAD
-=======
   <div class="bg-primary py-5">
     <div class="container text-center">
       <div class="row justify-content-center">
@@ -623,7 +500,6 @@
 
     </div>
   </div>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
 
 @endsection
 

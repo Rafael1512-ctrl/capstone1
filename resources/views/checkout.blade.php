@@ -4,11 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-<<<<<<< HEAD
-    <title>Secure Checkout | {{ $event->title }}</title>
-=======
     <title>Secure Checkout | {{ $data['title'] }}</title>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
     <meta name="description" content="Complete your purchase.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -178,38 +174,22 @@
                     <div class="checkout-card wow fadeInRight">
                         <h3 class="mb-4">Order Summary</h3>
                         <div class="event-summary d-flex align-items-start">
-<<<<<<< HEAD
-                            <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_1.jpg') }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
-                            <div>
-                                <h5 class="mb-1 text-white">{{ $event->title }}</h5>
-                                <p class="small text-muted mb-0"><i class="fa fa-calendar mr-1"></i> {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }}</p>
-                                <p class="small text-muted mb-0"><i class="fa fa-map-marker mr-1"></i> {{ $event->location }}</p>
-=======
                             <img src="{{ asset('cardboard-assets/img/' . $data['image']) }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
                             <div>
                                 <h5 class="mb-1 text-white">{{ $data['title'] }}</h5>
                                 <p class="small text-muted mb-0"><i class="fa fa-calendar mr-1"></i> {{ $data['date'] }}</p>
                                 <p class="small text-muted mb-0"><i class="fa fa-map-marker mr-1"></i> {{ $data['location'] }}</p>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                             </div>
                         </div>
 
                         <div class="order-total-box">
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Ticket Category</span>
-<<<<<<< HEAD
-                                <span class="font-weight-bold">{{ $ticketType->name }}</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="text-muted">Unit Price</span>
-                                <span>RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
-=======
                                 <span class="font-weight-bold">{{ $selected['category'] }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Unit Price</span>
                                 <span>RP {{ $selected['price'] }}</span>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Quantity</span>
@@ -218,11 +198,7 @@
                             <hr style="border-color: #333;">
                             <div class="d-flex justify-content-between mb-0">
                                 <h4 class="mb-0">Total Amount</h4>
-<<<<<<< HEAD
-                                <h4 class="mb-0 text-primary" id="total-amount">RP {{ number_format($ticketType->price, 0, ',', '.') }}</h4>
-=======
                                 <h4 class="mb-0 text-primary" id="total-amount">RP {{ $selected['price'] }}</h4>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                             </div>
                         </div>
 
@@ -284,13 +260,8 @@
                     <h2 class="font-weight-bold mb-2" style="color: #333 !important;">Pembayaran Berhasil!</h2>
                     <p class="text-muted" style="color: #666 !important;">E-Tiket Anda telah dikirim ke email dan tersedia di menu History.</p>
                     <div class="order-summary-mini mt-4 p-3 rounded text-left" style="background: #f8f9fa !important; color: #333 !important; border: 1px solid #eee;">
-<<<<<<< HEAD
-                        <p class="mb-1"><strong>{{ $event->title }}</strong></p>
-                        <p class="small text-muted mb-0" style="color: #777 !important;">{{ $ticketType->name }} | RP {{ number_format($ticketType->price, 0, ',', '.') }}</p>
-=======
                         <p class="mb-1"><strong>{{ $data['title'] }}</strong></p>
                         <p class="small text-muted mb-0" style="color: #777 !important;">{{ $selected['category'] }} | {{ $selected['price'] }}</p>
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                     </div>
                     <button type="button" class="btn btn-primary w-100 py-3 mt-4" style="border-radius: 50px; background: #28a745 !important; border: none; color: white !important; font-weight: bold; cursor: pointer;" onclick="window.location.href='{{ route('home') }}'">Kembali ke Beranda</button>
                     <a href="{{ route('tickets.index') }}" class="d-block mt-3 font-weight-bold" style="color: #9d50bb !important; text-decoration: none; cursor: pointer;">Lihat History Tiket</a>
@@ -306,11 +277,7 @@
         'footerSlogan' => 'Easy and Secure Payment',
         'footerSloganClass' => '',
         'footerButtonText' => 'Cancel Order',
-<<<<<<< HEAD
-        'footerButtonLink' => route('public.ticket.show', $event->event_id),
-=======
         'footerButtonLink' => route('ticket', ['type' => $selected['type']]),
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
         'footerCopyright' => 'LuxTix © 2026. All rights reserved.'
     ])
 
@@ -318,9 +285,6 @@
     <script src="{{ asset('concert-assets/js/bootstrap.min.js') }}"></script>
     <script>
         let qty = 1;
-<<<<<<< HEAD
-        let pricePerUnit = {{ $ticketType->price }};
-=======
         let pricePerUnit = parseInt("{{ str_replace('.', '', $selected['price']) }}");
         let selectedMethod = 'qris';
         let paymentDetected = false;
@@ -426,7 +390,6 @@
     <script>
         let qty = 1;
         let pricePerUnit = parseInt("{{ str_replace('.', '', $selected['price']) }}");
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
         let selectedMethod = 'qris';
         let paymentDetected = false;
 

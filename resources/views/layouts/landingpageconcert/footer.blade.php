@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-  <footer class="site-footer" role="contentinfo" id="footer">
-=======
   <footer class="site-footer" role="contentinfo">
->>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
     <div class="container">
       <div class="row mb-5">
         <div class="col-md-4 mb-5">
