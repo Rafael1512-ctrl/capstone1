@@ -6,7 +6,7 @@
             <div class="page-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h4 class="page-title">{{ $event->name }}</h4>
+                        <h4 class="page-title">{{ $event->title }}</h4>
                         @if ($event->category)
                             <span class="badge badge-primary">{{ $event->category->name }}</span>
                         @endif
@@ -30,7 +30,7 @@
                     <div class="card mb-4">
                         <!-- Banner -->
                         @if ($event->banner_url)
-                            <img src="{{ Storage::url($event->banner_url) }}" class="card-img-top" alt="{{ $event->name }}"
+                            <img src="{{ asset($event->banner_url) }}" class="card-img-top" alt="{{ $event->title }}"
                                 style="height: 400px; object-fit: cover;">
                         @else
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"

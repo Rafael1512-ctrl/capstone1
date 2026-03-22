@@ -158,7 +158,7 @@ class AnalyticsController extends Controller
 
                 return [
                     'event_id' => $event->event_id,
-                    'name' => $event->name,
+                    'name' => $event->title,
                     'date' => $event->schedule_time,
                     'location' => $event->location,
                     'status' => $event->status,
@@ -184,7 +184,8 @@ class AnalyticsController extends Controller
             ->get()
             ->map(function ($category) {
                 $revenue = DB::table('transaksi')
-                    ->join('acara', 'transaksi.event_id', '=', 'acara.event_id')
+                    ->join('ticket', 'transaksi.ticket_id', '=', 'ticket.ticket_id')
+                    ->join('acara', 'ticket.event_id', '=', 'acara.event_id')
                     ->where('acara.category_id', $category->category_id)
                     ->where('transaksi.payment_status', 'Verified')
                     ->sum('transaksi.total_amount') ?? 0;

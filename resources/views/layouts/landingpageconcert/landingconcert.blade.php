@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>CardBoard &mdash; Free Website Template by Free-Template.co</title>
+  <title>@yield('title', 'TIXLY — Concert Tickets')</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -65,7 +65,7 @@
 
 </head>
 
-<body>
+<body style="background: #0d0d0d; color: #fff;">
 
   
   @include('layouts.landingpageconcert.header')

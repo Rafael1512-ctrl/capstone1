@@ -24,13 +24,13 @@
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
-                <li class="nav-item active">
-                    <a data-bs-toggle="collapse" href="#adminDashboard" class="collapsed" aria-expanded="false">
+                <li class="nav-item {{ Request::is('admin*') ? 'active' : '' }}">
+                    <a data-bs-toggle="collapse" href="#adminDashboard" class="{{ Request::is('admin*') ? '' : 'collapsed' }}" aria-expanded="{{ Request::is('admin*') ? 'true' : 'false' }}">
                         <i class="fas fa-home"></i>
-                        <p>Admin Dashboard</p>
+                        <p>Admin</p>
                         <span class="caret"></span>
                     </a>
-                    <div class="collapse" id="adminDashboard">
+                    <div class="collapse {{ Request::is('admin*') ? 'show' : '' }}" id="adminDashboard">
                         <ul class="nav nav-collapse">
                             <li>
                                 <a href="{{ route('admin.dashboard') }}">

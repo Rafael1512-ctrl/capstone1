@@ -55,6 +55,13 @@ class Event extends Model
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'event_id', 'event_id');
+        return $this->hasManyThrough(
+            Order::class,
+            Ticket::class,
+            'event_id', // Foreign key on tickets table
+            'ticket_id', // Foreign key on orders table
+            'event_id', // Local key on events table
+            'ticket_id' // Local key on tickets table
+        );
     }
 }

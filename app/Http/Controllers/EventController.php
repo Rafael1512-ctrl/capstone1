@@ -52,7 +52,7 @@ class EventController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'              => ['required', 'string', 'max:200'],
+            'title'              => ['required', 'string', 'max:200'],
             'description'       => ['required', 'string', 'max:1000'],
             'category_id'       => ['nullable', 'exists:kategori_acara,category_id'],
             'schedule_time'     => ['required', 'date_format:Y-m-d\TH:i', 'after:now'],
@@ -67,8 +67,8 @@ class EventController extends Controller
 
         // Handle banner upload
         if ($request->hasFile('banner_url')) {
-            $data['banner_url'] = $request->file('banner_url')
-                ->store('events/' . date('Y/m'), 'public');
+            $path = $request->file('banner_url')->store('events/' . date('Y/m'), 'public');
+            $data['banner_url'] = '/storage/' . $path;
         } else {
             $data['banner_url'] = null;
         }
@@ -119,7 +119,7 @@ class EventController extends Controller
         }
 
         $validated = $request->validate([
-            'name'              => ['required', 'string', 'max:200'],
+            'title'              => ['required', 'string', 'max:200'],
             'description'       => ['required', 'string', 'max:1000'],
             'category_id'       => ['nullable', 'exists:kategori_acara,category_id'],
             'schedule_time'     => ['required', 'date_format:Y-m-d\TH:i'],
@@ -134,12 +134,13 @@ class EventController extends Controller
         // Handle banner upload
         if ($request->hasFile('banner_url')) {
             // Hapus banner lama jika ada
-            if ($event->banner_url && Storage::disk('public')->exists($event->banner_url)) {
-                Storage::disk('public')->delete($event->banner_url);
+            if ($event->banner_url) {
+                $oldPath = str_replace('/storage/', '', $event->banner_url);
+                Storage::disk('public')->delete($oldPath);
             }
             // Upload banner baru
-            $data['banner_url'] = $request->file('banner_url')
-                ->store('events/' . date('Y/m'), 'public');
+            $path = $request->file('banner_url')->store('events/' . date('Y/m'), 'public');
+            $data['banner_url'] = '/storage/' . $path;
         } else {
             // Jika tidak ada file baru, pertahankan yang lama
             $data['banner_url'] = $event->banner_url;

@@ -15,7 +15,7 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         if ($user->isAdmin()) {
-            return $this->adminDashboard();
+            return redirect()->route('admin.dashboard');
         } elseif ($user->isOrganizer()) {
             return $this->organizerDashboard();
         }

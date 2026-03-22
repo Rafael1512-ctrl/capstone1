@@ -43,8 +43,8 @@
                                             <div class="card h-100 event-card">
                                                 <!-- Banner Event -->
                                                 @if ($event->banner_url)
-                                                    <img src="{{ Storage::url($event->banner_url) }}" class="card-img-top"
-                                                        alt="{{ $event->name }}" style="height: 200px; object-fit: cover;">
+                                                    <img src="{{ asset($event->banner_url) }}" class="card-img-top"
+                                                        alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
                                                 @else
                                                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
                                                         style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -62,7 +62,7 @@
                                                     @endif
 
                                                     <!-- Judul -->
-                                                    <h5 class="card-title">{{ $event->name }}</h5>
+                                                    <h5 class="card-title">{{ $event->title }}</h5>
 
                                                     <!-- Deskripsi -->
                                                     <p class="card-text text-muted small">

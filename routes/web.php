@@ -22,7 +22,7 @@ Route::get('/concert/{event}/checkout/{ticketType}', [\App\Http\Controllers\Publ
 
 // Admin & Organizer Dashboards
 Route::get('/admin', function () {
-    return view('dashboard.admin');
+    return redirect()->route('admin.dashboard');
 })->name('dashboard.admin')->middleware(['auth', 'role:admin']);
 
 Route::get('/starter-template', function () {

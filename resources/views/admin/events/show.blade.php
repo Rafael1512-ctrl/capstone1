@@ -7,7 +7,7 @@
             <div>
                 <h1 class="h3 mb-0">{{ $event->title }}</h1>
                 <p class="text-muted small">
-                    <i class="fas fa-calendar-alt"></i> {{ $event->date->format('d M Y H:i') }} |
+                    <i class="fas fa-calendar-alt"></i> {{ $event->schedule_time->format('d M Y H:i') }} |
                     <i class="fas fa-map-marker-alt"></i> {{ $event->location }}
                 </p>
             </div>
@@ -25,7 +25,7 @@
         <div class="row mb-4">
             <div class="col-md-8">
                 @if ($event->banner_url)
-                    <img src="{{ $event->banner_url }}" alt="Banner" class="img-fluid rounded">
+                    <img src="{{ asset($event->banner_url) }}" alt="Banner" class="img-fluid rounded shadow-sm" style="max-height: 400px; width: 100%; object-fit: cover;">
                 @else
                     <div class="bg-light rounded p-4 text-center text-muted">
                         <i class="fas fa-image" style="font-size: 3rem;"></i>
@@ -61,10 +61,10 @@
                             </dd>
 
                             <dt class="col-sm-5">Organizer:</dt>
-                            <dd class="col-sm-7">{{ $event->organizer->name }}</dd>
+                            <dd class="col-sm-7">{{ $event->organizer->name ?? 'N/A' }}</dd>
 
-                            <dt class="col-sm-5">Dibuat:</dt>
-                            <dd class="col-sm-7">{{ $event->created_at->format('d M Y') }}</dd>
+                            <dt class="col-sm-5">ID Event:</dt>
+                            <dd class="col-sm-7">{{ $event->event_id }}</dd>
                         </dl>
                     </div>
                 </div>
