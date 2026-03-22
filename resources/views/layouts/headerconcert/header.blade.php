@@ -15,7 +15,11 @@
                                 <div class="main-menu  d-none d-lg-block">
                                     <nav>
                                         <ul id="navigation">
+<<<<<<< HEAD
+                                            <li><a href="#concert">home</a></li>
+=======
                                             <li><a href="{{ route('concert1') }}">home</a></li>
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
                                             <li><a href="#performers">Performer</a></li>
                                             <li><a href="#about">About</a></li>
                                             <li><a href="#program">Program</a></li>

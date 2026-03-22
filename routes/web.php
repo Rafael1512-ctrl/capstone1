@@ -10,6 +10,28 @@ use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrganizerController;
 
+<<<<<<< HEAD
+<<<<<<< Updated upstream
+Route::get('/', function () {
+=======
+// ============================================================
+// Public Routes
+Route::get('/', [\App\Http\Controllers\PublicController::class, 'index'])->name('home');
+Route::get('/concert/{event}', [\App\Http\Controllers\PublicController::class, 'showEvent'])->name('public.event.show');
+Route::get('/landing', [\App\Http\Controllers\PublicController::class, 'index'])->name('landing')->middleware('auth');
+
+// Admin & Organizer Dashboards
+Route::get('/admin', function () {
+    return view('dashboard.admin');
+})->name('dashboard.admin_old')->middleware(['auth', 'role:admin']);
+
+Route::get('/starter-template', function () {
+>>>>>>> Stashed changes
+    return view('starter-template');
+});
+
+<<<<<<< Updated upstream
+=======
 // ============================================================
 Route::get('/', function () {
     return view('user');
@@ -49,6 +71,7 @@ Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
     ->middleware(['auth', 'role:organizer,admin']);
 
 // Concert Pages (Public)
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
 Route::get('/concert1', function () {
     return view('concert1');
 })->name('concert1');
@@ -89,6 +112,19 @@ Route::get('/ticket', function () {
         'concert8' => ['title' => 'Billie Eilish', 'date' => '20 Jun 2027', 'location' => 'ICE BSD, Tangerang', 'image' => 'billie-eilish.jpg', 'reg' => '1.300.000', 'vip' => '3.800.000', 'vvip' => '7.000.000'],
     ];
 
+<<<<<<< HEAD
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+=======
+Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
+    ->name('organizer.dashboard')
+    ->middleware(['auth', 'role:organizer,admin']);
+
+Route::get('/concert/{event}/ticket', [\App\Http\Controllers\PublicController::class, 'showTicket'])->name('public.ticket.show');
+
+Route::get('/concert/{event}/checkout/{ticketType}', [\App\Http\Controllers\PublicController::class, 'showCheckout'])->name('public.checkout.show');
+=======
     $data = $concerts[$type] ?? $concerts['concert1'];
 
     return view('ticket', compact('data'));
@@ -120,6 +156,7 @@ Route::get('/checkout', function () {
 
     return view('checkout', compact('data', 'selected'));
 })->name('checkout');
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
 
 // ============================================================
 // AUTHENTICATION ROUTES
@@ -267,3 +304,7 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
+<<<<<<< HEAD
+>>>>>>> Stashed changes
+=======
+>>>>>>> 2f5d83ff45da2a0b3e68ae99aade8a7880dd8a40
