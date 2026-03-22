@@ -146,16 +146,6 @@
                                     <span class="sub-item">User</span>
                                 </a>
                             </li>
-                            <li>
-                                <a href="components/panels.html">
-                                    <span class="sub-item">Panels</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="components/notifications.html">
-                                    <span class="sub-item">Notifications</span>
-                                </a>
-                            </li>
                         </ul>
                     </div>
                 </li>
