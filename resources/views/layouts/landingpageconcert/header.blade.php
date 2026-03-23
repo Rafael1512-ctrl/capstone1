@@ -1,5 +1,6 @@
 <header role="banner" style="position: sticky; top: 0; z-index: 1050; width: 100%;">
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #0a0a0a; border-bottom: 1px solid rgba(220,20,60,0.2); box-shadow: 0 2px 20px rgba(0,0,0,0.5); padding: 12px 0;">
+    <nav class="navbar navbar-expand-lg navbar-dark"
+        style="background: #0a0a0a; border-bottom: 1px solid rgba(220,20,60,0.2); box-shadow: 0 2px 20px rgba(0,0,0,0.5); padding: 12px 0;">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('home') }}"
                 style="font-family: Georgia, serif; font-weight: 800; font-size: 1.6rem;
@@ -122,20 +123,24 @@
                             style="display:none; position:fixed; inset:0; z-index:9999;
                                    background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
                                    align-items:center; justify-content:center;">
-                            <div style="background: #111; border: 1px solid rgba(220,20,60,0.25);
+                            <div
+                                style="background: #111; border: 1px solid rgba(220,20,60,0.25);
                                         border-radius: 18px; padding: 42px 40px; max-width: 380px; width: 90%;
                                         box-shadow: 0 25px 60px rgba(0,0,0,0.7);
                                         text-align: center; animation: popIn 0.25s ease-out;">
-                                <div style="width:64px; height:64px; border-radius:50%;
+                                <div
+                                    style="width:64px; height:64px; border-radius:50%;
                                             background: rgba(220,20,60,0.12); border: 1.5px solid rgba(220,20,60,0.3);
                                             display:flex; align-items:center; justify-content:center;
                                             margin: 0 auto 22px; font-size:1.6rem; color:#dc143c;">
                                     <i class="fa fa-sign-out"></i>
                                 </div>
-                                <h3 style="color:#fff; font-size:1.35rem; font-weight:700; margin-bottom:10px; font-family:Georgia,serif;">
+                                <h3
+                                    style="color:#fff; font-size:1.35rem; font-weight:700; margin-bottom:10px; font-family:Georgia,serif;">
                                     Ready to Leave?
                                 </h3>
-                                <p style="color:rgba(255,255,255,0.45); font-size:0.9rem; line-height:1.6; margin-bottom:30px;">
+                                <p
+                                    style="color:rgba(255,255,255,0.45); font-size:0.9rem; line-height:1.6; margin-bottom:30px;">
                                     You'll need to log in again to access your tickets and events.
                                 </p>
                                 <div style="display:flex; gap:12px; justify-content:center;">
@@ -163,8 +168,15 @@
                         </div>
                         <style>
                             @keyframes popIn {
-                                from { transform: scale(0.88); opacity: 0; }
-                                to   { transform: scale(1);    opacity: 1; }
+                                from {
+                                    transform: scale(0.88);
+                                    opacity: 0;
+                                }
+
+                                to {
+                                    transform: scale(1);
+                                    opacity: 1;
+                                }
                             }
                         </style>
                     @endguest
