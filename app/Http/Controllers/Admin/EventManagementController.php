@@ -167,9 +167,10 @@ class EventManagementController extends Controller
         $totalTicketsSold = DB::table('ticket_type')->where('event_id', $event_id)->sum('quantity_sold');
         $totalTicketsAvailable = DB::table('ticket_type')->where('event_id', $event_id)->sum('quantity_total');
         $totalRevenue = DB::table('transaksi')
-            ->where('event_id', $event_id)
-            ->where('payment_status', 'Verified')
-            ->sum('total_amount');
+            ->join('ticket_type', 'transaksi.ticket_id', '=', 'ticket_type.id')
+            ->where('ticket_type.event_id', $event_id)
+            ->where('transaksi.payment_status', 'Verified')
+            ->sum('transaksi.total_amount');
 
         return view('admin.events.show', compact('event', 'totalTicketsSold', 'totalTicketsAvailable', 'totalRevenue'));
     }

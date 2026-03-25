@@ -8,17 +8,25 @@ use Illuminate\Http\Request;
 
 class PublicController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil 8 event terbaru untuk landing page (Urut berdasarkan waktu acara)
-        $events = Event::orderBy('schedule_time', 'desc')->take(8)->get();
+        $categories = \Illuminate\Support\Facades\DB::table('kategori_acara')->get();
+        
+        $query = Event::orderBy('schedule_time', 'desc');
+
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Ambil semua untuk "View All", tapi default landing tampilkan 8/serapah
+        $events = $query->get();
 
         // Ambil tiket milik user (jika login)
         $myTickets = auth()->check() ? \App\Models\Ticket::whereHas('order', function ($query) {
             $query->where('user_id', auth()->id());
         })->with(['ticketType.event', 'order'])->get() : collect();
 
-        return view('user', compact('events', 'myTickets'));
+        return view('user', compact('events', 'myTickets', 'categories'));
     }
 
     public function showEvent(Event $event)

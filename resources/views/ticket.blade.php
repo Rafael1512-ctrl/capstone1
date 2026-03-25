@@ -32,7 +32,7 @@
         .ticket-card {
             background-color: #1a1a1a;
             border-radius: 10px;
-            padding: 40px;
+            padding: 25px 20px;
             margin-bottom: 30px;
             border: 1px solid #333;
             transition: 0.3s;
@@ -123,7 +123,7 @@
 
     <!-- ticket_area_start -->
     <div class="ticket_bg">
-        <div class="container">
+        <div class="container-fluid px-lg-5">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
                     <div class="section_title text-center mb-80">
@@ -133,11 +133,11 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row justify-content-center flex-wrap">
                 @forelse($event->ticketTypes as $type)
                 <!-- Dynamic Ticket Category -->
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay="{{ 0.4 + ($loop->index * 0.1) }}s" 
+                <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch">
+                    <div class="ticket-card text-center wow fadeInUp w-100" data-wow-duration="1s" data-wow-delay="{{ 0.4 + ($loop->index * 0.1) }}s" 
                         @if(strtolower($type->name) == 'vip') style="border-color: #ff00c1; box-shadow: 0 10px 40px rgba(255, 0, 193, 0.15);" @endif>
                         
                         @if(strtolower($type->name) == 'vip')

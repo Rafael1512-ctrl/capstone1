@@ -28,47 +28,50 @@
 
         /* New Elegant Concert Cards */
         .concert-card {
-            background: #fff;
-            border-radius: 16px;
+            background: #262635;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
             margin-bottom: 30px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid #3b3b4d;
             height: 100%;
             display: flex;
             flex-direction: column;
         }
 
         .concert-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(157, 80, 187, 0.3);
+            border-color: #9d50bb;
         }
 
         .concert-card img {
             width: 100%;
-            height: 220px;
+            height: 160px;
             object-fit: cover;
+            border-bottom: 1px solid #3b3b4d;
         }
 
         .concert-card-body {
-            padding: 20px;
+            padding: 15px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            background: #262635;
         }
 
         .concert-card-title {
             font-family: 'DM Serif Display', serif;
-            font-size: 1.4rem;
-            color: #333;
-            margin-bottom: 12px;
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 10px;
             font-weight: 400;
         }
 
         .concert-meta {
             font-size: 0.9rem;
-            color: #777;
+            color: #aaa;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -86,18 +89,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-top: 1px solid #3b3b4d;
         }
 
         .price-label {
             font-size: 0.8rem;
-            color: #999;
+            color: #888;
             display: block;
         }
 
         .price-value {
             font-weight: bold;
-            color: #333;
+            color: #e0e0e0;
             font-size: 1.1rem;
         }
 
@@ -173,63 +176,99 @@
             <div class="container">
                 <div class="row mb-5 justify-content-center" data-aos="fade-up">
                     <div class="col-md-8 text-center">
-                        <h2 class="mb-4 section-title text-prim">Featured Concerts</h2>
-                        <p>Discover the most prestigious musical events across the globe. From grand stadiums to intimate
+                        <h2 class="mb-4 section-title" style="color: #fff; font-family: 'DM Serif Display', serif;">Featured Concerts</h2>
+                        <p style="color: #ccc; line-height: 1.6;">Discover the most prestigious musical events across the globe. From grand stadiums to intimate
                             stages, find
                             your rhythm here.</p>
-                        <p><a href="#" class="btn btn-outline-black">View All Concerts</a></p>
+                        <p><button id="viewAllBtn" class="btn btn-outline-light" style="border-radius: 50px; padding: 10px 30px; font-weight: 600;">View All Concerts</button></p>
                     </div>
                 </div>
             </div>
-            <div class="container-fluid" id="concerts">
-                <div class="row mb-5 justify-content-center g-4">
-                    @forelse($events as $event)
-                        <div class="col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch" data-aos="fade-up"
-                            data-aos-delay="{{ $loop->iteration * 100 }}">
-                            <div class="concert-card h-100 d-flex flex-column text-center shadow-sm rounded">
-                                <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_' . (($loop->iteration % 4) + 1) . '.jpg') }}"
+            <div class="container-fluid px-md-5" id="concerts">
+                <div class="row mb-5 justify-content-center flex-wrap" id="concert-list">
+                    @php
+                        $loopIndex = 0;
+                    @endphp
+                    @foreach($events as $event)
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch concert-item" style="{{ $loopIndex >= 8 ? 'display: none !important;' : '' }}">
+                            <div class="concert-card h-100 d-flex flex-column text-center shadow-sm rounded" style="width: 100%; min-width: 250px;">
+                                <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_' . (($loopIndex % 4) + 1) . '.jpg') }}"
                                     alt="{{ $event->title }}" class="img-fluid rounded-top">
 
                                 <div class="concert-card-body p-3 d-flex flex-column justify-content-between">
                                     <div>
                                         <h3 class="concert-card-title mb-3">{{ $event->title }}</h3>
-                                        <div class="concert-meta mb-2 text-muted">
+                                        <div class="concert-meta mb-2 text-muted justify-content-center">
                                             <i class="fa fa-calendar"></i>
                                             {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }}
                                         </div>
-                                        <div class="concert-meta mb-3 text-muted">
+                                        <div class="concert-meta mb-3 text-muted justify-content-center">
                                             <i class="fa fa-map-marker"></i> {{ $event->location ?? 'Venue TBD' }}
                                         </div>
                                     </div>
 
                                     <div class="concert-price-box mt-auto">
-                                        <div class="mb-2">
-                                            <span class="price-label d-block">Starting from</span>
-                                            <span class="price-value font-weight-bold">
+                                        <div class="mb-2 text-left">
+                                            <span class="price-label d-block text-center">Starting from</span>
+                                            <span class="price-value font-weight-bold d-block text-center">
                                                 Rp. {{ number_format($event->ticket_price ?? 0, 0, ',', '.') }}
                                             </span>
                                         </div>
                                         <a href="{{ route('public.event.show', $event->event_id) }}"
-                                            class="btn btn-sm btn-primary">
+                                            class="btn btn-buy w-100 mt-2">
                                             Detail
                                         </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @empty
-                        <div class="col-12 text-center py-5">
-                            <p class="text-muted">No featured concerts available at the moment. Please check back later!</p>
-                        </div>
-                    @endforelse
+                        @php $loopIndex++; @endphp
+                    @endforeach
                 </div>
 
                 <div class="row mt-5">
                     <div class="col-12 text-center">
-                        <p><a href="#" class="btn btn-outline-primary px-4 py-3">More Upcoming Events</a></p>
+                        <p><a href="#" class="btn btn-outline-primary px-4 py-3" style="border-radius: 50px; outline: none; box-shadow: none;">More Upcoming Events</a></p>
                     </div>
                 </div>
             </div>
+            
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    const btn = document.getElementById("viewAllBtn");
+                    const items = document.querySelectorAll(".concert-item");
+                    let isExpanded = false;
+
+                    // Pastikan saat load awal cuma 8 yang visible dari total
+                    items.forEach((item, index) => {
+                        if(index >= 8) {
+                            item.style.display = "none";
+                            item.style.setProperty("display", "none", "important");
+                        }
+                    });
+
+                    btn.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        isExpanded = !isExpanded;
+                        
+                        items.forEach((item, index) => {
+                            if (index >= 8) {
+                                if (isExpanded) {
+                                    item.style.setProperty("display", "block", "important");
+                                } else {
+                                    item.style.setProperty("display", "none", "important");
+                                }
+                            }
+                        });
+
+                        if (isExpanded) {
+                            btn.innerText = "Show Less";
+                        } else {
+                            btn.innerText = "View All Concerts";
+                        }
+                    });
+                });
+            </script>
         </div>
     @endauth
 
