@@ -105,6 +105,10 @@
                                     style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
                                     <i class="fa fa-ticket" style="width:18px; color:#dc143c;"></i> My Tickets
                                 </a>
+                                <a class="dropdown-item" href="{{ route('profile.show') }}"
+                                    style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
+                                    <i class="fa fa-user" style="width:18px; color:#dc143c;"></i> My Profile
+                                </a>
                                 <div style="border-top: 1px solid rgba(255,255,255,0.08); margin: 4px 0;"></div>
                                 <a class="dropdown-item" href="#"
                                     style="color: #ff6b6b; font-size:0.88rem; padding: 10px 18px;"

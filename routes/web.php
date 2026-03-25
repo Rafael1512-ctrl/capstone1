@@ -9,6 +9,7 @@ use App\Http\Controllers\TicketCategoryController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrganizerController;
+use App\Http\Controllers\ProfileController;
 
 
 // Public Routes
@@ -34,14 +35,30 @@ Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
     ->middleware(['auth', 'role:organizer,admin']);
 
 // Concert Pages (Static / Public)
-Route::get('/concert1', function () { return view('concert1'); })->name('concert1');
-Route::get('/concert2', function () { return view('concert2'); })->name('concert2');
-Route::get('/concert3', function () { return view('concert3'); })->name('concert3');
-Route::get('/concert4', function () { return view('concert4'); })->name('concert4');
-Route::get('/concert5', function () { return view('concert5'); })->name('concert5');
-Route::get('/concert6', function () { return view('concert6'); })->name('concert6');
-Route::get('/concert7', function () { return view('concert7'); })->name('concert7');
-Route::get('/concert8', function () { return view('concert8'); })->name('concert8');
+Route::get('/concert1', function () {
+    return view('concert1');
+})->name('concert1');
+Route::get('/concert2', function () {
+    return view('concert2');
+})->name('concert2');
+Route::get('/concert3', function () {
+    return view('concert3');
+})->name('concert3');
+Route::get('/concert4', function () {
+    return view('concert4');
+})->name('concert4');
+Route::get('/concert5', function () {
+    return view('concert5');
+})->name('concert5');
+Route::get('/concert6', function () {
+    return view('concert6');
+})->name('concert6');
+Route::get('/concert7', function () {
+    return view('concert7');
+})->name('concert7');
+Route::get('/concert8', function () {
+    return view('concert8');
+})->name('concert8');
 
 Route::get('/about', function () {
     return view('about');
@@ -69,7 +86,7 @@ Route::get('/ticket', function () {
 Route::get('/checkout', function () {
     $type = request('type', 'concert1');
     $category = request('category', 'reg');
-    
+
     $concerts = [
         'concert1' => ['title' => 'Radiohead', 'date' => '12 Oct 2026', 'location' => 'JIS, Jakarta', 'image' => 'concert_1.jpg', 'reg' => '850.000', 'vip' => '2.500.000', 'vvip' => '5.000.000'],
         'concert2' => ['title' => 'Coldplay', 'date' => '15 Nov 2026', 'location' => 'Gelora Bung Karno', 'image' => 'coldplay.png', 'reg' => '1.200.000', 'vip' => '3.500.000', 'vvip' => '7.500.000'],
@@ -83,7 +100,7 @@ Route::get('/checkout', function () {
 
     $data = $concerts[$type] ?? $concerts['concert1'];
     $categoryNames = ['reg' => 'General Admission', 'vip' => 'VIP Experience', 'vvip' => 'VVIP Suite'];
-    
+
     $selected = [
         'category' => $categoryNames[$category] ?? 'General Admission',
         'price' => $data[$category] ?? $data['reg'],
@@ -105,6 +122,15 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// ============================================================
+// PROFILE ROUTES (Authenticated Users)
+// ============================================================
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
 
 // ============================================================
 // PROTECTED ROUTES (Authenticated Users Only)
@@ -239,4 +265,3 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
-

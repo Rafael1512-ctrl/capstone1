@@ -133,6 +133,14 @@
     @auth
         <div class="section pb-0" data-aos="fade-up">
             <div class="container">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                    <a href="{{ route('profile.show') }}" class="btn btn-outline-primary px-4 py-2"
+                        style="border-radius: 50px; font-weight: 600; border-color: #9d50bb; color: #9d50bb; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='#9d50bb'; this.style.color='white';"
+                        onmouseout="this.style.background='transparent'; this.style.color='#9d50bb';">
+                        <i class="fa fa-user mr-2"></i>My Profile
+                    </a>
+                </div>
                 <div class="promo-banner-container"
                     style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('cardboard-assets/img/hero_1.jpg') }}'); background-size: cover; background-position: center; border-radius: 20px; padding: 60px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
                     <div
@@ -342,175 +350,165 @@
                 </div>
 
             @endauth
-        </div>
-    </div>
 
-    <div class="section" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3 mb-4">
-                    <div class="service" data-aos="fade-up" data-aos-delay=""
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%;">
-                        <span class="icon icon-lock mb-4 d-block" style="color: #9d50bb; font-size: 2.5rem;"></span>
-                        <h3 style="color: #333; font-weight: 600; margin-bottom: 15px;">Secure Ticketing</h3>
-                        <p style="color: #666; line-height: 1.6;">Blockchain-backed security ensures your tickets are
-                            unique, official, and safe from fraud.</p>
+            <!-- User Profile Section (for authenticated users) -->
+            @auth
+                <div class="row mb-5" data-aos="fade-up" style="margin-top: 60px;">
+                    <div class="col-12">
+                        <div
+                            style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; padding: 40px; border-left: 5px solid #9d50bb;">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h3
+                                        style="color: #333; font-weight: 700; margin-bottom: 10px; font-family: 'DM Serif Display', serif;">
+                                        {{ Auth::user()->name }}
+                                    </h3>
+                                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 15px;">
+                                        <i class="fa fa-envelope mr-2" style="color: #9d50bb;"></i>
+                                        {{ Auth::user()->email }}
+                                    </p>
+                                    <p style="color: #999; font-size: 0.85rem; margin-bottom: 0;">
+                                        Member since
+                                        {{ Auth::user()->created_at ? Auth::user()->created_at->format('d M Y') : 'N/A' }}
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-right">
+                                    <a href="{{ route('profile.show') }}" class="btn px-4 py-2"
+                                        style="background: linear-gradient(to right, #9d50bb, #6e48aa); color: white; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
+                                        onmouseover="this.style.boxShadow='0 6px 20px rgba(157, 80, 187, 0.3)';"
+                                        onmouseout="this.style.boxShadow='none';">
+                                        <i class="fa fa-user mr-2"></i>View Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-3 mb-4">
-                    <div class="service" data-aos="fade-up" data-aos-delay="100"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%;">
-                        <span class="icon icon-star mb-4 d-block" style="color: #9d50bb; font-size: 2.5rem;"></span>
-                        <h3 style="color: #333; font-weight: 600; margin-bottom: 15px;">VIP Access</h3>
-                        <p style="color: #666; line-height: 1.6;">Exclusive backstage passes and lounge access for our
-                            premium members.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 mb-4">
-                    <div class="service" data-aos="fade-up" data-aos-delay="200"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%;">
-                        <span class="icon icon-paper-plane mb-4 d-block"
-                            style="color: #9d50bb; font-size: 2.5rem;"></span>
-                        <h3 style="color: #333; font-weight: 600; margin-bottom: 15px;">Instant Delivery</h3>
-                        <p style="color: #666; line-height: 1.6;">Receive your digital tickets instantly via our secure app
-                            or email.</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 mb-4">
-                    <div class="service" data-aos="fade-up" data-aos-delay="300"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%;">
-                        <span class="icon icon-support mb-4 d-block" style="color: #9d50bb; font-size: 2.5rem;"></span>
-                        <h3 style="color: #333; font-weight: 600; margin-bottom: 15px;">24/7 Concierge</h3>
-                        <p style="color: #666; line-height: 1.6;">Our dedicated support team is available around the clock
-                            to assist your journey.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <style>
-            .service:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 15px 35px rgba(157, 80, 187, 0.15) !important;
+            @endauth
             }
-        </style>
-    </div>
-
-    <div class="section" style="background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);">
-        <div class="container">
-            <div class="row justify-content-center mb-5">
-                <div class="col-md-8 text-center">
-                    <h2 class="mb-4 section-title" style="color: #333;">What Our Users Say</h2>
-                    <p style="color: #666; font-size: 1.1rem;">Join thousands of music enthusiasts who've experienced the
-                        LuxTix difference</p>
-                </div>
-            </div>
-            <div class="nonloop-block-11 owl-carousel">
-                <div class="item">
-                    <div class="block-33 h-100"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
-                        <div class="vcard d-flex mb-3">
-                            <div class="image align-self-center"><img
-                                    src="{{ asset('cardboard-assets/img/person_1.jpg') }}" alt="Fan"
-                                    style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
-                            </div>
-                            <div class="name-text align-self-center ml-3">
-                                <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">Alicia V.</h2>
-                                <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Verified Attendee</span>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <blockquote
-                                style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
-                                <p>&rdquo; LuxTix made attending the Radiohead concert so easy. The VIP entrance was
-                                    seamless and the
-                                    seats were exactly as described. A truly premium experience. &ldquo;</p>
-                            </blockquote>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <div class="block-33 h-100"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
-                        <div class="vcard d-flex mb-3">
-                            <div class="image align-self-center"><img
-                                    src="{{ asset('cardboard-assets/img/person_2.jpg') }}" alt="Fan"
-                                    style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
-                            </div>
-                            <div class="name-text align-self-center ml-3">
-                                <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">David K.</h2>
-                                <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Music Enthusiast</span>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <blockquote
-                                style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
-                                <p>&rdquo; I've never had a more reliable experience buying tickets. No bots, no hidden
-                                    fees, just pure
-                                    music. Recommended for any serious concert-goer. &ldquo;</p>
-                            </blockquote>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <div class="block-33 h-100"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
-                        <div class="vcard d-flex mb-3">
-                            <div class="image align-self-center"><img
-                                    src="{{ asset('cardboard-assets/img/person_1.jpg') }}" alt="Fan"
-                                    style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
-                            </div>
-                            <div class="name-text align-self-center ml-3">
-                                <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">Sarah J.</h2>
-                                <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Pop Culture Critic</span>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <blockquote
-                                style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
-                                <p>&rdquo; The interface is as elegant as the concerts they host. Finding Taylor Swift
-                                    tickets was a
-                                    breeze! &ldquo;</p>
-                            </blockquote>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="item">
-                    <div class="block-33 h-100"
-                        style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
-                        <div class="vcard d-flex mb-3">
-                            <div class="image align-self-center"><img
-                                    src="{{ asset('cardboard-assets/img/person_2.jpg') }}" alt="Fan"
-                                    style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
-                            </div>
-                            <div class="name-text align-self-center ml-3">
-                                <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">James L.</h2>
-                                <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Rock Fan</span>
-                            </div>
-                        </div>
-                        <div class="text">
-                            <blockquote
-                                style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
-                                <p>&rdquo; Arctic Monkeys in Jakarta was a dream come true, and LuxTix helped me get
-                                    front-row access
-                                    without any hassle. &ldquo;</p>
-                            </blockquote>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            </style>
         </div>
-        <style>
-            .block-33:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 40px rgba(157, 80, 187, 0.2) !important;
-            }
-        </style>
-    </div>
-    <!-- END .block-4 -->
+
+        <div class="section" style="background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);">
+            <div class="container">
+                <div class="row justify-content-center mb-5">
+                    <div class="col-md-8 text-center">
+                        <h2 class="mb-4 section-title" style="color: #333;">What Our Users Say</h2>
+                        <p style="color: #666; font-size: 1.1rem;">Join thousands of music enthusiasts who've experienced
+                            the
+                            LuxTix difference</p>
+                    </div>
+                </div>
+                <div class="nonloop-block-11 owl-carousel">
+                    <div class="item">
+                        <div class="block-33 h-100"
+                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <div class="vcard d-flex mb-3">
+                                <div class="image align-self-center"><img
+                                        src="{{ asset('cardboard-assets/img/person_1.jpg') }}" alt="Fan"
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                </div>
+                                <div class="name-text align-self-center ml-3">
+                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">Alicia V.</h2>
+                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Verified
+                                        Attendee</span>
+                                </div>
+                            </div>
+                            <div class="text">
+                                <blockquote
+                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    <p>&rdquo; LuxTix made attending the Radiohead concert so easy. The VIP entrance was
+                                        seamless and the
+                                        seats were exactly as described. A truly premium experience. &ldquo;</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="block-33 h-100"
+                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <div class="vcard d-flex mb-3">
+                                <div class="image align-self-center"><img
+                                        src="{{ asset('cardboard-assets/img/person_2.jpg') }}" alt="Fan"
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                </div>
+                                <div class="name-text align-self-center ml-3">
+                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">David K.</h2>
+                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Music
+                                        Enthusiast</span>
+                                </div>
+                            </div>
+                            <div class="text">
+                                <blockquote
+                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    <p>&rdquo; I've never had a more reliable experience buying tickets. No bots, no hidden
+                                        fees, just pure
+                                        music. Recommended for any serious concert-goer. &ldquo;</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="block-33 h-100"
+                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <div class="vcard d-flex mb-3">
+                                <div class="image align-self-center"><img
+                                        src="{{ asset('cardboard-assets/img/person_1.jpg') }}" alt="Fan"
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                </div>
+                                <div class="name-text align-self-center ml-3">
+                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">Sarah J.</h2>
+                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Pop Culture
+                                        Critic</span>
+                                </div>
+                            </div>
+                            <div class="text">
+                                <blockquote
+                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    <p>&rdquo; The interface is as elegant as the concerts they host. Finding Taylor Swift
+                                        tickets was a
+                                        breeze! &ldquo;</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="block-33 h-100"
+                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <div class="vcard d-flex mb-3">
+                                <div class="image align-self-center"><img
+                                        src="{{ asset('cardboard-assets/img/person_2.jpg') }}" alt="Fan"
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                </div>
+                                <div class="name-text align-self-center ml-3">
+                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">James L.</h2>
+                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Rock Fan</span>
+                                </div>
+                            </div>
+                            <div class="text">
+                                <blockquote
+                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    <p>&rdquo; Arctic Monkeys in Jakarta was a dream come true, and LuxTix helped me get
+                                        front-row access
+                                        without any hassle. &ldquo;</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <style>
+                .block-33:hover {
+                    transform: translateY(-10px);
+                    box-shadow: 0 15px 40px rgba(157, 80, 187, 0.2) !important;
+                }
+            </style>
+        </div>
+        <!-- END .block-4 -->
     </div>
 @endsection
 
