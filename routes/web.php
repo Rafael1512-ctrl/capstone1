@@ -20,6 +20,7 @@ Route::get('/landing', [\App\Http\Controllers\PublicController::class, 'index'])
 // Dynamic Ticket & Checkout Routes
 Route::get('/concert/{event}/ticket', [\App\Http\Controllers\PublicController::class, 'showTicket'])->name('public.ticket.show');
 Route::get('/concert/{event}/checkout/{ticketType}', [\App\Http\Controllers\PublicController::class, 'showCheckout'])->name('public.checkout.show');
+Route::post('/concert/{event}/checkout/{ticketType}', [\App\Http\Controllers\PublicController::class, 'processCheckout'])->name('public.checkout.process')->middleware('auth');
 
 // Debug route for performer data (admin only)
 Route::get('/debug/event/{event}/performers', function (\App\Models\Event $event) {

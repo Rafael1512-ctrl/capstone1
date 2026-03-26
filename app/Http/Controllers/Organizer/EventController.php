@@ -22,6 +22,7 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'date' => 'required|date|after:now',
             'location' => 'required|string|max:255',
+            'maps_url' => 'nullable|string|max:1000',
             'banner' => 'nullable|image|max:2048',
             'status' => 'sometimes|in:draft,published,cancelled'
         ]);
@@ -54,6 +55,7 @@ class EventController extends Controller
             'description' => 'nullable|string',
             'date' => 'sometimes|date|after:now',
             'location' => 'sometimes|string|max:255',
+            'maps_url' => 'nullable|string|max:1000',
             'banner' => 'nullable|image|max:2048',
             'status' => 'sometimes|in:draft,published,cancelled'
         ]);

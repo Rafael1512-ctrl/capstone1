@@ -28,6 +28,7 @@ class Event extends Model
         'banner_url',
         'status',
         'performers',
+        'maps_url',
     ];
 
     protected $casts = [

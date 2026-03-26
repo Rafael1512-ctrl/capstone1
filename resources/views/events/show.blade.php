@@ -159,14 +159,39 @@
                                 <hr class="my-4">
                             @endif
 
-                            <!-- Description -->
-                            <div>
+                        <!-- Description & Map -->
+                        <div class="row mt-4">
+                            <div class="col-md-7">
                                 <h5>Deskripsi Event</h5>
                                 <p>{{ $event->description }}</p>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-map-marked-alt text-primary"></i> Venue Map
+                                        </h6>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        @if ($event->maps_url)
+                                            <iframe src="{{ $event->maps_url }}" width="100%" height="250"
+                                                style="border:0;" allowfullscreen="" loading="lazy">
+                                            </iframe>
+                                        @else
+                                            <div class="p-4 text-center text-muted">
+                                                <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+                                                <p class="small">Link Google Maps belum diset.</p>
+                                                <a href="{{ route('events.edit', $event->event_id) }}"
+                                                    class="btn btn-xs btn-outline-primary">Set Map</a>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
                 <!-- Sidebar -->
                 <div class="col-md-4">

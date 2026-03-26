@@ -41,7 +41,7 @@
                                 @foreach ($organizers as $org)
                                     <option value="{{ $org->user_id }}"
                                         {{ $event->organizer_id == $org->user_id ? 'selected' : '' }}>
-                                        {{ $org->nama_lengkap }} ({{ $org->email }})
+                                        {{ $org->name }} ({{ $org->email }})
                                     </option>
                                 @endforeach
                             </select>
@@ -95,6 +95,18 @@
                         @error('location')
                             <span class="invalid-feedback">{{ $message }}</span>
                         @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="maps_url" class="form-label">Link Embed Google Maps (Opsional)</label>
+                        <textarea class="form-control @error('maps_url') is-invalid @enderror" name="maps_url"
+                            id="maps_url" rows="2" placeholder="Contoh: https://www.google.com/maps/embed?pb=...">{{ old('maps_url', $event->maps_url) }}</textarea>
+                        @error('maps_url')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                        <small class="text-muted">
+                            Dapatkan di Google Maps: Bagikan > Sematkan peta > Salin URL di dalam src="..."
+                        </small>
                     </div>
 
                     <div class="mb-3">
@@ -176,7 +188,7 @@
                                                             </div>
                                                         @endif
                                                         <input type="file" class="form-control performer-photo" accept="image/*"
-                                                            data-index="{{ $index }}">
+                                                            name="performers[{{ $index }}][photo]" data-index="{{ $index }}">
                                                         <small class="text-muted">Max: 2MB</small>
                                                     </div>
                                                 </div>

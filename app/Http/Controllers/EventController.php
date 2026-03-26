@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class EventController extends Controller
 {
@@ -57,6 +58,7 @@ class EventController extends Controller
             'category_id'       => ['nullable', 'exists:kategori_acara,category_id'],
             'schedule_time'     => ['required', 'date_format:Y-m-d\TH:i', 'after:now'],
             'location'          => ['required', 'string', 'max:255'],
+            'maps_url'          => ['nullable', 'string', 'max:1000'],
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
         ]);
@@ -73,20 +75,34 @@ class EventController extends Controller
             $data['banner_url'] = null;
         }
 
-        // Generate ID menggunakan Stored Procedure
+        DB::beginTransaction();
         try {
-            DB::statement('CALL GenerateEventID(@new_id)');
-            $result = DB::select('SELECT @new_id AS event_id');
-            $data['event_id'] = $result[0]->event_id ?? null;
+            // Generate ID menggunakan Stored Procedure dengan fallback/safety
+            try {
+                DB::statement('CALL GenerateEventID(@new_id)');
+                $result = DB::select('SELECT @new_id AS event_id');
+                $data['event_id'] = $result[0]->event_id ?? ('EV-' . time());
+                
+                // Final safety check: if ID already exists, modify the suffix to avoid error
+                // The column limit is exactly 14 characters (VARCHAR(14)). We cannot append.
+                if (Event::where('event_id', $data['event_id'])->exists()) {
+                    // Original: TC-YYMMDD-XXXX (14 chars). Replace XXXX with random.
+                    $data['event_id'] = substr($data['event_id'], 0, 10) . strtoupper(Str::random(4));
+                }
+            } catch (\Exception $e) {
+                // Fallback jika SP tidak ada atau gagal
+                $data['event_id'] = 'EV-' . time();
+            }
+
+            $event = Event::create($data);
+            DB::commit();
+            
+            return redirect()->route('events.show', $event->event_id)
+                ->with('success', 'Event berhasil dibuat! Silakan tambahkan tipe tiket.');
         } catch (\Exception $e) {
-            // Fallback jika SP tidak ada
-            $data['event_id'] = 'EV' . time() . rand(1000, 9999);
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Gagal membuat event: ' . $e->getMessage());
         }
-
-        $event = Event::create($data);
-
-        return redirect()->route('events.show', $event->event_id)
-            ->with('success', 'Event berhasil dibuat! Silakan tambahkan tipe tiket.');
     }
 
     /**
@@ -124,6 +140,7 @@ class EventController extends Controller
             'category_id'       => ['nullable', 'exists:kategori_acara,category_id'],
             'schedule_time'     => ['required', 'date_format:Y-m-d\TH:i'],
             'location'          => ['required', 'string', 'max:255'],
+            'maps_url'          => ['nullable', 'string', 'max:1000'],
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'status'            => ['required', 'in:draft,published,cancelled'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],

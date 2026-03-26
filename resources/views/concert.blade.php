@@ -85,11 +85,11 @@
                             <div class="performer-card text-center">
                                 <div class="performer-image mb-3" style="position: relative; overflow: hidden; border-radius: 10px; height: 300px;">
                                     @if (isset($performer['photo']) && $performer['photo'])
-                                        <img src="{{ $performer['photo'] }}" alt="{{ $performer['name'] }}"
+                                        <img src="{{ url($performer['photo']) }}" alt="{{ $performer['name'] }}"
                                             style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
                                     @else
-                                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-music"></i> {{ $performer['name'] }}
+                                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%); display: flex; align-items: center; justify-content: center; color: white;">
+                                            <i class="fas fa-music fa-3x"></i>
                                         </div>
                                     @endif
                                 </div>
@@ -123,7 +123,14 @@
             <div class="row">
                 <div class="col-xl-12">
                     <div class="venue_map wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.103046755606!2d106.86214371476856!3d-6.123545595565545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a1e5080000001%3A0xd653f53835f8386b!2sJakarta%20International%20Stadium!5e0!3m2!1sen!2sid!4v1653556050510!5m2!1sen!2sid" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                        <iframe 
+                            src="{{ !empty($event->maps_url) ? $event->maps_url : 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3967.103046755606!2d106.86214371476856!3d-6.123545595565545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6a1e5080000001%3A0xd653f53835f8386b!2sJakarta%20International%20Stadium!5e0!3m2!1sen!2sid!4v1653556050510!5m2!1sen!2sid' }}" 
+                            width="100%" 
+                            height="450" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy">
+                        </iframe>
                     </div>
                     <div class="text-center mt-4 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".6s">
                         <h4 class="text-white">{{ $event->location ?? 'Jakarta, Indonesia' }}</h4>

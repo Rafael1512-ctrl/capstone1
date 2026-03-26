@@ -7,6 +7,7 @@
     <title>Secure Checkout | {{ $event->title }}</title>
     <meta name="description" content="Complete your purchase.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('concert-assets/img/favicon.png') }}">
 
@@ -129,6 +130,32 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(220, 20, 60, 0.5);
         }
+        /* Modal Styling Improvements */
+        #paymentModal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow-y: auto !important;
+        }
+        #paymentModal .modal-dialog {
+            margin: 30px auto !important;
+            max-width: 500px;
+        }
+        .modal-backdrop {
+            z-index: 9998 !important;
+        }
+        .modal-content {
+            z-index: 9999 !important;
+        }
+        a[href*="tickets.index"] {
+            transition: all 0.2s;
+        }
+        a[href*="tickets.index"]:hover {
+            text-decoration: underline !important;
+            opacity: 0.8;
+        }
     </style>
 </head>
 
@@ -238,60 +265,151 @@
 
     <!-- Payment Modal -->
     <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" style="z-index: 9999;">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content" style="background-color: #ffffff !important; color: #111111 !important; border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.5); z-index: 10000; position: relative;">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Selesaikan Pembayaran</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="closeModalBtn" style="color: #333 !important; opacity: 1;">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                
-                <!-- Step 1: Payment Info -->
-                <div class="modal-body text-center p-2" id="p-step-1">
-                    <div id="qrisSection">
-                        <p class="mb-4 text-muted" style="color: #666 !important;">Silakan pindai QRIS di bawah ini untuk membayar</p>
-                        <div class="qris-box p-3 bg-white d-inline-block rounded-lg mb-4" style="border: 2px solid #f0f0f0;">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020101021226590014ID.LINKAJA.WWW011893600503000007672202150000000000000005204541153033605802ID5914LUXTIX%20OFFICIAL6007JAKARTA6105123456304CA5A" alt="QRIS" style="width: 250px; height: 250px;">
-                        </div>
-                        <div class="d-flex justify-content-center align-items-center mb-3">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" height="30" class="mr-3">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/GPN_Logo.svg/1024px-GPN_Logo.svg.png" height="25">
-                        </div>
-                    </div>
-                    
-                    <div id="vaSection" style="display:none;">
-                        <p class="mb-2 text-muted" style="color: #666 !important;">Nomor Virtual Account</p>
-                        <h2 class="font-weight-bold mb-4" style="letter-spacing: 2px; color: #dc143c !important;">8806 0812 3456 7890</h2>
-                        <div class="bg-light p-3 rounded mb-4 text-left" style="border: 1px solid #eee; background-color: #f8f9fa !important;">
-                            <p class="small text-muted mb-1">Nama Bank</p>
-                            <p class="mb-0 font-weight-bold" style="color: #333 !important;">BCA Virtual Account</p>
-                        </div>
-                    </div>
+        <div class="modal-dialog" role="document" style="width: 90%; max-width: 500px;">
+            <div class="modal-content" style="background-color: #ffffff !important; color: #111111 !important; border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.5); position: relative; max-height: 90vh; overflow-y: auto;">
 
-                    <div class="timer mb-4 p-2 rounded" style="background: rgba(220,20,60,0.08) !important; color: #ff6b6b !important; border: 1px solid rgba(220,20,60,0.25) !important; font-weight: bold; border-radius: 10px !important;">
-                        Menunggu pembayaran: <span id="countdown">14:59</span>
+                <!-- ======= STEP 1: Detail Pembayaran ======= -->
+                <div id="p-step-1">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Detail Pembayaran</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #333 !important; opacity: 1;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-
-                    <div id="detection-status" class="alert alert-secondary py-2" style="border: none; border-radius: 10px; font-size: 13px; background: #f0f0f0 !important; color: #444 !important;">
-                        <i class="fa fa-spinner fa-spin mr-2"></i> Sistem sedang mendeteksi pembayaran Anda...
+                    <div class="modal-body p-4">
+                        <div class="p-3 rounded mb-3" style="background: #f8f9fa !important; border: 1px solid #eee;">
+                            <p class="mb-1 font-weight-bold" style="color: #333 !important;">{{ $event->title }}</p>
+                            <p class="small mb-0" style="color: #777 !important;">{{ $ticketType->name }}</p>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2" style="color: #555 !important;">
+                            <span>Harga Tiket</span>
+                            <span>RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2" style="color: #555 !important;">
+                            <span>Jumlah</span>
+                            <span id="modal-qty">1x</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2" style="color: #555 !important;">
+                            <span>Metode Pembayaran</span>
+                            <span id="modal-method" class="font-weight-bold" style="color: #dc143c !important;">QRIS</span>
+                        </div>
+                        <hr style="border-color: #eee;">
+                        <div class="d-flex justify-content-between">
+                            <span class="font-weight-bold" style="font-size: 1.1rem; color: #333 !important;">Total Bayar</span>
+                            <span class="font-weight-bold" style="font-size: 1.1rem; color: #dc143c !important;" id="modal-total">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                        <button type="button" class="btn w-100 py-3" onclick="goToStep2()" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(220,20,60,0.35);">
+                            Lanjutkan Pembayaran <i class="fa fa-arrow-right ml-2"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Step 2: Success Simulation -->
-                <div class="modal-body text-center p-5" id="p-step-2" style="display:none;">
-                    <div class="success-icon mb-4">
-                        <i class="fa fa-check-circle" style="font-size: 100px; color: #dc143c !important;"></i>
+                <!-- ======= STEP 2: Scan / Transfer ======= -->
+                <div id="p-step-2" style="display:none;">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Selesaikan Pembayaran</h5>
+                        <button type="button" class="close" onclick="goToStep1()" style="color: #333 !important; opacity: 1;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <h2 class="font-weight-bold mb-2" style="color: #333 !important;">Pembayaran Berhasil!</h2>
-                    <p class="text-muted" style="color: #666 !important;">E-Tiket Anda telah dikirim ke email dan tersedia di menu History.</p>
-                    <div class="order-summary-mini mt-4 p-3 rounded text-left" style="background: #f8f9fa !important; color: #333 !important; border: 1px solid #eee;">
-                        <p class="mb-1"><strong>{{ $event->title }}</strong></p>
-                        <p class="small text-muted mb-0" style="color: #777 !important;">{{ $ticketType->name }} | RP {{ number_format($ticketType->price, 0, ',', '.') }}</p>
+                    <div class="modal-body text-center p-4">
+                        <!-- Total amount reminder -->
+                        <div class="mb-3 p-2 rounded" style="background: rgba(220,20,60,0.06) !important; border: 1px solid rgba(220,20,60,0.15); border-radius: 10px !important;">
+                            <span style="color: #888 !important; font-size: 13px;">Total Pembayaran</span><br>
+                            <span class="font-weight-bold" style="font-size: 1.3rem; color: #dc143c !important;" id="modal-total-2">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
+                        </div>
+
+                        <div id="qrisSection2">
+                            <p class="mb-3" style="color: #666 !important; font-size: 14px;">Silakan pindai QRIS di bawah ini untuk membayar</p>
+                            <div class="p-3 bg-white d-inline-block rounded-lg mb-3" style="border: 2px solid #f0f0f0;">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=00020101021226590014ID.LINKAJA.WWW011893600503000007672202150000000000000005204541153033605802ID5914LUXTIX%20OFFICIAL6007JAKARTA6105123456304CA5A" alt="QRIS" style="width: 220px; height: 220px;">
+                            </div>
+                            <div class="d-flex justify-content-center align-items-center mb-3">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" height="25" class="mr-3">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/GPN_Logo.svg/1024px-GPN_Logo.svg.png" height="20">
+                            </div>
+                        </div>
+
+                        <div id="vaSection2" style="display:none;">
+                            <p class="mb-2" style="color: #666 !important; font-size: 14px;">Nomor Virtual Account</p>
+                            <h2 class="font-weight-bold mb-3" style="letter-spacing: 2px; color: #dc143c !important; font-size: 1.5rem;">8806 0812 3456 7890</h2>
+                            <div class="p-3 rounded mb-3 text-left" style="border: 1px solid #eee; background-color: #f8f9fa !important;">
+                                <p class="small mb-1" style="color: #999 !important;">Nama Bank</p>
+                                <p class="mb-0 font-weight-bold" style="color: #333 !important;">BCA Virtual Account</p>
+                            </div>
+                        </div>
+
+                        <div class="timer mb-3 p-2 rounded" style="background: rgba(220,20,60,0.08) !important; color: #ff6b6b !important; border: 1px solid rgba(220,20,60,0.25) !important; font-weight: bold; border-radius: 10px !important; font-size: 14px;">
+                            Batas waktu pembayaran: <span id="countdown">14:59</span>
+                        </div>
                     </div>
-                    <button type="button" class="btn btn-primary w-100 py-3 mt-4" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(220,20,60,0.35);" onclick="window.location.href='{{ route('home') }}'">Kembali ke Beranda</button>
-                    <a href="{{ route('tickets.index') }}" class="d-block mt-3 font-weight-bold" style="color: #dc143c !important; text-decoration: none; cursor: pointer;">Lihat History Tiket</a>
+                    <div class="modal-footer border-0 pt-0 px-4 pb-4 d-flex flex-column">
+                        <button type="button" class="btn w-100 py-3 mb-2" onclick="goToStep3()" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(220,20,60,0.35);">
+                            <i class="fa fa-check mr-2"></i> Saya Sudah Bayar
+                        </button>
+                        <button type="button" class="btn w-100 py-2" onclick="goToStep1()" style="border-radius: 50px; background: transparent !important; border: 1px solid #ddd !important; color: #888 !important; font-weight: 500; font-size: 0.9rem;">
+                            <i class="fa fa-arrow-left mr-1"></i> Kembali
+                        </button>
+                    </div>
                 </div>
+
+                <!-- ======= STEP 3: Konfirmasi Pembayaran ======= -->
+                <div id="p-step-3" style="display:none;">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Konfirmasi Pembayaran</h5>
+                    </div>
+                    <div class="modal-body text-center p-4">
+                        <div class="mb-4">
+                            <i class="fa fa-question-circle" style="font-size: 70px; color: #f0ad4e !important;"></i>
+                        </div>
+                        <h4 class="font-weight-bold mb-2" style="color: #333 !important;">Apakah Anda yakin sudah membayar?</h4>
+                        <p class="mb-3" style="color: #666 !important; font-size: 14px;">Pastikan pembayaran sebesar <strong style="color: #dc143c !important;" id="modal-total-3">RP 0</strong> sudah berhasil sebelum melanjutkan.</p>
+                        <div class="p-3 rounded mb-3 text-left" style="background: #fff8e1 !important; border: 1px solid #ffe082; border-radius: 10px !important;">
+                            <p class="mb-0 small" style="color: #795548 !important;"><i class="fa fa-info-circle mr-1"></i> Jika pembayaran belum dilakukan, tiket tidak akan diproses.</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 px-4 pb-4 d-flex flex-column">
+                        <button type="button" class="btn w-100 py-3 mb-2" onclick="confirmPaymentDone()" style="border-radius: 50px; background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(40,167,69,0.35);">
+                            <i class="fa fa-check-circle mr-2"></i> Ya, Saya Sudah Bayar
+                        </button>
+                        <button type="button" class="btn w-100 py-2" onclick="backToStep2()" style="border-radius: 50px; background: transparent !important; border: 1px solid #ddd !important; color: #888 !important; font-weight: 500; font-size: 0.9rem;">
+                            <i class="fa fa-arrow-left mr-1"></i> Belum, Kembali
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ======= STEP 4: Berhasil ======= -->
+                <div id="p-step-4" style="display:none;">
+                    <div class="modal-body text-center p-4 pb-5">
+                        <div class="mb-3" style="animation: successPop 0.5s ease;">
+                            <i class="fa fa-check-circle" style="font-size: 90px; color: #28a745 !important;"></i>
+                        </div>
+                        <h2 class="font-weight-bold mb-2" style="color: #333 !important;">Pembayaran Berhasil!</h2>
+                        <p class="mb-4" style="color: #666 !important; font-size: 14px;">Tiket Anda sudah terbeli. Silakan cek di halaman <strong>My Tickets</strong> untuk melihat detail tiket.</p>
+                        <div class="p-3 rounded text-left mb-3" style="background: #f8f9fa !important; color: #333 !important; border: 1px solid #eee;">
+                            <p class="mb-1 font-weight-bold" style="color: #333 !important;">{{ $event->title }}</p>
+                            <div class="d-flex justify-content-between small" style="color: #777 !important;">
+                                <span>{{ $ticketType->name }}</span>
+                                <span id="modal-summary-qty">1x</span>
+                            </div>
+                            <hr style="border-color: #eee; margin: 8px 0;">
+                            <div class="d-flex justify-content-between">
+                                <span class="font-weight-bold" style="color: #333 !important;">Total</span>
+                                <span class="font-weight-bold" style="color: #dc143c !important;" id="modal-total-4">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
+                            </div>
+                        </div>
+                        <div class="p-3 rounded mb-4" style="background: #e8f5e9 !important; border: 1px solid #a5d6a7; border-radius: 10px !important;">
+                            <p class="mb-0 small" style="color: #2e7d32 !important;"><i class="fa fa-ticket mr-1"></i> E-Tiket sudah tersedia di halaman <strong>My Tickets</strong></p>
+                        </div>
+                        <a href="{{ route('tickets.index') }}" class="btn w-100 py-3 mb-2" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(220,20,60,0.35); display: block; text-decoration: none;">
+                            <i class="fa fa-ticket mr-2"></i> Lihat My Tickets
+                        </a>
+                        <a href="{{ route('home') }}" class="d-block mt-2 font-weight-bold" style="color: #dc143c !important; text-decoration: none; font-size: 14px;">Kembali ke Beranda</a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -309,11 +427,18 @@
 
     <script src="{{ asset('concert-assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
     <script src="{{ asset('concert-assets/js/bootstrap.min.js') }}"></script>
+    <style>
+        @keyframes successPop {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
     <script>
         let qty = 1;
         let pricePerUnit = {{ $ticketType->price }};
         let selectedMethod = 'qris';
-        let paymentDetected = false;
+        let timerInterval = null;
 
         $('#plus').click(function() {
             if(qty < 5) {
@@ -336,58 +461,116 @@
             $('#total-amount').text('RP ' + total.toLocaleString('id-ID'));
         }
 
+        function formatPrice(amount) {
+            return 'RP ' + amount.toLocaleString('id-ID');
+        }
+
         function selectPayment(el, method) {
             $('.payment-option').removeClass('active').find('i.fa-check-circle').replaceWith('<i class="fa fa-circle-thin text-muted"></i>');
             $(el).addClass('active').find('i.fa-circle-thin').replaceWith('<i class="fa fa-check-circle text-primary"></i>');
             selectedMethod = method;
         }
 
+        // Open modal at Step 1
         function confirmPurchase() {
-            // Reset modal steps
+            let total = qty * pricePerUnit;
+            let totalFormatted = formatPrice(total);
+
+            // Update all total displays
+            $('#modal-qty').text(qty + 'x');
+            $('#modal-method').text(selectedMethod === 'qris' ? 'QRIS' : 'Bank Transfer / VA');
+            $('#modal-total, #modal-total-2, #modal-total-3, #modal-total-4').text(totalFormatted);
+            $('#modal-summary-qty').text(qty + 'x');
+
+            // Show step 1, hide others
             $('#p-step-1').show();
-            $('#p-step-2').hide();
-            $('#closeModalBtn').show();
-            paymentDetected = false;
+            $('#p-step-2, #p-step-3, #p-step-4').hide();
 
-            if(selectedMethod === 'qris') {
-                $('#qrisSection').show();
-                $('#vaSection').hide();
-            } else {
-                $('#qrisSection').hide();
-                $('#vaSection').show();
-            }
-            
             $('#paymentModal').modal('show');
-            startTimer(15 * 60);
-
-            // SIMULASI DETEKSI OTOMATIS (Setelah 7 detik)
-            setTimeout(function() {
-                simulateSuccess();
-            }, 7000);
         }
 
-        function simulateSuccess() {
-            if(paymentDetected) return;
-            paymentDetected = true;
-            
-            $('#detection-status').html('<i class="fa fa-check-circle mr-2"></i> Pembayaran Terdeteksi!').addClass('alert-success').removeClass('alert-secondary');
-            
-            setTimeout(function() {
-                $('#p-step-1').fadeOut(400, function() {
-                    $('#p-step-2').fadeIn();
-                    $('#closeModalBtn').hide(); // Paksa user liat sukses
-                });
-            }, 1500);
+        // Step 1 -> Step 2
+        function goToStep2() {
+            // Show correct payment section
+            if(selectedMethod === 'qris') {
+                $('#qrisSection2').show();
+                $('#vaSection2').hide();
+            } else {
+                $('#qrisSection2').hide();
+                $('#vaSection2').show();
+            }
+
+            $('#p-step-1').fadeOut(200, function() {
+                $('#p-step-2').fadeIn(200);
+            });
+
+            // Start countdown timer
+            startTimer(15 * 60);
+        }
+
+        // Step 2 -> Step 1
+        function goToStep1() {
+            if(timerInterval) clearInterval(timerInterval);
+            $('#p-step-2').fadeOut(200, function() {
+                $('#p-step-1').fadeIn(200);
+            });
+        }
+
+        // Step 2 -> Step 3 (user clicks "Saya Sudah Bayar")
+        function goToStep3() {
+            if(timerInterval) clearInterval(timerInterval);
+            $('#p-step-2').fadeOut(200, function() {
+                $('#p-step-3').fadeIn(200);
+            });
+        }
+
+        // Step 3 -> Step 2 (user clicks "Belum, Kembali")
+        function backToStep2() {
+            $('#p-step-3').fadeOut(200, function() {
+                $('#p-step-2').fadeIn(200);
+            });
+            startTimer(15 * 60);
+        }
+
+        // Step 3 -> Step 4 (confirmed! - send to backend)
+        function confirmPaymentDone() {
+            let $btn = $('#p-step-3').find('button').first();
+            let originalText = $btn.html();
+            $btn.html('<i class="fa fa-spinner fa-spin mr-2"></i> Memproses...').prop('disabled', true);
+
+            $.ajax({
+                url: '{{ route("public.checkout.process", [$event->event_id, $ticketType->id]) }}',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    quantity: qty,
+                    payment_method: selectedMethod === 'qris' ? 'QRIS' : 'Virtual Account'
+                },
+                success: function(response) {
+                    if(response.success) {
+                        $('#p-step-3').fadeOut(200, function() {
+                            $('#p-step-4').fadeIn(200);
+                        });
+                    } else {
+                        alert('Error: ' + response.message);
+                        $btn.html(originalText).prop('disabled', false);
+                    }
+                },
+                error: function(xhr) {
+                    let msg = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi kesalahan.';
+                    alert('Error: ' + msg);
+                    $btn.html(originalText).prop('disabled', false);
+                }
+            });
         }
 
         function startTimer(duration) {
+            if(timerInterval) clearInterval(timerInterval);
             let timer = duration, minutes, seconds;
-            let timerInterval = setInterval(function () {
-                if(paymentDetected) {
-                    clearInterval(timerInterval);
-                    return;
-                }
-                minutes = parseInt(timer / 60, 10)
+            timerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
                 seconds = parseInt(timer % 60, 10);
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;

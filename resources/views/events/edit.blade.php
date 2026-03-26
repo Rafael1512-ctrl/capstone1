@@ -44,11 +44,11 @@
                                     <div class="col-md-8">
                                         <!-- Judul Event -->
                                         <div class="form-group">
-                                            <label for="name">Judul Event <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                id="name" name="name" placeholder="Contoh: Tulus Concert 2026"
-                                                required maxlength="200" value="{{ old('name', $event->name) }}">
-                                            @error('name')
+                                            <label for="title">Judul Event <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('title') is-invalid @enderror"
+                                                id="title" name="title" placeholder="Contoh: Tulus Concert 2026"
+                                                required maxlength="200" value="{{ old('title', $event->title) }}">
+                                            @error('title')
                                                 <small class="text-danger d-block mt-2">{{ $message }}</small>
                                             @enderror
                                             <small class="form-text text-muted">Max 200 karakter</small>
@@ -163,8 +163,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="col-md-6">
-                                        <!-- Lokasi -->
                                         <div class="form-group">
                                             <label for="location">Lokasi Event <span class="text-danger">*</span></label>
                                             <input type="text"
@@ -175,6 +173,23 @@
                                             @error('location')
                                                 <small class="text-danger d-block mt-2">{{ $message }}</small>
                                             @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <!-- Google Maps URL -->
+                                        <div class="form-group">
+                                            <label for="maps_url">Link Embed Google Maps <span class="text-muted">(Opsional)</span></label>
+                                            <textarea class="form-control @error('maps_url') is-invalid @enderror"
+                                                id="maps_url" name="maps_url"
+                                                placeholder="Contoh: https://www.google.com/maps/embed?pb=..."
+                                                rows="2">{{ old('maps_url', $event->maps_url) }}</textarea>
+                                            @error('maps_url')
+                                                <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                            @enderror
+                                            <small class="form-text text-muted">
+                                                Dapatkan di Google Maps: Bagikan > Sematkan peta > Salin URL di dalam src="..."
+                                            </small>
                                         </div>
                                     </div>
                                 </div>
@@ -237,7 +252,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Apakah Anda yakin ingin menghapus event <strong>{{ $event->name }}</strong>?</p>
+                    <p>Apakah Anda yakin ingin menghapus event <strong>{{ $event->title }}</strong>?</p>
                     <p class="text-danger"><small>⚠ Tindakan ini tidak dapat dikembalikan dan akan menghapus semua data
                             terkait.</small></p>
                 </div>

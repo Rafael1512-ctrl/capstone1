@@ -71,13 +71,44 @@
             </div>
         </div>
 
-        <!-- Description -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Deskripsi Event</h5>
+        <!-- Description & Map -->
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Deskripsi Event</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ $event->description }}
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                {{ $event->description }}
+            <div class="col-md-4">
+                <div class="card mb-4 h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-map-marked-alt"></i> Venue Map
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        @if ($event->maps_url)
+                            <iframe 
+                                src="{{ $event->maps_url }}" 
+                                width="100%" 
+                                height="100%" 
+                                style="border:0; min-height: 250px;" 
+                                allowfullscreen="" 
+                                loading="lazy">
+                            </iframe>
+                        @else
+                            <div class="p-4 text-center text-muted">
+                                <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
+                                <p>Link Google Maps belum diset.</p>
+                                <a href="{{ route('admin.events.edit', $event) }}" class="btn btn-sm btn-outline-primary">Set Map Sekarang</a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 

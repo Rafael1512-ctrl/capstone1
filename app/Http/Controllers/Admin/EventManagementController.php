@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class EventManagementController extends Controller
 {
@@ -71,6 +72,7 @@ class EventManagementController extends Controller
             'description' => 'required|string',
             'schedule_time' => 'required|date|after:today',
             'location' => 'required|string|max:150',
+            'maps_url' => 'nullable|string|max:1000',
             'ticket_quota' => 'nullable|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
@@ -92,7 +94,7 @@ class EventManagementController extends Controller
         // Handle performers for festival events
         $performers = [];
         if ($request->has('performers') && is_array($request->performers)) {
-            foreach ($request->performers as $performer) {
+            foreach ($request->performers as $index => $performer) {
                 if (isset($performer['name']) && isset($performer['role'])) {
                     $performerData = [
                         'name' => $performer['name'],
@@ -101,8 +103,13 @@ class EventManagementController extends Controller
                         'photo' => null,
                     ];
                     
-                    // Handle performer photo upload if provided
-                    // Note: File uploads via form array need special handling
+                    // Handle performer photo upload
+                    if ($request->hasFile("performers.{$index}.photo")) {
+                        $photo = $request->file("performers.{$index}.photo");
+                        $path = $photo->store('events/performers', 'public');
+                        $performerData['photo'] = '/storage/' . $path;
+                    }
+                    
                     $performers[] = $performerData;
                 }
             }
@@ -111,50 +118,92 @@ class EventManagementController extends Controller
             $validated['performers'] = $performers;
         }
 
+        // Improved Google Maps Cleaner to ensure it works in iframes
+        if (!empty($validated['maps_url'])) {
+            $mapsUrl = $validated['maps_url'];
+            
+            // Extract src from iframe tag if pasted
+            if (preg_match('/src="([^"]+)"/', $mapsUrl, $matches)) {
+                $mapsUrl = $matches[1];
+            }
+            
+            // If provided a standard link (like maps.app.goo.gl), convert to a functional embed via search
+            if (!str_contains($mapsUrl, 'output=embed') && !str_contains($mapsUrl, '/embed/')) {
+                $mapsUrl = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
+            }
+            
+            $validated['maps_url'] = $mapsUrl;
+        } elseif (!empty($validated['location'])) {
+            // If no URL provided but location exists, create a default embed
+            $validated['maps_url'] = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
+        }
+
         // Calculate total ticket quota
         $totalQuota = $validated['regular_quota'] + $validated['vip_quota'] + $validated['vvip_quota'];
         $validated['ticket_quota'] = $totalQuota;
 
-        // Generate Event ID via SP
-        DB::statement('CALL GenerateEventID(@new_id)');
-        $newIdResult = DB::select('SELECT @new_id AS new_id');
-        $validated['event_id'] = $newIdResult[0]->new_id;
+        // Use a transaction for reliability and to ensure all-or-nothing completion
+        DB::beginTransaction();
+        try {
+            // Generate Event ID via Stored Procedure
+            try {
+                DB::statement('CALL GenerateEventID(@new_id)');
+                $newIdResult = DB::select('SELECT @new_id AS new_id');
+                $eventId = $newIdResult[0]->new_id ?? ('EV-' . time());
+                
+                // Final safety check: if ID already exists, modify the suffix to avoid error
+                // The column limit is exactly 14 characters (VARCHAR(14)). We cannot append.
+                if (Event::where('event_id', $eventId)->exists()) {
+                    // Original: TC-YYMMDD-XXXX (14 chars). Replace XXXX with random.
+                    $eventId = substr($eventId, 0, 10) . strtoupper(Str::random(4));
+                }
+            } catch (\Exception $e) {
+                // Fallback if SP fails completely
+                $eventId = 'EV-' . time();
+            }
 
-        // Create the event
-        $event = Event::create($validated);
+            $validated['event_id'] = $eventId;
 
-        // Create ticket types
-        if ($validated['regular_quota'] > 0) {
-            TicketType::create([
-                'event_id' => $event->event_id,
-                'name' => 'Regular',
-                'price' => $validated['regular_price'],
-                'quantity_total' => $validated['regular_quota'],
-                'quantity_sold' => 0,
-            ]);
+            // Create the event
+            $event = Event::create($validated);
+
+            // Create ticket types
+            if ($validated['regular_quota'] > 0) {
+                TicketType::create([
+                    'event_id' => $event->event_id,
+                    'name' => 'Regular',
+                    'price' => $validated['regular_price'],
+                    'quantity_total' => $validated['regular_quota'],
+                    'quantity_sold' => 0,
+                ]);
+            }
+
+            if ($validated['vip_quota'] > 0) {
+                TicketType::create([
+                    'event_id' => $event->event_id,
+                    'name' => 'VIP',
+                    'price' => $validated['vip_price'],
+                    'quantity_total' => $validated['vip_quota'],
+                    'quantity_sold' => 0,
+                ]);
+            }
+
+            if ($validated['vvip_quota'] > 0) {
+                TicketType::create([
+                    'event_id' => $event->event_id,
+                    'name' => 'VVIP',
+                    'price' => $validated['vvip_price'],
+                    'quantity_total' => $validated['vvip_quota'],
+                    'quantity_sold' => 0,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.events.index')->with('success', 'Event berhasil dibuat');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Gagal membuat event: ' . $e->getMessage());
         }
-
-        if ($validated['vip_quota'] > 0) {
-            TicketType::create([
-                'event_id' => $event->event_id,
-                'name' => 'VIP',
-                'price' => $validated['vip_price'],
-                'quantity_total' => $validated['vip_quota'],
-                'quantity_sold' => 0,
-            ]);
-        }
-
-        if ($validated['vvip_quota'] > 0) {
-            TicketType::create([
-                'event_id' => $event->event_id,
-                'name' => 'VVIP',
-                'price' => $validated['vvip_price'],
-                'quantity_total' => $validated['vvip_quota'],
-                'quantity_sold' => 0,
-            ]);
-        }
-
-        return redirect()->route('admin.events.index')->with('success', 'Event berhasil dibuat');
     }
 
     /**
@@ -183,6 +232,7 @@ class EventManagementController extends Controller
             'description' => 'required|string',
             'schedule_time' => 'required|date',
             'location' => 'required|string|max:150',
+            'maps_url' => 'nullable|string|max:1000',
             'ticket_quota' => 'nullable|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
@@ -209,7 +259,7 @@ class EventManagementController extends Controller
         // Handle performers for festival events
         $performers = [];
         if ($request->has('performers') && is_array($request->performers)) {
-            foreach ($request->performers as $performer) {
+            foreach ($request->performers as $index => $performer) {
                 if (isset($performer['name']) && isset($performer['role'])) {
                     $performerData = [
                         'name' => $performer['name'],
@@ -217,6 +267,19 @@ class EventManagementController extends Controller
                         'description' => $performer['description'] ?? '',
                         'photo' => $performer['photo'] ?? null,
                     ];
+                    
+                    // Handle new performer photo upload
+                    if ($request->hasFile("performers.{$index}.photo")) {
+                        // Delete old photo if exists
+                        if (!empty($performerData['photo'])) {
+                            $oldPath = str_replace('/storage/', '', $performerData['photo']);
+                            Storage::disk('public')->delete($oldPath);
+                        }
+                        
+                        $photo = $request->file("performers.{$index}.photo");
+                        $path = $photo->store('events/performers', 'public');
+                        $performerData['photo'] = '/storage/' . $path;
+                    }
                     
                     $performers[] = $performerData;
                 }
@@ -226,6 +289,21 @@ class EventManagementController extends Controller
             $validated['performers'] = $performers;
         } else {
             $validated['performers'] = null;
+        }
+
+        // Improved Google Maps Cleaner
+        if (!empty($validated['maps_url'])) {
+            $mapsUrl = $validated['maps_url'];
+            if (preg_match('/src="([^"]+)"/', $mapsUrl, $matches)) {
+                $mapsUrl = $matches[1];
+            }
+            
+            if (!str_contains($mapsUrl, 'output=embed') && !str_contains($mapsUrl, '/embed/')) {
+                $mapsUrl = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
+            }
+            $validated['maps_url'] = $mapsUrl;
+        } elseif (!empty($validated['location'])) {
+            $validated['maps_url'] = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
         }
 
         // Calculate total ticket quota

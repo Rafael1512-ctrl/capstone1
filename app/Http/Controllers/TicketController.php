@@ -142,7 +142,7 @@ class TicketController extends Controller
             $query->where('user_id', Auth::id());
         })
             ->with(['ticketType.event', 'order'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('ticket_id', 'desc')
             ->paginate(12);
 
         return view('tickets.my-tickets', compact('tickets'));
