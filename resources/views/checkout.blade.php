@@ -17,66 +17,80 @@
     <link rel="stylesheet" href="{{ asset('concert-assets/css/style.css') }}">
     <style>
         body {
-            background-color: #0c0c0c;
+            background-color: #0d0d0d;
             color: #fff;
             font-family: 'Poppins', sans-serif;
+            animation: pageFadeIn 0.4s ease forwards;
+        }
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
         .checkout-container {
-            padding: 100px 0;
+            padding: 100px 0 60px;
         }
         .checkout-card {
             background-color: #161616;
             border-radius: 20px;
             padding: 40px;
-            border: 1px solid #222;
+            border: 1px solid rgba(220,20,60,0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            transition: border-color 0.3s;
+        }
+        .checkout-card:hover {
+            border-color: rgba(220,20,60,0.25);
         }
         .event-summary {
-            background: linear-gradient(135deg, #1f1f1f 0%, #111 100%);
+            background: linear-gradient(135deg, #1f0808 0%, #120505 100%);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
-            border-left: 5px solid #ff00c1;
+            border-left: 5px solid #dc143c;
         }
         .form-label {
-            color: #aaa;
+            color: rgba(255,255,255,0.55);
             font-weight: 500;
             margin-bottom: 10px;
         }
         .form-control, .form-select {
-            background-color: #222;
-            border: 1px solid #333;
+            background-color: #0d0d0d;
+            border: 1px solid rgba(255,255,255,0.1);
             color: #fff;
-            padding: 15px;
+            padding: 14px 16px;
             border-radius: 10px;
         }
+        .form-control::placeholder { color: rgba(255,255,255,0.25); }
         .form-control:focus, .form-select:focus {
-            background-color: #2a2a2a;
-            border-color: #ff00c1;
+            background-color: #111;
+            border-color: #dc143c;
             color: #fff;
-            box-shadow: none;
+            box-shadow: 0 0 0 3px rgba(220,20,60,0.12);
         }
         .qty-controls {
             display: flex;
             align-items: center;
             gap: 20px;
-            background: #222;
-            padding: 10px 20px;
+            background: #0d0d0d;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 24px;
             border-radius: 50px;
             width: fit-content;
         }
         .qty-btn {
             background: none;
             border: none;
-            color: #ff00c1;
-            font-size: 20px;
+            color: #dc143c;
+            font-size: 22px;
             cursor: pointer;
+            transition: color 0.2s;
         }
+        .qty-btn:hover { color: #ff6b6b; }
         .payment-option {
-            background: #222;
-            border: 1px solid #333;
+            background: #0d0d0d;
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 15px;
             padding: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 14px;
             cursor: pointer;
             transition: 0.3s;
             display: flex;
@@ -84,35 +98,36 @@
             justify-content: space-between;
         }
         .payment-option:hover {
-            border-color: #555;
+            border-color: rgba(220,20,60,0.3);
         }
         .payment-option.active {
-            border-color: #ff00c1;
-            background: rgba(255, 0, 193, 0.05);
+            border-color: #dc143c;
+            background: rgba(220, 20, 60, 0.06);
         }
-        .payment-option input {
-            display: none;
-        }
+        .payment-option input { display: none; }
         .order-total-box {
-            background: #222;
+            background: #0d0d0d;
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 15px;
-            padding: 30px;
+            padding: 28px;
         }
         .confirm-btn {
-            background: linear-gradient(to right, #ff00c1, #9d50bb);
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white;
             border: none;
-            padding: 15px;
+            padding: 16px;
             border-radius: 50px;
             width: 100%;
-            font-weight: bold;
-            font-size: 18px;
+            font-weight: 700;
+            font-size: 1.1rem;
             margin-top: 20px;
-            transition: 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(220,20,60,0.35);
+            letter-spacing: 0.5px;
         }
         .confirm-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 30px rgba(255, 0, 193, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.5);
         }
     </style>
 </head>
@@ -236,14 +251,14 @@
                     
                     <div id="vaSection" style="display:none;">
                         <p class="mb-2 text-muted" style="color: #666 !important;">Nomor Virtual Account</p>
-                        <h2 class="text-primary font-weight-bold mb-4" style="letter-spacing: 2px; color: #9d50bb !important;">8806 0812 3456 7890</h2>
+                        <h2 class="font-weight-bold mb-4" style="letter-spacing: 2px; color: #dc143c !important;">8806 0812 3456 7890</h2>
                         <div class="bg-light p-3 rounded mb-4 text-left" style="border: 1px solid #eee; background-color: #f8f9fa !important;">
                             <p class="small text-muted mb-1">Nama Bank</p>
                             <p class="mb-0 font-weight-bold" style="color: #333 !important;">BCA Virtual Account</p>
                         </div>
                     </div>
 
-                    <div class="timer mb-4 p-2 rounded" style="background: #fff0f9 !important; color: #ff00c1 !important; border: 1px solid #ffe1f2 !important; font-weight: bold;">
+                    <div class="timer mb-4 p-2 rounded" style="background: rgba(220,20,60,0.08) !important; color: #ff6b6b !important; border: 1px solid rgba(220,20,60,0.25) !important; font-weight: bold; border-radius: 10px !important;">
                         Menunggu pembayaran: <span id="countdown">14:59</span>
                     </div>
 
@@ -264,7 +279,7 @@
                         <p class="small text-muted mb-0" style="color: #777 !important;">{{ $ticketType->name }} | RP {{ number_format($ticketType->price, 0, ',', '.') }}</p>
                     </div>
                     <button type="button" class="btn btn-primary w-100 py-3 mt-4" style="border-radius: 50px; background: #28a745 !important; border: none; color: white !important; font-weight: bold; cursor: pointer;" onclick="window.location.href='{{ route('home') }}'">Kembali ke Beranda</button>
-                    <a href="{{ route('tickets.index') }}" class="d-block mt-3 font-weight-bold" style="color: #9d50bb !important; text-decoration: none; cursor: pointer;">Lihat History Tiket</a>
+                    <a href="{{ route('tickets.index') }}" class="d-block mt-3 font-weight-bold" style="color: #dc143c !important; text-decoration: none; cursor: pointer;">Lihat History Tiket</a>
                 </div>
             </div>
         </div>

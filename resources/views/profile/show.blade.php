@@ -1,127 +1,165 @@
 @extends('layouts.landingpageconcert.landingconcert')
 @section('contentlandingconcert')
     <style>
-        .profile-header {
-            background: linear-gradient(135deg, #9d50bb 0%, #6e48aa 100%);
-            color: white;
-            padding: 60px 0;
-            margin-bottom: 40px;
-        }
-
-        .profile-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        .profile-hero {
+            background: linear-gradient(135deg, #1a0a0a 0%, #2a0808 60%, #0d0d0d 100%);
+            border-bottom: 1px solid rgba(220, 20, 60, 0.2);
+            padding: 70px 0 50px;
+            margin-bottom: 50px;
+            position: relative;
             overflow: hidden;
-            margin-bottom: 30px;
         }
-
+        .profile-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(220,20,60,0.08) 0%, transparent 65%);
+            pointer-events: none;
+        }
+        .profile-card {
+            background: #161616;
+            border-radius: 18px;
+            border: 1px solid rgba(220, 20, 60, 0.15);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: border-color 0.3s ease;
+        }
+        .profile-card:hover {
+            border-color: rgba(220, 20, 60, 0.3);
+        }
         .profile-info {
-            padding: 40px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 36px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-
         .profile-field {
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
-
         .profile-field-label {
-            font-size: 0.85rem;
-            color: #999;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.35);
             text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
             display: block;
         }
-
         .profile-field-value {
-            font-size: 1.1rem;
-            color: #333;
+            font-size: 1.05rem;
+            color: #fff;
             font-weight: 500;
         }
-
         .profile-actions {
             padding: 20px 40px;
             display: flex;
-            gap: 15px;
+            gap: 14px;
             flex-wrap: wrap;
+            background: rgba(255,255,255,0.02);
         }
-
         .btn-edit-profile {
-            background: linear-gradient(to right, #9d50bb, #6e48aa);
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white !important;
             border: none;
-            padding: 12px 30px;
+            padding: 11px 28px;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(220,20,60,0.3);
         }
-
         .btn-edit-profile:hover {
-            opacity: 0.9;
-            box-shadow: 0 6px 20px rgba(157, 80, 187, 0.3);
+            box-shadow: 0 6px 22px rgba(220,20,60,0.5);
+            transform: translateY(-1px);
         }
-
         .btn-back {
-            background: #f5f5f5;
-            color: #333 !important;
-            border: none;
-            padding: 12px 30px;
+            background: transparent;
+            color: rgba(255,255,255,0.55) !important;
+            border: 1.5px solid rgba(255,255,255,0.12);
+            padding: 11px 28px;
             border-radius: 50px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-
         .btn-back:hover {
-            background: #e9e9e9;
+            border-color: rgba(220,20,60,0.4);
+            color: #fff !important;
         }
-
-        .alert-success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
         .member-badge {
-            display: inline-block;
-            background: #9d50bb;
-            color: white;
-            padding: 6px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(220, 20, 60, 0.12);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            color: #ff6b6b;
+            padding: 5px 14px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 600;
-            margin-top: 5px;
+        }
+        .side-widget {
+            text-align: center;
+            padding: 36px 30px;
+        }
+        .side-widget-icon {
+            font-size: 2.8rem;
+            color: #dc143c;
+            margin-bottom: 16px;
+            opacity: 0.85;
+        }
+        .side-widget h4 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+        }
+        .side-widget p, .side-widget small {
+            color: rgba(255,255,255,0.45);
+            font-size: 0.88rem;
+            line-height: 1.7;
+        }
+        .alert-success-dark {
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.25);
+            color: #4ade80;
+            padding: 14px 20px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            font-size: 0.93rem;
         }
     </style>
 
-    <div class="profile-header">
+    <div class="profile-hero">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h1 class="mb-2" style="font-family: 'DM Serif Display', serif; font-size: 2.5rem;">My Profile</h1>
-                    <p class="lead mb-0">Manage your LuxTix account information and preferences</p>
+                    <p style="color: #dc143c; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px;">
+                        <i class="fa fa-user mr-2"></i>Account
+                    </p>
+                    <h1 style="font-family: 'DM Serif Display', serif; font-size: 2.8rem; color: #fff; margin-bottom: 10px;">My Profile</h1>
+                    <p style="color: rgba(255,255,255,0.45); font-size: 1rem; margin: 0;">Manage your TIXLY account information and preferences</p>
                 </div>
-                <div class="col-md-4 text-right">
-                    <i class="fa fa-user" style="font-size: 80px; opacity: 0.2;"></i>
+                <div class="col-md-4 text-right d-none d-md-block">
+                    <i class="fa fa-user-circle" style="font-size: 90px; color: rgba(220,20,60,0.15);"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container py-5">
+    <div class="container pb-5">
         @if ($message = Session::get('success'))
-            <div class="alert-success">
-                <strong>Success!</strong> {{ $message }}
+            <div class="alert-success-dark">
+                <i class="fa fa-check-circle mr-2"></i><strong>Success!</strong> {{ $message }}
             </div>
         @endif
 
@@ -139,7 +177,7 @@
                                     <span class="profile-field-label">Account Status</span>
                                     <div>
                                         <span class="member-badge">
-                                            <i class="fa fa-check-circle mr-1"></i>Active Member
+                                            <i class="fa fa-check-circle"></i> Active Member
                                         </span>
                                     </div>
                                 </div>
@@ -161,10 +199,10 @@
 
                     <div class="profile-actions">
                         <a href="{{ route('profile.edit') }}" class="btn-edit-profile">
-                            <i class="fa fa-edit mr-2"></i>Edit Profile
+                            <i class="fa fa-edit"></i> Edit Profile
                         </a>
                         <a href="{{ route('landing') }}" class="btn-back">
-                            <i class="fa fa-arrow-left mr-2"></i>Back to Landing
+                            <i class="fa fa-arrow-left"></i> Back to Home
                         </a>
                     </div>
                 </div>
@@ -172,29 +210,25 @@
 
             <div class="col-lg-4">
                 <div class="profile-card">
-                    <div class="profile-info" style="text-align: center; border: none;">
-                        <div style="font-size: 3rem; color: #9d50bb; margin-bottom: 15px;">
+                    <div class="side-widget">
+                        <div class="side-widget-icon">
                             <i class="fa fa-shield"></i>
                         </div>
-                        <h4 style="color: #333; margin-bottom: 10px;">Account Security</h4>
-                        <p style="color: #666; font-size: 0.95rem; margin-bottom: 15px;">
-                            Your account is secured with encrypted password protection
-                        </p>
-                        <p style="color: #999; font-size: 0.85rem;">
-                            Change your password regularly through the edit profile section
-                        </p>
+                        <h4>Account Security</h4>
+                        <p>Your account is secured with encrypted password protection.</p>
+                        <small>Change your password regularly via Edit Profile.</small>
                     </div>
                 </div>
 
                 <div class="profile-card">
-                    <div class="profile-info" style="text-align: center; border: none;">
-                        <div style="font-size: 3rem; color: #9d50bb; margin-bottom: 15px;">
+                    <div class="side-widget">
+                        <div class="side-widget-icon">
                             <i class="fa fa-ticket"></i>
                         </div>
-                        <h4 style="color: #333; margin-bottom: 10px;">Your Tickets</h4>
-                        <p style="color: #666; font-size: 0.95rem;">
+                        <h4>Your Tickets</h4>
+                        <p>
                             <a href="{{ route('tickets.index') }}"
-                                style="color: #9d50bb; text-decoration: none; font-weight: 600;">
+                                style="color: #dc143c; text-decoration: none; font-weight: 600;">
                                 View Your Tickets <i class="fa fa-arrow-right ml-1"></i>
                             </a>
                         </p>

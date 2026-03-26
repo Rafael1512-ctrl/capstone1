@@ -61,6 +61,38 @@
         height: 400px;
       }
     }
+
+    /* ===== DARK RED THEME GLOBAL OVERRIDE ===== */
+    body {
+      background: #0d0d0d !important;
+      animation: pageFadeIn 0.4s ease forwards;
+    }
+    @keyframes pageFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+    .section {
+      background: transparent !important;
+    }
+    .portfolio-section {
+      background: #0d0d0d !important;
+    }
+    /* Override template's white backgrounds on the page */
+    body > .section,
+    #my-tickets .section {
+      background: #0d0d0d !important;
+    }
+    /* Text color defaults */
+    p, li {
+      color: #cccccc;
+    }
+    /* Slider text */
+    .slider-item h1 {
+      color: #fff !important;
+    }
   </style>
 
 </head>

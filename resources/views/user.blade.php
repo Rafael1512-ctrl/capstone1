@@ -5,7 +5,6 @@
         .work-thumb {
             overflow: hidden !important;
             border: 4px solid #fff !important;
-            /* Keep the white border static on the container */
         }
 
         .work-thumb img {
@@ -26,15 +25,15 @@
             bottom: 0 !important;
         }
 
-        /* New Elegant Concert Cards */
+        /* New Elegant Concert Cards — Dark Red Theme */
         .concert-card {
-            background: #262635;
+            background: #1a0a0a;
             border-radius: 24px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             transition: all 0.3s ease;
             margin-bottom: 30px;
-            border: 1px solid #3b3b4d;
+            border: 1px solid rgba(220, 20, 60, 0.2);
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -42,15 +41,15 @@
 
         .concert-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(157, 80, 187, 0.3);
-            border-color: #9d50bb;
+            box-shadow: 0 15px 40px rgba(220, 20, 60, 0.3);
+            border-color: #dc143c;
         }
 
         .concert-card img {
             width: 100%;
             height: 160px;
             object-fit: cover;
-            border-bottom: 1px solid #3b3b4d;
+            border-bottom: 1px solid rgba(220, 20, 60, 0.2);
         }
 
         .concert-card-body {
@@ -58,7 +57,7 @@
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            background: #262635;
+            background: #1a0a0a;
         }
 
         .concert-card-title {
@@ -79,7 +78,7 @@
 
         .concert-meta i {
             margin-right: 8px;
-            color: #9d50bb;
+            color: #dc143c;
             width: 16px;
         }
 
@@ -89,7 +88,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #3b3b4d;
+            border-top: 1px solid rgba(220, 20, 60, 0.2);
         }
 
         .price-label {
@@ -105,7 +104,7 @@
         }
 
         .btn-buy {
-            background: linear-gradient(to right, #9d50bb, #6e48aa);
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: #fff !important;
             border: none;
             padding: 8px 20px;
@@ -113,13 +112,29 @@
             font-weight: 600;
             font-size: 0.9rem;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
         }
 
         .btn-buy:hover {
             opacity: 0.9;
-            box-shadow: 0 4px 15px rgba(157, 80, 187, 0.3);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* Testimonial cards */
+        .block-33:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(220, 20, 60, 0.15) !important;
+        }
+
+        /* Ticket cards */
+        .ticket-history-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 45px rgba(220, 20, 60, 0.15) !important;
+            border-color: #dc143c !important;
         }
     </style>
+
     <div class="slider-item overlay" data-stellar-background-ratio="0.5"
         style="background-image: url('{{ asset('cardboard-assets/img/hero_2.jpg') }}');">
         <div class="container">
@@ -133,21 +148,22 @@
             </div>
         </div>
     </div>
+
     @auth
         <div class="section pb-0" data-aos="fade-up">
             <div class="container">
                 <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
                     <a href="{{ route('profile.show') }}" class="btn btn-outline-primary px-4 py-2"
-                        style="border-radius: 50px; font-weight: 600; border-color: #9d50bb; color: #9d50bb; transition: all 0.3s ease;"
-                        onmouseover="this.style.background='#9d50bb'; this.style.color='white';"
-                        onmouseout="this.style.background='transparent'; this.style.color='#9d50bb';">
+                        style="border-radius: 50px; font-weight: 600; border-color: #dc143c; color: #dc143c; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='#dc143c'; this.style.color='white';"
+                        onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">
                         <i class="fa fa-user mr-2"></i>My Profile
                     </a>
                 </div>
                 <div class="promo-banner-container"
                     style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('cardboard-assets/img/hero_1.jpg') }}'); background-size: cover; background-position: center; border-radius: 20px; padding: 60px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
                     <div
-                        style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(90deg, #9d50bb, transparent); opacity: 0.6;">
+                        style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(90deg, #8b0000, transparent); opacity: 0.6;">
                     </div>
                     <div class="row align-items-center" style="position: relative; z-index: 2;">
                         <div class="col-md-7">
@@ -228,18 +244,20 @@
 
                 <div class="row mt-5">
                     <div class="col-12 text-center">
-                        <p><a href="#" class="btn btn-outline-primary px-4 py-3" style="border-radius: 50px; outline: none; box-shadow: none;">More Upcoming Events</a></p>
+                        <p><a href="#" class="btn px-4 py-3"
+                            style="border-radius: 50px; border: 2px solid #dc143c; color: #dc143c; font-weight: 600; transition: all 0.3s ease;"
+                            onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
+                            onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">More Upcoming Events</a></p>
                     </div>
                 </div>
             </div>
-            
+
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const btn = document.getElementById("viewAllBtn");
                     const items = document.querySelectorAll(".concert-item");
                     let isExpanded = false;
 
-                    // Pastikan saat load awal cuma 8 yang visible dari total
                     items.forEach((item, index) => {
                         if(index >= 8) {
                             item.style.display = "none";
@@ -250,7 +268,7 @@
                     btn.addEventListener("click", function (e) {
                         e.preventDefault();
                         isExpanded = !isExpanded;
-                        
+
                         items.forEach((item, index) => {
                             if (index >= 8) {
                                 if (isExpanded) {
@@ -277,7 +295,7 @@
             @auth
                 <div class="row mb-5" data-aos="fade-up">
                     <div class="col-md-8">
-                        <h2 class="mb-4 section-title" style="font-family: 'DM Serif Display', serif;">My Tickets</h2>
+                        <h2 class="mb-4 section-title" style="font-family: 'DM Serif Display', serif; color: #dc143c;">My Tickets</h2>
                         <p>Your current and past concert experiences are gathered here. Access your tickets anytime with ease.
                         </p>
                     </div>
@@ -285,22 +303,23 @@
 
                 @if ($myTickets->isEmpty())
                     <div class="row" data-aos="fade-up">
-                        <div class="col-md-12 text-center py-5 bg-white rounded-lg shadow-sm" style="border: 1px dashed #ccc;">
+                        <div class="col-md-12 text-center py-5 rounded-lg shadow-sm"
+                            style="border: 1px dashed rgba(220,20,60,0.3); background: #1a0a0a;">
                             <div class="mb-3">
-                                <i class="fa fa-ticket text-muted" style="font-size: 50px; opacity: 0.3;"></i>
+                                <i class="fa fa-ticket" style="font-size: 50px; opacity: 0.3; color: #dc143c;"></i>
                             </div>
-                            <h4 class="text-muted">You haven't ordered any tickets yet.</h4>
-                            <p>Discover our featured concerts above to start your musical journey!</p>
-                            <a href="#concerts" class="btn btn-primary btn-sm px-4 py-2 mt-2"
-                                style="border-radius: 50px; background: #9d50bb; border: none;">Browse Concerts</a>
+                            <h4 style="color: #ccc;">You haven't ordered any tickets yet.</h4>
+                            <p style="color: #888;">Discover our featured concerts above to start your musical journey!</p>
+                            <a href="#concerts" class="btn btn-sm px-4 py-2 mt-2"
+                                style="border-radius: 50px; background: linear-gradient(135deg, #dc143c, #8b0000); color: #fff; border: none;">Browse Concerts</a>
                         </div>
                     </div>
                 @else
                     <div class="row no-gutters" data-aos="fade-up">
                         @foreach ($myTickets as $ticket)
                             <div class="col-lg-4 col-md-6 mb-4 px-2">
-                                <div class="ticket-history-card p-4 rounded-lg bg-white"
-                                    style="box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #eee; transition: all 0.3s ease; height: 100%;">
+                                <div class="ticket-history-card p-4 rounded-lg"
+                                    style="background: #1a0a0a; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(220,20,60,0.2); transition: all 0.3s ease; height: 100%;">
                                     <div class="d-flex justify-content-between mb-3 align-items-center">
                                         <span
                                             class="badge {{ $ticket->isActive() ? 'badge-success' : 'badge-secondary' }} px-3 py-1"
@@ -308,24 +327,27 @@
                                             {{ $ticket->ticket_status }}
                                         </span>
                                         <small
-                                            class="text-muted">{{ $ticket->created_at ? $ticket->created_at->format('d M Y') : 'N/A' }}</small>
+                                            style="color: #888;">{{ $ticket->created_at ? $ticket->created_at->format('d M Y') : 'N/A' }}</small>
                                     </div>
 
-                                    <h4 class="font-weight-bold mb-1" style="color: #333; font-size: 1.1rem;">
+                                    <h4 class="font-weight-bold mb-1" style="color: #fff; font-size: 1.1rem;">
                                         {{ $ticket->ticketType->event->title ?? 'Concert Event' }}</h4>
-                                    <p class="small text-muted mb-3"><i class="fa fa-map-marker mr-1"></i>
+                                    <p class="small mb-3" style="color: #aaa;"><i class="fa fa-map-marker mr-1" style="color: #dc143c;"></i>
                                         {{ $ticket->ticketType->event->location ?? 'Venue Location' }}</p>
 
-                                    <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto">
+                                    <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto"
+                                        style="border-color: rgba(220,20,60,0.2) !important;">
                                         <div>
-                                            <p class="mb-0 small text-uppercase font-weight-bold text-muted"
-                                                style="font-size: 0.7rem;">Category</p>
-                                            <p class="mb-0 font-weight-bold" style="color: #9d50bb;">
+                                            <p class="mb-0 small text-uppercase font-weight-bold"
+                                                style="font-size: 0.7rem; color: #888;">Category</p>
+                                            <p class="mb-0 font-weight-bold" style="color: #dc143c;">
                                                 {{ $ticket->ticketType->name }}</p>
                                         </div>
                                         <a href="{{ route('tickets.view', $ticket->ticket_id) }}"
-                                            class="btn btn-outline-primary btn-sm"
-                                            style="border-radius: 20px; border-color: #9d50bb; color: #9d50bb;">View Detail</a>
+                                            class="btn btn-sm"
+                                            style="border-radius: 20px; border: 1.5px solid #dc143c; color: #dc143c; transition: all 0.3s ease;"
+                                            onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
+                                            onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">View Detail</a>
                                     </div>
                                 </div>
                             </div>
@@ -333,21 +355,13 @@
                     </div>
                 @endif
 
-                <style>
-                    .ticket-history-card:hover {
-                        transform: translateY(-5px);
-                        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1) !important;
-                        border-color: #9d50bb !important;
-                    }
-                </style>
             @else
                 <div class="row">
-                    <!-- Bagian Welcome di atas -->
                     <div class="col-12 text-center mb-5">
-                        <h2 class="mb-4 section-title text-primary" style="font-family: 'DM Serif Display', serif;">
-                            Welcome to LuxTix
+                        <h2 class="mb-4 section-title" style="font-family: 'DM Serif Display', serif; color: #dc143c;">
+                            Welcome to TIXLY
                         </h2>
-                        <p class="mb-4">
+                        <p class="mb-4" style="color: #ccc;">
                             Your gateway to the most exclusive live music experiences.
                             Please log in or register to access your personalized concert dashboard
                             and start exploring our featured events.
@@ -356,35 +370,36 @@
                 </div>
 
                 <div class="row">
-                    <!-- Kolom Gambar -->
                     <div class="col-lg-6 mb-4">
-                        <img src="your-image.jpg" alt="Concert Experience" class="img-fluid rounded shadow">
+                        <img src="{{ asset('cardboard-assets/img/hero_1.jpg') }}" alt="Concert Experience" class="img-fluid rounded shadow">
                     </div>
 
-                    <!-- Kolom About Us -->
                     <div class="col-lg-6 mb-4">
-                        <span class="d-block text-uppercase text-primary">About Us</span>
+                        <span class="d-block text-uppercase" style="color: #dc143c;">About Us</span>
                         <h2 class="mb-4 section-title" style="color: #ffffff;">
                             Your Gateway to Exclusive Live Music Experiences
                         </h2>
-                        <p style="color: #ffffff; line-height: 1.8; font-size: 1rem;">
-                            LuxTix is a premium platform dedicated to bringing the world's most magnificent concerts directly to
+                        <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
+                            TIXLY is a premium platform dedicated to bringing the world's most magnificent concerts directly to
                             you.
                             We revolutionize ticket purchasing by combining cutting-edge technology with unparalleled customer
                             service.
                         </p>
-                        <p style="color: #ffffff; line-height: 1.8; font-size: 1rem;">
+                        <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
                             Our mission is to eliminate barriers between fans and the artists they love.
                             From intimate performances to massive stadium shows, we curate the finest musical events
                             while ensuring absolute security and authenticity in every transaction.
                         </p>
-                        <p style="color: #ffffff; line-height: 1.8; font-size: 1rem;">
-                            With blockchain-backed ticketing and dedicated concierge support, LuxTix transforms concert
+                        <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
+                            With blockchain-backed ticketing and dedicated concierge support, TIXLY transforms concert
                             attendance
                             from a transaction into an unforgettable experience. We believe every seat deserves to be
                             extraordinary.
                         </p>
-                        <p><a href="#" class="btn btn-outline-white">Learn More About LuxTix</a></p>
+                        <p><a href="#" class="btn px-4 py-2"
+                            style="border-radius: 50px; border: 1.5px solid #dc143c; color: #dc143c; transition: all 0.3s ease;"
+                            onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
+                            onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">Learn More About TIXLY</a></p>
                     </div>
                 </div>
 
@@ -395,27 +410,27 @@
                 <div class="row mb-5" data-aos="fade-up" style="margin-top: 60px;">
                     <div class="col-12">
                         <div
-                            style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; padding: 40px; border-left: 5px solid #9d50bb;">
+                            style="background: linear-gradient(135deg, #1a0a0a 0%, #120505 100%); border-radius: 16px; padding: 40px; border-left: 5px solid #dc143c; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <h3
-                                        style="color: #333; font-weight: 700; margin-bottom: 10px; font-family: 'DM Serif Display', serif;">
+                                        style="color: #fff; font-weight: 700; margin-bottom: 10px; font-family: 'DM Serif Display', serif;">
                                         {{ Auth::user()->name }}
                                     </h3>
-                                    <p style="color: #666; font-size: 0.95rem; margin-bottom: 15px;">
-                                        <i class="fa fa-envelope mr-2" style="color: #9d50bb;"></i>
+                                    <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">
+                                        <i class="fa fa-envelope mr-2" style="color: #dc143c;"></i>
                                         {{ Auth::user()->email }}
                                     </p>
-                                    <p style="color: #999; font-size: 0.85rem; margin-bottom: 0;">
+                                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 0;">
                                         Member since
                                         {{ Auth::user()->created_at ? Auth::user()->created_at->format('d M Y') : 'N/A' }}
                                     </p>
                                 </div>
                                 <div class="col-md-4 text-right">
                                     <a href="{{ route('profile.show') }}" class="btn px-4 py-2"
-                                        style="background: linear-gradient(to right, #9d50bb, #6e48aa); color: white; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s ease;"
-                                        onmouseover="this.style.boxShadow='0 6px 20px rgba(157, 80, 187, 0.3)';"
-                                        onmouseout="this.style.boxShadow='none';">
+                                        style="background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); color: white; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220,20,60,0.35);"
+                                        onmouseover="this.style.boxShadow='0 6px 20px rgba(220, 20, 60, 0.55)';"
+                                        onmouseout="this.style.boxShadow='0 4px 15px rgba(220,20,60,0.35)';">
                                         <i class="fa fa-user mr-2"></i>View Profile
                                     </a>
                                 </div>
@@ -424,39 +439,39 @@
                     </div>
                 </div>
             @endauth
-            }
-            </style>
+
         </div>
 
-        <div class="section" style="background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);">
+        <!-- Testimonials Section -->
+        <div class="section" style="background: linear-gradient(135deg, #0d0d0d 0%, #1a0505 100%);">
             <div class="container">
                 <div class="row justify-content-center mb-5">
                     <div class="col-md-8 text-center">
-                        <h2 class="mb-4 section-title" style="color: #333;">What Our Users Say</h2>
-                        <p style="color: #666; font-size: 1.1rem;">Join thousands of music enthusiasts who've experienced
+                        <h2 class="mb-4 section-title" style="color: #fff;">What Our Users Say</h2>
+                        <p style="color: #888; font-size: 1.1rem;">Join thousands of music enthusiasts who've experienced
                             the
-                            LuxTix difference</p>
+                            TIXLY difference</p>
                     </div>
                 </div>
                 <div class="nonloop-block-11 owl-carousel">
                     <div class="item">
                         <div class="block-33 h-100"
-                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            style="background: #1a0a0a; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid rgba(220,20,60,0.15); transition: all 0.3s ease;">
                             <div class="vcard d-flex mb-3">
                                 <div class="image align-self-center"><img
                                         src="{{ asset('cardboard-assets/img/person_1.jpg') }}" alt="Fan"
-                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #dc143c;">
                                 </div>
                                 <div class="name-text align-self-center ml-3">
-                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">Alicia V.</h2>
-                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Verified
+                                    <h2 class="heading" style="color: #fff; margin: 0; font-size: 1.1rem;">Alicia V.</h2>
+                                    <span class="meta" style="color: #dc143c; font-size: 0.9rem;">Verified
                                         Attendee</span>
                                 </div>
                             </div>
                             <div class="text">
                                 <blockquote
-                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
-                                    <p>&rdquo; LuxTix made attending the Radiohead concert so easy. The VIP entrance was
+                                    style="color: #aaa; border-left: 3px solid #dc143c; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    <p>&rdquo; TIXLY made attending the Radiohead concert so easy. The VIP entrance was
                                         seamless and the
                                         seats were exactly as described. A truly premium experience. &ldquo;</p>
                                 </blockquote>
@@ -466,21 +481,21 @@
 
                     <div class="item">
                         <div class="block-33 h-100"
-                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            style="background: #1a0a0a; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid rgba(220,20,60,0.15); transition: all 0.3s ease;">
                             <div class="vcard d-flex mb-3">
                                 <div class="image align-self-center"><img
                                         src="{{ asset('cardboard-assets/img/person_2.jpg') }}" alt="Fan"
-                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #dc143c;">
                                 </div>
                                 <div class="name-text align-self-center ml-3">
-                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">David K.</h2>
-                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Music
+                                    <h2 class="heading" style="color: #fff; margin: 0; font-size: 1.1rem;">David K.</h2>
+                                    <span class="meta" style="color: #dc143c; font-size: 0.9rem;">Music
                                         Enthusiast</span>
                                 </div>
                             </div>
                             <div class="text">
                                 <blockquote
-                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    style="color: #aaa; border-left: 3px solid #dc143c; padding-left: 15px; margin: 0; line-height: 1.7;">
                                     <p>&rdquo; I've never had a more reliable experience buying tickets. No bots, no hidden
                                         fees, just pure
                                         music. Recommended for any serious concert-goer. &ldquo;</p>
@@ -491,21 +506,21 @@
 
                     <div class="item">
                         <div class="block-33 h-100"
-                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            style="background: #1a0a0a; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid rgba(220,20,60,0.15); transition: all 0.3s ease;">
                             <div class="vcard d-flex mb-3">
                                 <div class="image align-self-center"><img
                                         src="{{ asset('cardboard-assets/img/person_1.jpg') }}" alt="Fan"
-                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #dc143c;">
                                 </div>
                                 <div class="name-text align-self-center ml-3">
-                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">Sarah J.</h2>
-                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Pop Culture
+                                    <h2 class="heading" style="color: #fff; margin: 0; font-size: 1.1rem;">Sarah J.</h2>
+                                    <span class="meta" style="color: #dc143c; font-size: 0.9rem;">Pop Culture
                                         Critic</span>
                                 </div>
                             </div>
                             <div class="text">
                                 <blockquote
-                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    style="color: #aaa; border-left: 3px solid #dc143c; padding-left: 15px; margin: 0; line-height: 1.7;">
                                     <p>&rdquo; The interface is as elegant as the concerts they host. Finding Taylor Swift
                                         tickets was a
                                         breeze! &ldquo;</p>
@@ -516,21 +531,21 @@
 
                     <div class="item">
                         <div class="block-33 h-100"
-                            style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            style="background: #1a0a0a; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); border: 1px solid rgba(220,20,60,0.15); transition: all 0.3s ease;">
                             <div class="vcard d-flex mb-3">
                                 <div class="image align-self-center"><img
                                         src="{{ asset('cardboard-assets/img/person_2.jpg') }}" alt="Fan"
-                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">
+                                        style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #dc143c;">
                                 </div>
                                 <div class="name-text align-self-center ml-3">
-                                    <h2 class="heading" style="color: #333; margin: 0; font-size: 1.1rem;">James L.</h2>
-                                    <span class="meta" style="color: #9d50bb; font-size: 0.9rem;">Rock Fan</span>
+                                    <h2 class="heading" style="color: #fff; margin: 0; font-size: 1.1rem;">James L.</h2>
+                                    <span class="meta" style="color: #dc143c; font-size: 0.9rem;">Rock Fan</span>
                                 </div>
                             </div>
                             <div class="text">
                                 <blockquote
-                                    style="color: #666; border-left: 3px solid #9d50bb; padding-left: 15px; margin: 0; line-height: 1.7;">
-                                    <p>&rdquo; Arctic Monkeys in Jakarta was a dream come true, and LuxTix helped me get
+                                    style="color: #aaa; border-left: 3px solid #dc143c; padding-left: 15px; margin: 0; line-height: 1.7;">
+                                    <p>&rdquo; Arctic Monkeys in Jakarta was a dream come true, and TIXLY helped me get
                                         front-row access
                                         without any hassle. &ldquo;</p>
                                 </blockquote>
@@ -540,14 +555,8 @@
 
                 </div>
             </div>
-            <style>
-                .block-33:hover {
-                    transform: translateY(-10px);
-                    box-shadow: 0 15px 40px rgba(157, 80, 187, 0.2) !important;
-                }
-            </style>
         </div>
-        <!-- END .block-4 -->
+        <!-- END testimonials -->
     </div>
 @endsection
 
