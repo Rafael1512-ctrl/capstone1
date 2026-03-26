@@ -27,10 +27,12 @@ class Event extends Model
         'ticket_quota',
         'banner_url',
         'status',
+        'performers',
     ];
 
     protected $casts = [
         'schedule_time' => 'datetime',
+        'performers' => 'array',
     ];
 
     public function organizer()

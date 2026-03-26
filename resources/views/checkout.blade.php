@@ -248,7 +248,7 @@
                 </div>
                 
                 <!-- Step 1: Payment Info -->
-                <div class="modal-body text-center p-4" id="p-step-1">
+                <div class="modal-body text-center p-2" id="p-step-1">
                     <div id="qrisSection">
                         <p class="mb-4 text-muted" style="color: #666 !important;">Silakan pindai QRIS di bawah ini untuk membayar</p>
                         <div class="qris-box p-3 bg-white d-inline-block rounded-lg mb-4" style="border: 2px solid #f0f0f0;">

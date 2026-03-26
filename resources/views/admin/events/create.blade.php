@@ -128,6 +128,57 @@
                         </div>
                     </div>
 
+                    <!-- Performers Section (Only for Festival) -->
+                    <div id="performers-section" class="card mb-4" style="display: none; border-color: #e83e8c; border-width: 2px;">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users"></i> Daftar Performer
+                            </h5>
+                            <small class="text-muted">Tambahkan performer untuk festival ini</small>
+                        </div>
+                        <div class="card-body">
+                            <button type="button" class="btn btn-sm btn-primary mb-3" id="add-performer-btn">
+                                <i class="fas fa-plus"></i> Tambah Performer
+                            </button>
+                            <div id="performers-container">
+                                @if(old('performers'))
+                                    @foreach(old('performers') as $index => $performer)
+                                        <div class="performer-item card mb-3 border-secondary">
+                                            <div class="card-body">
+                                                <div class="row g-3">
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Nama Performer *</label>
+                                                        <input type="text" class="form-control" name="performers[{{ $index }}][name]"
+                                                            placeholder="Nama artis/grup" value="{{ $performer['name'] ?? '' }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Peran/Genre *</label>
+                                                        <input type="text" class="form-control" name="performers[{{ $index }}][role]"
+                                                            placeholder="Vokalis, DJ, Band, dll" value="{{ $performer['role'] ?? '' }}">
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <label class="form-label">Foto Performer</label>
+                                                        <input type="file" class="form-control performer-photo" accept="image/*"
+                                                            data-index="{{ $index }}">
+                                                        <small class="text-muted">Max: 2MB</small>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-3">
+                                                    <label class="form-label">Deskripsi</label>
+                                                    <textarea class="form-control" name="performers[{{ $index }}][description]"
+                                                        rows="2" placeholder="Info singkat tentang performer">{{ $performer['description'] ?? '' }}</textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-danger mt-2 remove-performer-btn">
+                                                    <i class="fas fa-trash"></i> Hapus
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Ticket Types Section -->
                     <hr class="my-4">
                     <h5 class="mb-3">Jenis Tiket & Kuota</h5>
@@ -234,4 +285,114 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Get categories for Festival detection
+        const FESTIVAL_CATEGORY = "Fes"; // Festival category keyword
+        let performerCount = 0;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            performerCount = document.querySelectorAll('.performer-item').length;
+            if (performerCount === 0) performerCount = 0;
+            else performerCount += 1;
+
+            // Listen to category change
+            document.getElementById('category_id').addEventListener('change', function() {
+                togglePerformerSection(this.value);
+            });
+
+            // Check initial category
+            togglePerformerSection(document.getElementById('category_id').value);
+
+            // Add new performer
+            document.getElementById('add-performer-btn').addEventListener('click', addPerformer);
+
+            // Remove performer buttons
+            document.querySelectorAll('.remove-performer-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.closest('.performer-item').remove();
+                    reindexPerformers();
+                });
+            });
+        });
+
+        function togglePerformerSection(categoryId) {
+            const performersSection = document.getElementById('performers-section');
+            
+            // Get category name from select option
+            const categorySelect = document.getElementById('category_id');
+            const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+            const categoryName = selectedOption.text.toLowerCase();
+
+            // Show/hide based on whether category contains "festival"
+            if (categoryName.includes('festival')) {
+                performersSection.style.display = 'block';
+            } else {
+                performersSection.style.display = 'none';
+            }
+        }
+
+        function addPerformer() {
+            const container = document.getElementById('performers-container');
+            const performerHTML = `
+                <div class="performer-item card mb-3 border-secondary">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Nama Performer *</label>
+                                <input type="text" class="form-control" name="performers[${performerCount}][name]"
+                                    placeholder="Nama artis/grup" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Peran/Genre *</label>
+                                <input type="text" class="form-control" name="performers[${performerCount}][role]"
+                                    placeholder="Vokalis, DJ, Band, dll" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Foto Performer</label>
+                                <input type="file" class="form-control performer-photo" accept="image/*"
+                                    name="performers[${performerCount}][photo]" data-index="${performerCount}">
+                                <small class="text-muted">Max: 2MB</small>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label">Deskripsi</label>
+                            <textarea class="form-control" name="performers[${performerCount}][description]"
+                                rows="2" placeholder="Info singkat tentang performer"></textarea>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-danger mt-2 remove-performer-btn">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            container.insertAdjacentHTML('beforeend', performerHTML);
+            performerCount++;
+
+            // Add event listener to new remove button
+            document.querySelectorAll('.remove-performer-btn').forEach(btn => {
+                if (!btn.dataset.listenerAdded) {
+                    btn.addEventListener('click', function() {
+                        this.closest('.performer-item').remove();
+                        reindexPerformers();
+                    });
+                    btn.dataset.listenerAdded = 'true';
+                }
+            });
+        }
+
+        function reindexPerformers() {
+            document.querySelectorAll('.performer-item').forEach((item, index) => {
+                item.querySelectorAll('input[type="text"], input[type="file"], textarea').forEach(input => {
+                    const oldName = input.getAttribute('name');
+                    if (oldName) {
+                        const newName = oldName.replace(/\d+\]/, index + ']');
+                        input.setAttribute('name', newName);
+                    }
+                });
+            });
+        }
+    </script>
 @endsection

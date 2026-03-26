@@ -81,6 +81,47 @@
             </div>
         </div>
 
+        <!-- Performers Section (Only for Festival) -->
+        @if ($event->category && strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users"></i> Daftar Performer
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach ($event->performers as $performer)
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-0 shadow-sm h-100">
+                                    @if (isset($performer['photo']) && $performer['photo'])
+                                        <img src="{{ $performer['photo'] }}" class="card-img-top"
+                                            alt="{{ $performer['name'] }}"
+                                            style="height: 200px; object-fit: cover;">
+                                    @else
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                            style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                            <i class="fas fa-music fa-3x text-white opacity-50"></i>
+                                        </div>
+                                    @endif
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-1">{{ $performer['name'] }}</h6>
+                                        <p class="text-muted small mb-2">
+                                            <i class="fas fa-microphone-alt"></i>
+                                            {{ $performer['role'] }}
+                                        </p>
+                                        @if (isset($performer['description']) && $performer['description'])
+                                            <p class="card-text small">{{ $performer['description'] }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Statistics -->
         <div class="row mb-4">
             <div class="col-md-3 mb-3">

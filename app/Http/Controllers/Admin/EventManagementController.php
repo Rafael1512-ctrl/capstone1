@@ -89,6 +89,28 @@ class EventManagementController extends Controller
             $validated['banner_url'] = '/storage/' . $path;
         }
 
+        // Handle performers for festival events
+        $performers = [];
+        if ($request->has('performers') && is_array($request->performers)) {
+            foreach ($request->performers as $performer) {
+                if (isset($performer['name']) && isset($performer['role'])) {
+                    $performerData = [
+                        'name' => $performer['name'],
+                        'role' => $performer['role'],
+                        'description' => $performer['description'] ?? '',
+                        'photo' => null,
+                    ];
+                    
+                    // Handle performer photo upload if provided
+                    // Note: File uploads via form array need special handling
+                    $performers[] = $performerData;
+                }
+            }
+        }
+        if (!empty($performers)) {
+            $validated['performers'] = $performers;
+        }
+
         // Calculate total ticket quota
         $totalQuota = $validated['regular_quota'] + $validated['vip_quota'] + $validated['vvip_quota'];
         $validated['ticket_quota'] = $totalQuota;
@@ -182,6 +204,28 @@ class EventManagementController extends Controller
             $banner = $request->file('banner');
             $path = $banner->store('events/banners', 'public');
             $validated['banner_url'] = '/storage/' . $path;
+        }
+
+        // Handle performers for festival events
+        $performers = [];
+        if ($request->has('performers') && is_array($request->performers)) {
+            foreach ($request->performers as $performer) {
+                if (isset($performer['name']) && isset($performer['role'])) {
+                    $performerData = [
+                        'name' => $performer['name'],
+                        'role' => $performer['role'],
+                        'description' => $performer['description'] ?? '',
+                        'photo' => $performer['photo'] ?? null,
+                    ];
+                    
+                    $performers[] = $performerData;
+                }
+            }
+        }
+        if (!empty($performers)) {
+            $validated['performers'] = $performers;
+        } else {
+            $validated['performers'] = null;
         }
 
         // Calculate total ticket quota

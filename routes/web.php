@@ -21,6 +21,16 @@ Route::get('/landing', [\App\Http\Controllers\PublicController::class, 'index'])
 Route::get('/concert/{event}/ticket', [\App\Http\Controllers\PublicController::class, 'showTicket'])->name('public.ticket.show');
 Route::get('/concert/{event}/checkout/{ticketType}', [\App\Http\Controllers\PublicController::class, 'showCheckout'])->name('public.checkout.show');
 
+// Debug route for performer data (admin only)
+Route::get('/debug/event/{event}/performers', function (\App\Models\Event $event) {
+    return response()->json([
+        'event_id' => $event->event_id,
+        'title' => $event->title,
+        'category' => $event->category?->name,
+        'performers' => $event->performers ?? [],
+    ]);
+})->middleware(['auth', 'role:admin'])->name('debug.event.performers');
+
 // Admin & Organizer Dashboards
 Route::get('/admin', function () {
     return redirect()->route('admin.dashboard');

@@ -52,6 +52,7 @@
                         <tr>
                             <th class="ps-4">Status</th>
                             <th>Judul Event</th>
+                            <th>Kategori</th>
                             <th>Organizer</th>
                             <th>Jadwal</th>
                             <th>Lokasi</th>
@@ -75,6 +76,19 @@
                                     <strong>{{ $event->title }}</strong>
                                     <br>
                                     <small class="text-muted small">ID: {{ $event->event_id }}</small>
+                                </td>
+                                <td>
+                                    @if ($event->category)
+                                        <span class="badge bg-info text-white">{{ $event->category->name }}</span>
+                                        @if (strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+                                            <br>
+                                            <small class="text-success mt-1 d-inline-block">
+                                                <i class="fas fa-users"></i> {{ count($event->performers) }} Performer
+                                            </small>
+                                        @endif
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
                                 </td>
                                 <td>{{ $event->organizer->name ?? '-' }}</td>
                                 <td>
@@ -121,7 +135,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-5">
+                                <td colspan="8" class="text-center text-muted py-5">
                                     <i class="fas fa-calendar-times mb-3 fa-3x d-block"></i>
                                     Tidak ada event yang ditemukan sesuai kriteria.
                                 </td>

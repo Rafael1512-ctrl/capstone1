@@ -61,6 +61,54 @@
     </div>
     <!-- performar_area_end  -->
 
+    <!-- Performers Section (Only for Festival) -->
+    @if ($event->category && strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+        <div id="performers-lineup" class="performar_area black_bg pt-120">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="section_title  text-center mb-80">
+                            <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s">
+                                <i class="fas fa-users"></i>Line Up Performer
+                            </h3>
+                            <p class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".4s">
+                                {{ count($event->performers) }} Artists yang akan memeriahkan acara ini
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performers Grid -->
+                <div class="row mt-5">
+                    @foreach ($event->performers as $performer)
+                        <div class="col-md-6 col-lg-4 mb-5 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">
+                            <div class="performer-card text-center">
+                                <div class="performer-image mb-3" style="position: relative; overflow: hidden; border-radius: 10px; height: 300px;">
+                                    @if (isset($performer['photo']) && $performer['photo'])
+                                        <img src="{{ $performer['photo'] }}" alt="{{ $performer['name'] }}"
+                                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                                    @else
+                                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-music"></i> {{ $performer['name'] }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <h5 class="performer-name text-white mb-2">{{ $performer['name'] }}</h5>
+                                <p class="performer-role text-warning mb-3">
+                                    <i class="fas fa-microphone-alt"></i> {{ $performer['role'] }}
+                                </p>
+                                @if (isset($performer['description']) && $performer['description'])
+                                    <p class="performer-description text-light">{{ $performer['description'] }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+    <!-- Performers Section End -->
+
     <!-- venue_area_start  -->
     <div id="venue" class="venue_area black_bg pt-120">
         <div class="container">
