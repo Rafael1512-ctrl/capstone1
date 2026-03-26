@@ -16,6 +16,15 @@
         .header-area .main-header-area.sticky {
             background: #0a0a0a !important;
         }
+
+        /* Reduce menu margins to prevent wrapping */
+        .header-area .main-header-area .main-menu ul li {
+            margin: 0 12px !important;
+        }
+
+        .header-area .main-header-area .main-menu ul li a {
+            padding: 30px 0 !important;
+        }
     </style>
     <div class="header-area">
         <div id="sticky-header" class="main-header-area">

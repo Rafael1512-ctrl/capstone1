@@ -43,7 +43,16 @@
                                             <div class="card h-100 event-card">
                                                 <!-- Banner Event -->
                                                 @if ($event->banner_url)
-                                                    <img src="{{ asset($event->banner_url) }}" class="card-img-top"
+                                                    @php
+                                                        if (str_starts_with($event->banner_url, '/storage/')) {
+                                                            $imgSrc = $event->banner_url;
+                                                        } elseif (str_starts_with($event->banner_url, '/')) {
+                                                            $imgSrc = asset($event->banner_url);
+                                                        } else {
+                                                            $imgSrc = Storage::url($event->banner_url);
+                                                        }
+                                                    @endphp
+                                                    <img src="{{ $imgSrc }}" class="card-img-top"
                                                         alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
                                                 @else
                                                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center"

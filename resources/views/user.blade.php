@@ -208,7 +208,19 @@
                     @foreach($events as $event)
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch concert-item" style="{{ $loopIndex >= 8 ? 'display: none !important;' : '' }}">
                             <div class="concert-card h-100 d-flex flex-column text-center shadow-sm rounded" style="width: 100%; min-width: 250px;">
-                                <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_' . (($loopIndex % 4) + 1) . '.jpg') }}"
+                                @php
+                                    // Handle both storage paths and relative paths
+                                    if ($event->banner_url) {
+                                        if (str_starts_with($event->banner_url, '/storage/')) {
+                                            $imageUrl = $event->banner_url;
+                                        } else {
+                                            $imageUrl = Storage::url($event->banner_url);
+                                        }
+                                    } else {
+                                        $imageUrl = asset('cardboard-assets/img/concert_' . (($loopIndex % 4) + 1) . '.jpg');
+                                    }
+                                @endphp
+                                <img src="{{ $imageUrl }}"
                                     alt="{{ $event->title }}" class="img-fluid rounded-top">
 
                                 <div class="concert-card-body p-3 d-flex flex-column justify-content-between">

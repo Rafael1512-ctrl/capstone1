@@ -189,7 +189,18 @@
                     <div class="checkout-card wow fadeInRight">
                         <h3 class="mb-4">Order Summary</h3>
                         <div class="event-summary d-flex align-items-start">
-                            <img src="{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_1.jpg') }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
+                            @php
+                                if ($event->banner_url) {
+                                    if (str_starts_with($event->banner_url, '/storage/')) {
+                                        $imgUrl = $event->banner_url;
+                                    } else {
+                                        $imgUrl = Storage::url($event->banner_url);
+                                    }
+                                } else {
+                                    $imgUrl = asset('cardboard-assets/img/concert_1.jpg');
+                                }
+                            @endphp
+                            <img src="{{ $imgUrl }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
                             <div>
                                 <h5 class="mb-1 text-white">{{ $event->title }}</h5>
                                 <p class="small text-muted mb-0"><i class="fa fa-calendar mr-1"></i> {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }}</p>
@@ -270,7 +281,7 @@
                 <!-- Step 2: Success Simulation -->
                 <div class="modal-body text-center p-5" id="p-step-2" style="display:none;">
                     <div class="success-icon mb-4">
-                        <i class="fa fa-check-circle" style="font-size: 100px; color: #28a745 !important;"></i>
+                        <i class="fa fa-check-circle" style="font-size: 100px; color: #dc143c !important;"></i>
                     </div>
                     <h2 class="font-weight-bold mb-2" style="color: #333 !important;">Pembayaran Berhasil!</h2>
                     <p class="text-muted" style="color: #666 !important;">E-Tiket Anda telah dikirim ke email dan tersedia di menu History.</p>
@@ -278,7 +289,7 @@
                         <p class="mb-1"><strong>{{ $event->title }}</strong></p>
                         <p class="small text-muted mb-0" style="color: #777 !important;">{{ $ticketType->name }} | RP {{ number_format($ticketType->price, 0, ',', '.') }}</p>
                     </div>
-                    <button type="button" class="btn btn-primary w-100 py-3 mt-4" style="border-radius: 50px; background: #28a745 !important; border: none; color: white !important; font-weight: bold; cursor: pointer;" onclick="window.location.href='{{ route('home') }}'">Kembali ke Beranda</button>
+                    <button type="button" class="btn btn-primary w-100 py-3 mt-4" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(220,20,60,0.35);" onclick="window.location.href='{{ route('home') }}'">Kembali ke Beranda</button>
                     <a href="{{ route('tickets.index') }}" class="d-block mt-3 font-weight-bold" style="color: #dc143c !important; text-decoration: none; cursor: pointer;">Lihat History Tiket</a>
                 </div>
             </div>

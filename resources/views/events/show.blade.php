@@ -30,7 +30,16 @@
                     <div class="card mb-4">
                         <!-- Banner -->
                         @if ($event->banner_url)
-                            <img src="{{ asset($event->banner_url) }}" class="card-img-top" alt="{{ $event->title }}"
+                            @php
+                                if (str_starts_with($event->banner_url, '/storage/')) {
+                                    $bannerSrc = $event->banner_url;
+                                } elseif (str_starts_with($event->banner_url, '/')) {
+                                    $bannerSrc = asset($event->banner_url);
+                                } else {
+                                    $bannerSrc = Storage::url($event->banner_url);
+                                }
+                            @endphp
+                            <img src="{{ $bannerSrc }}" class="card-img-top" alt="{{ $event->title }}"
                                 style="height: 400px; object-fit: cover;">
                         @else
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"

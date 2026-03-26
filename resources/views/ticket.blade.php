@@ -38,13 +38,13 @@
             transition: 0.3s;
         }
         .ticket-card:hover {
-            border-color: #ff00c1;
+            border-color: rgba(220,20,60,0.6);
             transform: translateY(-5px);
         }
         .ticket-price {
             font-size: 36px;
             font-weight: bold;
-            color: #ff00c1;
+            color: #dc143c;
             margin-bottom: 15px;
         }
         .ticket-title {
@@ -62,28 +62,30 @@
             color: #aaa;
         }
         .ticket-features li i {
-            color: #ff00c1;
+            color: #dc143c;
             margin-right: 10px;
         }
         .buy-btn {
-            background-color: #ff00c1;
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%);
             color: white;
             padding: 12px 35px;
             border-radius: 30px;
             text-transform: uppercase;
             font-weight: bold;
             display: inline-block;
-            transition: 0.3s;
+            transition: all 0.3s;
             text-decoration: none;
+            box-shadow: 0 4px 15px rgba(220,20,60,0.35);
         }
         .buy-btn:hover {
-            background-color: #fff;
-            color: #ff00c1;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220,20,60,0.5);
             text-decoration: none;
+            color: white !important;
         }
         .important-info-box {
             background-color: #111;
-            border-left: 5px solid #ff00c1;
+            border-left: 5px solid #dc143c;
             padding: 30px;
             border-radius: 5px;
         }
@@ -104,7 +106,18 @@
     <!-- header-end -->
 
     <!-- bradcam_area_start -->
-    <div class="bradcam_area" style="background-image: url('{{ $event->banner_url ? Storage::url($event->banner_url) : asset('cardboard-assets/img/concert_1.jpg') }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
+    @php
+        if ($event->banner_url) {
+            if (str_starts_with($event->banner_url, '/storage/')) {
+                $bannerUrl = $event->banner_url;
+            } else {
+                $bannerUrl = Storage::url($event->banner_url);
+            }
+        } else {
+            $bannerUrl = asset('cardboard-assets/img/concert_1.jpg');
+        }
+    @endphp
+    <div class="bradcam_area" style="background-image: url('{{ $bannerUrl }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">
@@ -129,7 +142,7 @@
                     <div class="section_title text-center mb-80">
                         <span class="d-block text-primary text-uppercase mb-2" style="letter-spacing: 2px;">Premium Packages</span>
                         <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s" style="color:#fff; font-size: 45px;">Choose Your Experience</h3>
-                        <div class="line mx-auto" style="width: 80px; height: 3px; background: #ff00c1; margin-top: 20px;"></div>
+                        <div class="line mx-auto" style="width: 80px; height: 3px; background: #dc143c; margin-top: 20px;"></div>
                     </div>
                 </div>
             </div>
@@ -138,13 +151,13 @@
                 <!-- Dynamic Ticket Category -->
                 <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch">
                     <div class="ticket-card text-center wow fadeInUp w-100" data-wow-duration="1s" data-wow-delay="{{ 0.4 + ($loop->index * 0.1) }}s" 
-                        @if(strtolower($type->name) == 'vip') style="border-color: #ff00c1; box-shadow: 0 10px 40px rgba(255, 0, 193, 0.15);" @endif>
+                        @if(strtolower($type->name) == 'vip') style="border-color: #dc143c; box-shadow: 0 10px 40px rgba(220,20,60,0.25);" @endif>
                         
                         @if(strtolower($type->name) == 'vip')
-                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: #ff00c1; color: white; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Most Popular</div>
+                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); color: white; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; box-shadow: 0 4px 15px rgba(220,20,60,0.35);">Most Popular</div>
                         @endif
 
-                        <div class="ticket-title" @if(strtolower($type->name) == 'vip') style="color: #ff00c1;" @endif>{{ $type->name }}</div>
+                        <div class="ticket-title" @if(strtolower($type->name) == 'vip') style="color: #dc143c;" @endif>{{ $type->name }}</div>
                         <div class="ticket-price">RP {{ number_format($type->price, 0, ',', '.') }}</div>
                         <p>Available Seats: {{ $type->availableStock() }} / {{ $type->quantity_total }}</p>
                         
