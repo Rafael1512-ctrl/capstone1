@@ -130,7 +130,20 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    
+    // Forgot Password Routes
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->name('forgot-password.post');
+    
+    // Reset Password Routes
+    Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('show-reset-password');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('reset-password');
 });
+
+// Email Verification Routes
+Route::get('/verify-email', [AuthController::class, 'showVerifyEmail'])->name('verify-email');
+Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->name('verify-email.post');
+Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->name('resend-verification-email')->middleware('guest');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
