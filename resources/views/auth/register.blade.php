@@ -502,34 +502,8 @@
                 </div>
 
                 <div class="form-group">
-                    <div class="role-section-label">I want to</div>
-                    <div class="role-grid">
-                        <div class="role-card">
-                            <input type="radio" id="role_user" name="role" value="user"
-                                {{ old('role', 'user') === 'user' ? 'checked' : '' }} required>
-                            <label for="role_user">
-                                <div class="role-icon"><i class="fas fa-ticket-alt"></i></div>
-                                <div>
-                                    <div class="role-name">Buy Tickets</div>
-                                    <div class="role-desc">Purchase & attend events</div>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="role-card">
-                            <input type="radio" id="role_organizer" name="role" value="organizer"
-                                {{ old('role') === 'organizer' ? 'checked' : '' }}>
-                            <label for="role_organizer">
-                                <div class="role-icon"><i class="fas fa-calendar-check"></i></div>
-                                <div>
-                                    <div class="role-name">Sell Tickets</div>
-                                    <div class="role-desc">Create & manage events</div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    @error('role')
-                        <div class="input-error">{{ $message }}</div>
-                    @enderror
+                    <!-- Set default role as user -->
+                    <input type="hidden" name="role" value="user">
                 </div>
 
                 <button type="submit" class="btn-submit" id="registerBtn">

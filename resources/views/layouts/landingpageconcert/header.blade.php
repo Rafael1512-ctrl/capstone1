@@ -48,10 +48,10 @@
                         <a class="nav-link active" href="{{ route('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#concerts">Discover</a>
+                        <a class="nav-link" href="{{ Auth::check() ? '#concerts' : route('login') }}">Discover</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#my-tickets">My Tickets</a>
+                        <a class="nav-link" href="{{ Auth::check() ? '#my-tickets' : route('login') }}">My Tickets</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#footer">Contact</a>
