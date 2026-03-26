@@ -50,16 +50,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#concerts">Discover</a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">Categories</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown04">
-                            <a class="dropdown-item" href="#">Pop</a>
-                            <a class="dropdown-item" href="#">Rock</a>
-                            <a class="dropdown-item" href="#">Indie</a>
-                            <a class="dropdown-item" href="#">Jazz</a>
-                        </div>
-                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#my-tickets">My Tickets</a>
                     </li>
@@ -139,7 +129,7 @@
                                 </a>
                                 
                                 <div style="border-top: 1px solid rgba(255,255,255,0.08); margin: 4px 0;"></div>
-                                <a class="dropdown-item" href="#"
+                                <a class="dropdown-item" href="#logout"
                                     style="color: #ff6b6b; font-size:0.88rem; padding: 10px 18px;"
                                     onclick="event.preventDefault(); document.getElementById('logout-confirm-modal').style.display='flex';">
                                     <i class="fa fa-sign-out" style="width:18px;"></i> Logout
@@ -148,14 +138,7 @@
                         </li>
 
                     @endguest
-                </div>
-
-                <div class="navbar-nav ml-auto">
-                    <form method="post" class="search-form">
-                        <span class="icon ion ion-search"></span>
-                        <input type="text" class="form-control" placeholder="Search concerts...">
-                    </form>
-                </div>
+                </div>  
 
             </div>
         </div>
@@ -169,10 +152,10 @@
 
 <!-- Logout Confirmation Modal — di luar header agar position:fixed bekerja benar -->
 <div id="logout-confirm-modal"
-    style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; width:100%; height:100%; z-index:99999;
+    style="display:none; position:fixed; top:0; left:0%; right:0; bottom:0; width:100%; height:100%; z-index:99999;
            background:rgba(0,0,0,0.82); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
            align-items:center; justify-content:center;">
-    <div style="background:#111; border:1px solid rgba(220,20,60,0.3);
+    <div id="logout" style="background:#111;top:-43%; border:1px solid rgba(220,20,60,0.3);
                 border-radius:18px; padding:42px 40px; max-width:380px; width:90%;
                 box-shadow:0 25px 60px rgba(0,0,0,0.8);
                 text-align:center; animation:popIn 0.25s ease-out;
