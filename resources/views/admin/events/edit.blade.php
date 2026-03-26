@@ -108,15 +108,6 @@
 
                     <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="ticket_quota" class="form-label">Kuota Tiket *</label>
-                            <input type="number" class="form-control @error('ticket_quota') is-invalid @enderror" name="ticket_quota"
-                                id="ticket_quota" value="{{ $event->ticket_quota }}" min="1" required>
-                            @error('ticket_quota')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-3">
                             <label for="banner" class="form-label">Banner Event</label>
                             @if ($event->banner_url)
                                 <div class="mb-2">
@@ -132,7 +123,7 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-9">
                             <label for="status" class="form-label">Status *</label>
                             <select class="form-select @error('status') is-invalid @enderror" name="status" id="status"
                                 required>
@@ -145,6 +136,113 @@
                             @error('status')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
+                        </div>
+                    </div>
+
+                    <!-- Ticket Types Section -->
+                    <hr class="my-4">
+                    <h5 class="mb-3">Jenis Tiket & Kuota</h5>
+                    <p class="text-muted small mb-4">Atur kuota dan harga untuk setiap jenis tiket</p>
+
+                    @php
+                        // Get existing ticket types by name
+                        $regularTicket = $event->ticketTypes->where('name', 'Regular')->first();
+                        $vipTicket = $event->ticketTypes->where('name', 'VIP')->first();
+                        $vvipTicket = $event->ticketTypes->where('name', 'VVIP')->first();
+                    @endphp
+
+                    <!-- Regular Ticket Type -->
+                    <div class="card mb-3 border-start border-4" style="border-color: #6c757d !important;">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">
+                                <i class="fas fa-tag"></i> Tiket Regular
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="regular_quota" class="form-label">Kuota Tiket *</label>
+                                    <input type="number"
+                                        class="form-control @error('regular_quota') is-invalid @enderror"
+                                        name="regular_quota" id="regular_quota" placeholder="Jumlah tiket"
+                                        value="{{ old('regular_quota', $regularTicket?->quantity_total ?? 0) }}"
+                                        min="0" required>
+                                    @error('regular_quota')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="regular_price" class="form-label">Harga (Rp) *</label>
+                                    <input type="number"
+                                        class="form-control @error('regular_price') is-invalid @enderror"
+                                        name="regular_price" id="regular_price" placeholder="0"
+                                        value="{{ old('regular_price', $regularTicket?->price ?? 0) }}" min="0"
+                                        step="1000" required>
+                                    @error('regular_price')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VIP Ticket Type -->
+                    <div class="card mb-3 border-start border-4" style="border-color: #ffc107 !important;">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">
+                                <i class="fas fa-crown"></i> Tiket VIP
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="vip_quota" class="form-label">Kuota Tiket *</label>
+                                    <input type="number" class="form-control @error('vip_quota') is-invalid @enderror"
+                                        name="vip_quota" id="vip_quota" placeholder="Jumlah tiket"
+                                        value="{{ old('vip_quota', $vipTicket?->quantity_total ?? 0) }}" min="0"
+                                        required>
+                                    @error('vip_quota')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="vip_price" class="form-label">Harga (Rp) *</label>
+                                    <input type="number" class="form-control @error('vip_price') is-invalid @enderror"
+                                        name="vip_price" id="vip_price" placeholder="0"
+                                        value="{{ old('vip_price', $vipTicket?->price ?? 0) }}" min="0"
+                                        step="1000" required>
+                                    @error('vip_price')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VVIP Ticket Type -->
+                    <div class="card mb-3 border-start border-4" style="border-color: #dc3545 !important;">
+                        <div class="card-body">
+                            <h6 class="card-title mb-3">
+                                <i class="fas fa-gem"></i> Tiket VVIP
+                            </h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="vvip_quota" class="form-label">Kuota Tiket *</label>
+                                    <input type="number" class="form-control @error('vvip_quota') is-invalid @enderror"
+                                        name="vvip_quota" id="vvip_quota" placeholder="Jumlah tiket"
+                                        value="{{ old('vvip_quota', $vvipTicket?->quantity_total ?? 0) }}" min="0"
+                                        required>
+                                    @error('vvip_quota')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="vvip_price" class="form-label">Harga (Rp) *</label>
+                                    <input type="number" class="form-control @error('vvip_price') is-invalid @enderror"
+                                        name="vvip_price" id="vvip_price" placeholder="0"
+                                        value="{{ old('vvip_price', $vvipTicket?->price ?? 0) }}" min="0"
+                                        step="1000" required>
+                                    @error('vvip_price')
+                                        <span class="invalid-feedback d-block">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
 

@@ -34,17 +34,17 @@
                         <ul class="nav nav-collapse">
                             <li>
                                 <a href="{{ route('admin.dashboard') }}">
-                                    <span class="sub-item">📊 Main Dashboard</span>
+                                    <span class="sub-item">Main Dashboard</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.events.index') }}">
-                                    <span class="sub-item">🎪 Event Management</span>
+                                    <span class="sub-item">Event Management</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.categories.index') }}">
-                                    <span class="sub-item">🏷️ Event Categories</span>
+                                    <span class="sub-item">Event Categories</span>
                                 </a>
                             </li>
                         </ul>
@@ -62,22 +62,22 @@
                         <ul class="nav nav-collapse">
                             <li>
                                 <a href="{{ route('admin.analytics.sales') }}">
-                                    <span class="sub-item">📈 Sales Analytics</span>
+                                    <span class="sub-item">Sales Analytics</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.analytics.transactions') }}">
-                                    <span class="sub-item">💳 Transactions</span>
+                                    <span class="sub-item">Transactions</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.analytics.event-performance') }}">
-                                    <span class="sub-item">⭐ Event Performance</span>
+                                    <span class="sub-item">Event Performance</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.analytics.user-stats') }}">
-                                    <span class="sub-item">👥 User Stats</span>
+                                    <span class="sub-item">User Stats</span>
                                 </a>
                             </li>
                         </ul>
@@ -95,22 +95,22 @@
                         <ul class="nav nav-collapse">
                             <li>
                                 <a href="{{ route('admin.export.events') }}">
-                                    <span class="sub-item">📥 Export Events</span>
+                                    <span class="sub-item">Export Events</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.export.orders') }}">
-                                    <span class="sub-item">📥 Export Orders</span>
+                                    <span class="sub-item">Export Orders</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.export.sales') }}">
-                                    <span class="sub-item">📥 Sales Report</span>
+                                    <span class="sub-item">Sales Report</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('admin.export.event-performance') }}">
-                                    <span class="sub-item">📥 Performance Report</span>
+                                    <span class="sub-item">Performance Report</span>
                                 </a>
                             </li>
                         </ul>
