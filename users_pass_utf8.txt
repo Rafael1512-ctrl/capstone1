@@ -1,6 +1,0 @@
-﻿name	email	pass
-Errvin	2472024@maranatha.ac.id	$2y$12$TbNw4a4/RlOh1Tvz0frRMOCeohPLo4CU4UTNPuDgBX/eouSUeNamC
-Juan	2472020@maranatha.ac.id	$2y$12$IkWNQ6zXPTa.JZxprGfLW.6Ce4zauf3Vr/LeQiD9HL34Ggt1QY1Qa
-Rafael	2472025@maranatha.ac.id	$2y$12$84GaLIzVZuBKmqiunBgeV.DWS/MWe04AtHZIpGkpaAx2HSMHAOaKO
-Budi	user@gmail.com	user123
-Budi Santoso	user@example.com	$2y$12$eg6qbBxIhs6HrOx5zXopp.2hSvb.zvzVeiqzPVGtaeIkm.gR5T0Ja
