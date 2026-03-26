@@ -71,9 +71,15 @@ class EventManagementController extends Controller
             'description' => 'required|string',
             'schedule_time' => 'required|date|after:today',
             'location' => 'required|string|max:150',
-            'ticket_quota' => 'required|integer|min:1',
+            'ticket_quota' => 'nullable|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
+            'regular_quota' => 'required|integer|min:0',
+            'regular_price' => 'required|integer|min:0',
+            'vip_quota' => 'required|integer|min:0',
+            'vip_price' => 'required|integer|min:0',
+            'vvip_quota' => 'required|integer|min:0',
+            'vvip_price' => 'required|integer|min:0',
         ]);
 
         // Handle banner upload
@@ -83,12 +89,48 @@ class EventManagementController extends Controller
             $validated['banner_url'] = '/storage/' . $path;
         }
 
+        // Calculate total ticket quota
+        $totalQuota = $validated['regular_quota'] + $validated['vip_quota'] + $validated['vvip_quota'];
+        $validated['ticket_quota'] = $totalQuota;
+
         // Generate Event ID via SP
         DB::statement('CALL GenerateEventID(@new_id)');
         $newIdResult = DB::select('SELECT @new_id AS new_id');
         $validated['event_id'] = $newIdResult[0]->new_id;
 
-        Event::create($validated);
+        // Create the event
+        $event = Event::create($validated);
+
+        // Create ticket types
+        if ($validated['regular_quota'] > 0) {
+            TicketType::create([
+                'event_id' => $event->event_id,
+                'name' => 'Regular',
+                'price' => $validated['regular_price'],
+                'quantity_total' => $validated['regular_quota'],
+                'quantity_sold' => 0,
+            ]);
+        }
+
+        if ($validated['vip_quota'] > 0) {
+            TicketType::create([
+                'event_id' => $event->event_id,
+                'name' => 'VIP',
+                'price' => $validated['vip_price'],
+                'quantity_total' => $validated['vip_quota'],
+                'quantity_sold' => 0,
+            ]);
+        }
+
+        if ($validated['vvip_quota'] > 0) {
+            TicketType::create([
+                'event_id' => $event->event_id,
+                'name' => 'VVIP',
+                'price' => $validated['vvip_price'],
+                'quantity_total' => $validated['vvip_quota'],
+                'quantity_sold' => 0,
+            ]);
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil dibuat');
     }
@@ -98,7 +140,7 @@ class EventManagementController extends Controller
      */
     public function edit($event_id)
     {
-        $event = Event::findOrFail($event_id);
+        $event = Event::with('ticketTypes')->findOrFail($event_id);
         $categories = DB::table('kategori_acara')->get();
         $organizers = User::where('role_id', 2)->get();
 
@@ -119,9 +161,15 @@ class EventManagementController extends Controller
             'description' => 'required|string',
             'schedule_time' => 'required|date',
             'location' => 'required|string|max:150',
-            'ticket_quota' => 'required|integer|min:1',
+            'ticket_quota' => 'nullable|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
+            'regular_quota' => 'required|integer|min:0',
+            'regular_price' => 'required|integer|min:0',
+            'vip_quota' => 'required|integer|min:0',
+            'vip_price' => 'required|integer|min:0',
+            'vvip_quota' => 'required|integer|min:0',
+            'vvip_price' => 'required|integer|min:0',
         ]);
 
         // Handle banner upload
@@ -136,7 +184,75 @@ class EventManagementController extends Controller
             $validated['banner_url'] = '/storage/' . $path;
         }
 
+        // Calculate total ticket quota
+        $totalQuota = $validated['regular_quota'] + $validated['vip_quota'] + $validated['vvip_quota'];
+        $validated['ticket_quota'] = $totalQuota;
+
         $event->update($validated);
+
+        // Update or create ticket types
+        // Regular Ticket
+        $regularTicket = $event->ticketTypes->where('name', 'Regular')->first();
+        if ($validated['regular_quota'] > 0) {
+            if ($regularTicket) {
+                $regularTicket->update([
+                    'price' => $validated['regular_price'],
+                    'quantity_total' => $validated['regular_quota'],
+                ]);
+            } else {
+                TicketType::create([
+                    'event_id' => $event->event_id,
+                    'name' => 'Regular',
+                    'price' => $validated['regular_price'],
+                    'quantity_total' => $validated['regular_quota'],
+                    'quantity_sold' => 0,
+                ]);
+            }
+        } elseif ($regularTicket) {
+            $regularTicket->delete();
+        }
+
+        // VIP Ticket
+        $vipTicket = $event->ticketTypes->where('name', 'VIP')->first();
+        if ($validated['vip_quota'] > 0) {
+            if ($vipTicket) {
+                $vipTicket->update([
+                    'price' => $validated['vip_price'],
+                    'quantity_total' => $validated['vip_quota'],
+                ]);
+            } else {
+                TicketType::create([
+                    'event_id' => $event->event_id,
+                    'name' => 'VIP',
+                    'price' => $validated['vip_price'],
+                    'quantity_total' => $validated['vip_quota'],
+                    'quantity_sold' => 0,
+                ]);
+            }
+        } elseif ($vipTicket) {
+            $vipTicket->delete();
+        }
+
+        // VVIP Ticket
+        $vvipTicket = $event->ticketTypes->where('name', 'VVIP')->first();
+        if ($validated['vvip_quota'] > 0) {
+            if ($vvipTicket) {
+                $vvipTicket->update([
+                    'price' => $validated['vvip_price'],
+                    'quantity_total' => $validated['vvip_quota'],
+                ]);
+            } else {
+                TicketType::create([
+                    'event_id' => $event->event_id,
+                    'name' => 'VVIP',
+                    'price' => $validated['vvip_price'],
+                    'quantity_total' => $validated['vvip_quota'],
+                    'quantity_sold' => 0,
+                ]);
+            }
+        } elseif ($vvipTicket) {
+            $vvipTicket->delete();
+        }
 
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil diupdate');
     }
@@ -173,5 +289,11 @@ class EventManagementController extends Controller
             ->sum('transaksi.total_amount');
 
         return view('admin.events.show', compact('event', 'totalTicketsSold', 'totalTicketsAvailable', 'totalRevenue'));
+    }
+
+    public function manageTickets()
+    {
+        // logika untuk menampilkan atau mengelola tiket
+        return view('admin.tickets.index');
     }
 }

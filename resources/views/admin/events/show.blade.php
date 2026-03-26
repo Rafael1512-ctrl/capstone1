@@ -129,12 +129,6 @@
 
         <!-- Ticket Types -->
         <div class="card">
-            <div class="card-header d-flex justify-content-between">
-                <h5 class="card-title mb-0">Jenis Tiket</h5>
-                <a href="{{ route('admin.events.manage-tickets', $event) }}" class="btn btn-sm btn-primary">
-                    <i class="fas fa-edit"></i> Kelola
-                </a>
-            </div>
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
