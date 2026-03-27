@@ -403,23 +403,24 @@ class EventManagementController extends Controller
             }
         }
 
-        // Use transaction for reliability
+        // Use transaction for reliability with foreign key check disabled temporarily
         DB::beginTransaction();
         try {
+            // Disable foreign key checks to handle circular dependencies and complex relations
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
             // Get all ticket type IDs belonging to this event
             $ticketTypeIds = TicketType::where('event_id', $event_id)->pluck('id');
             // Get all ticket IDs belonging to these types
             $ticketIds = DB::table('ticket')->whereIn('ticket_type_id', $ticketTypeIds)->pluck('ticket_id');
 
             // 1. Get all transaction IDs related to these tickets
-            // We find transaction_ids from the ticket table
             $transactionIdsFromTickets = DB::table('ticket')
                 ->whereIn('ticket_type_id', $ticketTypeIds)
                 ->pluck('transaction_id')
                 ->filter()
                 ->unique();
 
-            // Also find transaction IDs from transaksi table where either ticket_id matches or transaction_id is in the set
             $transactionIdsFromOrders = DB::table('transaksi')
                 ->whereIn('ticket_id', $ticketIds)
                 ->pluck('transaction_id')
@@ -430,12 +431,19 @@ class EventManagementController extends Controller
 
             // 2. Perform Exhaustive Dependency Cleanup (Checking table existence first)
 
+            // Cleanup: Report (CRITICAL: Often causes FK failure)
+            if (Schema::hasTable('report')) {
+                DB::table('report')->where('event_id', $event_id)->delete();
+            }
+
             // Cleanup: Waiting Lists
             if (Schema::hasTable('waiting_lists')) {
                 DB::table('waiting_lists')->where('event_id', $event_id)->delete();
                 if ($ticketTypeIds->isNotEmpty()) {
                     DB::table('waiting_lists')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
                 }
+            } else if (Schema::hasTable('waiting_list')) { // Also check for singular name mapping
+                DB::table('waiting_list')->where('event_id', $event_id)->delete();
             }
 
             // Cleanup: Ticket Reservations
@@ -470,10 +478,15 @@ class EventManagementController extends Controller
             // 5. Delete the event record (acara)
             $event->delete();
 
+            // Re-enable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
             DB::commit();
             return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus beserta semua data terkait.');
         } catch (\Exception $e) {
             DB::rollBack();
+            // Ensure foreign key checks are re-enabled even on failure
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
             return redirect()->route('admin.events.index')->with('error', 'Gagal menghapus event: ' . $e->getMessage());
         }
     }
