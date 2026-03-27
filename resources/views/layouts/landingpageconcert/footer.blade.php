@@ -3,8 +3,8 @@
     <div class="container">
       <div class="row mb-5">
         <div class="col-md-4 mb-5">
-          <h3 class="mb-4" style="color: #ffffff; font-family: 'DM Serif Display', serif; font-size: 26px; letter-spacing: 0.5px;">About LuxTix</h3>
-          <p class="mb-5" style="color: #888; font-family: 'Inter', sans-serif; line-height: 1.9; font-size: 14.5px;">LuxTix is the premier destination for music lovers seeking exclusive access to the world's most prestigious concerts and festivals. We bring you closer to the artists you adore with elegance and security.</p>
+          <h3 class="mb-4" style="color: #ffffff; font-family: 'DM Serif Display', serif; font-size: 26px; letter-spacing: 0.5px;">About Tixly</h3>
+          <p class="mb-5" style="color: #888; font-family: 'Inter', sans-serif; line-height: 1.9; font-size: 14.5px;">Tixly is the premier destination for music lovers seeking exclusive access to the world's most prestigious concerts and festivals. We bring you closer to the artists you adore with elegance and security.</p>
           <ul class="list-unstyled footer-link d-flex footer-social">
             <li><a href="#" class="p-2" style="color: #444; transition: all 0.4s ease;" onmouseover="this.style.color='#8B0000'; this.style.transform='translateY(-5px)'" onmouseout="this.style.color='#444'; this.style.transform='translateY(0)'"><span class="fa fa-twitter"></span></a></li>
             <li><a href="#" class="p-2" style="color: #444; transition: all 0.4s ease;" onmouseover="this.style.color='#8B0000'; this.style.transform='translateY(-5px)'" onmouseout="this.style.color='#444'; this.style.transform='translateY(0)'"><span class="fa fa-facebook"></span></a></li>
@@ -25,7 +25,7 @@
                 <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Concierge</span><span class="caption-text" style="color: #999; font-size: 14px;">+62 21 555 0123</span>
               </li>
               <li class="d-block">
-                <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Email</span><span class="caption-text" style="color: #999; font-size: 14px;">concierge@luxtix.com</span>
+                <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Email</span><span class="caption-text" style="color: #999; font-size: 14px;">concierge@tixly.com</span>
               </li>
             </ul>
           </div>
@@ -48,7 +48,7 @@
       <div class="row pt-5 mt-5 border-top" style="border-color: #221a1a !important;">
         <div class="col-12 text-md-center text-left">
           <p class="copyright" style="color: #555; font-size: 12px; letter-spacing: 1px;"><small>&copy;
-                  <script>document.write(new Date().getFullYear());</script> LuxTix. All Rights Reserved. <br> <span style="opacity: 0.4; font-size: 10px; text-transform: uppercase;">Engineered for the ultimate sound.</span></small></p>
+                  <script>document.write(new Date().getFullYear());</script> Tixly. All Rights Reserved. <br> <span style="opacity: 0.4; font-size: 10px; text-transform: uppercase;">Engineered for the ultimate sound.</span></small></p>
         </div>
       </div>
     </div>

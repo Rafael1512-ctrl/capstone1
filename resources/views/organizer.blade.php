@@ -5,12 +5,12 @@
 <style>
     /* ── Organizer Dashboard Styles ── */
     :root {
-        --org-gold: #c9a84c;
+        --org-gold: #ff3366; /* Using Tixly pink/red */
         --org-dark: #0d0d0d;
         --org-card-bg: #1a1a1a;
-        --org-border: rgba(201,168,76,0.25);
+        --org-border: rgba(255, 51, 102, 0.25);
     }
-
+    
     /* Hero */
     .org-hero {
         background: linear-gradient(135deg, #0d0d0d 0%, #1a1014 50%, #0d0d0d 100%);
@@ -26,13 +26,13 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(ellipse at center, rgba(201,168,76,0.06) 0%, transparent 65%);
+        background: radial-gradient(ellipse at center, rgba(255, 51, 102, 0.08) 0%, transparent 65%);
         pointer-events: none;
     }
     .org-hero .badge-role {
         display: inline-block;
-        background: linear-gradient(90deg, #c9a84c, #e8c97a);
-        color: #000;
+        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        color: #fff;
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 2px;
@@ -49,7 +49,7 @@
         line-height: 1.2;
     }
     .org-hero h1 span {
-        background: linear-gradient(90deg, #c9a84c, #e8c97a);
+        background: linear-gradient(90deg, #ff3366, #ff6b8b);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -63,15 +63,15 @@
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #c9a84c, #e8c97a);
+        background: linear-gradient(135deg, #ff3366, #ff6b8b);
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 28px;
         font-weight: 800;
-        color: #000;
+        color: #fff;
         flex-shrink: 0;
-        box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+        box-shadow: 0 0 0 4px rgba(255, 51, 102, 0.2);
     }
 
     /* Stats */
@@ -95,20 +95,20 @@
         position: absolute;
         top: 0; left: 0; right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #c9a84c, #e8c97a);
+        background: linear-gradient(90deg, #ff3366, #ff6b8b);
         opacity: 0;
         transition: opacity 0.3s;
     }
     .stat-card:hover {
         transform: translateY(-5px);
-        border-color: rgba(201,168,76,0.5);
-        box-shadow: 0 12px 40px rgba(201,168,76,0.1);
+        border-color: rgba(255, 51, 102, 0.5);
+        box-shadow: 0 12px 40px rgba(255, 51, 102, 0.1);
     }
     .stat-card:hover::before { opacity: 1; }
     .stat-card .stat-icon {
         width: 48px; height: 48px;
         border-radius: 12px;
-        background: rgba(201,168,76,0.12);
+        background: rgba(255, 51, 102, 0.12);
         display: flex; align-items: center; justify-content: center;
         margin: 0 auto 14px;
         font-size: 20px;
@@ -116,7 +116,7 @@
     .stat-card .stat-value {
         font-size: 28px;
         font-weight: 800;
-        color: #c9a84c;
+        color: #ff3366;
         line-height: 1;
         margin-bottom: 6px;
     }
@@ -139,7 +139,7 @@
         margin-bottom: 6px;
     }
     .org-section-title span {
-        color: #c9a84c;
+        color: #ff3366;
     }
     .org-section-sub {
         color: rgba(255,255,255,0.4);
@@ -158,7 +158,7 @@
     }
     .event-card:hover {
         transform: translateY(-6px);
-        border-color: rgba(201,168,76,0.5);
+        border-color: rgba(255, 51, 102, 0.5);
         box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
     .event-card-img {
@@ -195,9 +195,9 @@
         border: 1px solid rgba(34,197,94,0.3);
     }
     .event-badge.upcoming {
-        background: rgba(201,168,76,0.15);
-        color: #c9a84c;
-        border: 1px solid rgba(201,168,76,0.3);
+        background: rgba(255, 51, 102, 0.15);
+        color: #ff3366;
+        border: 1px solid rgba(255, 51, 102, 0.3);
     }
     .event-card-title {
         font-size: 20px;
@@ -229,7 +229,7 @@
     }
     .event-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, #c9a84c, #e8c97a);
+        background: linear-gradient(90deg, #ff3366, #ff6b8b);
         border-radius: 10px;
         transition: width 1s ease;
     }
@@ -262,8 +262,8 @@
         display: block;
         width: 100%;
         text-align: center;
-        background: linear-gradient(90deg, #c9a84c, #e8c97a);
-        color: #000 !important;
+        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        color: #fff !important;
         font-weight: 700;
         font-size: 13px;
         padding: 10px 0;
@@ -288,8 +288,8 @@
         transition: all 0.2s;
     }
     .btn-org-outline:hover {
-        border-color: #c9a84c;
-        color: #c9a84c !important;
+        border-color: #ff3366;
+        color: #ff3366 !important;
     }
 
     /* Orders Table */
@@ -331,7 +331,7 @@
         transition: background 0.2s;
     }
     .org-table tbody tr:last-child { border-bottom: none; }
-    .org-table tbody tr:hover { background: rgba(201,168,76,0.04); }
+    .org-table tbody tr:hover { background: rgba(255, 51, 102, 0.04); }
     .org-table tbody td {
         padding: 14px 20px;
         color: rgba(255,255,255,0.8);
@@ -391,9 +391,9 @@
         text-decoration: none;
     }
     .org-tab-btn.active, .org-tab-btn:hover {
-        background: linear-gradient(90deg, #c9a84c, #e8c97a);
+        background: linear-gradient(90deg, #ff3366, #ff6b8b);
         border-color: transparent;
-        color: #000 !important;
+        color: #fff !important;
     }
 
     /* Responsive */
@@ -484,9 +484,22 @@
             <div class="col-md-6" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                 <div class="event-card">
                     {{-- Image --}}
-                    <div class="event-card-img-placeholder">
-                        {{ $event['emoji'] }}
-                    </div>
+                    @if($event['banner_url'])
+                        @php
+                            if (str_starts_with($event['banner_url'], '/storage/')) {
+                                $imgSrc = $event['banner_url'];
+                            } elseif (str_starts_with($event['banner_url'], '/')) {
+                                $imgSrc = asset($event['banner_url']);
+                            } else {
+                                $imgSrc = Storage::url($event['banner_url']);
+                            }
+                        @endphp
+                        <img src="{{ $imgSrc }}" alt="{{ $event['name'] }}" class="event-card-img">
+                    @else
+                        <div class="event-card-img-placeholder">
+                            {{ $event['emoji'] }}
+                        </div>
+                    @endif
 
                     <div class="event-card-body">
                         <span class="event-badge {{ $event['status_class'] }}">{{ $event['status_label'] }}</span>
@@ -524,8 +537,22 @@
                             </div>
                         </div>
 
-                        <a href="#orders-{{ $event['id'] }}" class="btn-org-primary">
-                            🎫 View Buyer Report
+                        {{-- Revenue & Analysis --}}
+                        <div class="event-mini-stats" style="margin-top: -10px;">
+                            <div class="event-mini-stat">
+                                <div class="val" style="color:#ff3366; font-size: 16px;">Rp {{ number_format($event['revenue'] / 1000, 0) }}K</div>
+                                <div class="lbl">Revenue</div>
+                            </div>
+                            <div class="event-mini-stat">
+                                <div class="val" style="font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $event['performance'] }}">
+                                    @if($pct >= 90) 🔥 @elseif($pct >= 50) 🚀 @else 📈 @endif {{ $event['performance'] }}
+                                </div>
+                                <div class="lbl">Analysis</div>
+                            </div>
+                        </div>
+
+                        <a href="{{ route('organizer.report', $event['id']) }}" class="btn-org-primary">
+                            🎫 View Buyer Report & Chart
                         </a>
                     </div>
                 </div>
@@ -540,91 +567,6 @@
             </div>
         </div>
         @endif
-
-        {{-- ─── BUYER HISTORY PER EVENT ───────────────────────── --}}
-        @foreach($myEvents as $event)
-        <div id="orders-{{ $event['id'] }}" class="mb-5" data-aos="fade-up">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h3 class="org-section-title" style="font-size:18px">
-                        {{ $event['emoji'] }} {{ $event['name'] }} — <span>Buyer History</span>
-                    </h3>
-                    <p class="org-section-sub mb-0">All ticket purchases for this event</p>
-                </div>
-                <span class="event-badge {{ $event['status_class'] }}">{{ $event['status_label'] }}</span>
-            </div>
-
-            <div class="org-table-wrap">
-                <div class="org-table-header">
-                    <h6>📋 Purchase Records</h6>
-                    <span style="color:rgba(255,255,255,0.4);font-size:13px">
-                        {{ count($event['orders_list']) }} transaction(s)
-                    </span>
-                </div>
-
-                @if(count($event['orders_list']) > 0)
-                <div class="table-responsive">
-                    <table class="org-table">
-                        <thead>
-                            <tr>
-                                <th>Order #</th>
-                                <th>Buyer</th>
-                                <th>Ticket Type</th>
-                                <th>Qty</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($event['orders_list'] as $order)
-                            <tr>
-                                <td data-label="Order #">
-                                    <span style="font-family:monospace;color:#c9a84c;font-size:13px">
-                                        {{ $order['order_number'] }}
-                                    </span>
-                                </td>
-                                <td data-label="Buyer">
-                                    <div class="buyer-name">{{ $order['buyer_name'] }}</div>
-                                    <div class="buyer-email">{{ $order['buyer_email'] }}</div>
-                                </td>
-                                <td data-label="Ticket Type">
-                                    <span style="color:rgba(255,255,255,0.7);font-size:13px">
-                                        {{ $order['ticket_type'] }}
-                                    </span>
-                                </td>
-                                <td data-label="Qty">
-                                    <span style="color:#fff;font-weight:700">{{ $order['qty'] }}</span>
-                                </td>
-                                <td data-label="Amount">
-                                    <span style="color:#c9a84c;font-weight:700">
-                                        Rp {{ number_format($order['amount'], 0, ',', '.') }}
-                                    </span>
-                                </td>
-                                <td data-label="Status">
-                                    <span class="status-badge {{ $order['status'] }}">
-                                        {{ ucfirst($order['status']) }}
-                                    </span>
-                                </td>
-                                <td data-label="Date">
-                                    <span style="color:rgba(255,255,255,0.45);font-size:12px">
-                                        {{ $order['date'] }}
-                                    </span>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @else
-                <div class="empty-state">
-                    <div class="empty-icon">📭</div>
-                    <p>No purchases recorded for this event yet.</p>
-                </div>
-                @endif
-            </div>
-        </div>
-        @endforeach
 
     </div>
 </div>
@@ -647,21 +589,6 @@
         bar.dataset.width = target;
         bar.style.width = '0%';
         observer.observe(bar);
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#orders-"]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                // Highlight briefly
-                target.style.transition = 'outline 0.3s';
-                target.style.outline = '2px solid rgba(201,168,76,0.4)';
-                setTimeout(() => target.style.outline = 'none', 1500);
-            }
-        });
     });
 </script>
 @endsection

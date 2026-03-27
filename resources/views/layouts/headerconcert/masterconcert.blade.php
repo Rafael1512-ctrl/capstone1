@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>@yield('title', 'LuxTix Concert')</title>
+    <title>@yield('title', 'Tixly Concert')</title>
     <meta name="description" content="@yield('meta_description', 'Live Music Event')">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -50,7 +50,7 @@
         'footerSlogan' => $footerSlogan ?? 'GET YOUR TICKETS NOW',
         'footerButtonText' => $footerButtonText ?? 'Get Your Ticket',
         'footerButtonLink' => $footerButtonLink ?? '#',
-        'footerCopyright' => $footerCopyright ?? 'LuxTix © 2026'
+        'footerCopyright' => $footerCopyright ?? 'Tixly © 2026'
     ])
 
     <!-- JS common for all concert pages -->

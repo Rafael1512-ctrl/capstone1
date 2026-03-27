@@ -22,7 +22,7 @@
                     <div class="col-xl-12">
                         <p class="copy_right text-center wow fadeInDown" data-wow-duration="1s" data-wow-delay=".5s">
                             Copyright &copy;
-                            <script>document.write(new Date().getFullYear());</script> All rights reserved | {{ $footerCopyright ?? 'LuxTix' }}
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved | {{ $footerCopyright ?? 'Tixly' }}
                         </p>
                     </div>
                 </div>

@@ -44,18 +44,30 @@
 
             <div class="collapse navbar-collapse" id="navbarsExample05">
                 <ul class="navbar-nav pl-md-5 ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ route('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ Auth::check() ? '#concerts' : route('login') }}">Discover</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ Auth::check() ? '#my-tickets' : route('login') }}">My Tickets</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#footer">Contact</a>
-                    </li>
+                    @if(Auth::check() && (Auth::user()->role === 'Organizer' || Auth::user()->role === 'organizer'))
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('organizer.dashboard') ? 'active' : '' }}" href="{{ route('organizer.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">User Site</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#footer">Support</a>
+                        </li>
+                    @else
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ Auth::check() ? '#concerts' : route('login') }}">Discover</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ Auth::check() ? '#my-tickets' : route('login') }}">My Tickets</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#footer">Contact</a>
+                        </li>
+                    @endif
                 </ul>
 
                 <div class="navbar-nav ml-auto align-items-center" style="gap: 10px;">
@@ -118,15 +130,22 @@
                                         style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
                                         <i class="fa fa-tachometer" style="width:18px; color:#dc143c;"></i> Dashboard
                                     </a>
+                                @elseif (Auth::user()->role === 'Organizer' || Auth::user()->role === 'organizer')
+                                    <a class="dropdown-item" href="{{ route('organizer.dashboard') }}"
+                                        style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
+                                        <i class="fa fa-bar-chart" style="width:18px; color:#dc143c;"></i> Org. Dashboard
+                                    </a>
                                 @endif
                                 <a class="dropdown-item" href="{{ route('profile.show') }}"
                                     style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
                                     <i class="fa fa-user" style="width:18px; color:#dc143c;"></i> My Profile
                                 </a>
-                                <a class="dropdown-item" href="{{ route('tickets.index') }}"
-                                    style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
-                                    <i class="fa fa-ticket" style="width:18px; color:#dc143c;"></i> My Tickets
-                                </a>
+                                @if (Auth::user()->role !== 'Organizer' && Auth::user()->role !== 'organizer')
+                                    <a class="dropdown-item" href="{{ route('tickets.index') }}"
+                                        style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
+                                        <i class="fa fa-ticket" style="width:18px; color:#dc143c;"></i> My Tickets
+                                    </a>
+                                @endif
                                 
                                 <div style="border-top: 1px solid rgba(255,255,255,0.08); margin: 4px 0;"></div>
                                 <a class="dropdown-item" href="#logout"

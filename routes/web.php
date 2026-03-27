@@ -45,6 +45,10 @@ Route::get('/organizer-dashboard', [OrganizerController::class, 'index'])
     ->name('organizer.dashboard')
     ->middleware(['auth', 'role:organizer,admin']);
 
+Route::get('/organizer-dashboard/event/{id}', [OrganizerController::class, 'showReport'])
+    ->name('organizer.report')
+    ->middleware(['auth', 'role:organizer,admin']);
+
 // Concert Pages (Static / Public)
 Route::get('/concert1', function () {
     return view('concert1');
