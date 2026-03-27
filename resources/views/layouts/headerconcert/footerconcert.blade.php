@@ -6,8 +6,8 @@
                         <div class="footer_widget">
                             <div class="address_details text-center">
                                 <h4 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".3s">{{ $footerDate }}</h4>
-                                <h3 class="wow fadeInUp {{ $footerLocationClass ?? 'text-warning' }}" data-wow-duration="1s" data-wow-delay=".4s">{{ $footerLocation }}</h3>
-                                <p class="wow fadeInUp {{ $footerSloganClass ?? 'text-light' }}" data-wow-duration="1s" data-wow-delay=".5s">{{ $footerSlogan }}</p>
+                                <h3 class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">{{ $footerLocation }}</h3>
+                                <p class="wow fadeInUp" data-wow-duration="1s" data-wow-delay=".5s">{{ $footerSlogan }}</p>
                                 <a href="{{ $footerButtonLink ?? '#' }}" class="boxed-btn3 wow fadeInUp" data-wow-duration="1s"
                                     data-wow-delay=".6s">{{ $footerButtonText }}</a>
                             </div>
@@ -22,7 +22,7 @@
                     <div class="col-xl-12">
                         <p class="copy_right text-center wow fadeInDown" data-wow-duration="1s" data-wow-delay=".5s">
                             Copyright &copy;
-                            <script>document.write(new Date().getFullYear());</script> {{ $footerCopyright ?? 'LuxTix' }}
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved | {{ $footerCopyright ?? 'LuxTix' }}
                         </p>
                     </div>
                 </div>

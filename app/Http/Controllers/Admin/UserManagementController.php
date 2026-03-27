@@ -57,6 +57,11 @@ class UserManagementController extends Controller
             $request->role_id
         ]);
 
+        // Auto-verify if the user is an Admin or Organizer
+        if ($request->role_id == 1 || $request->role_id == 2) {
+            User::where('email', $request->email)->update(['email_verified_at' => now()]);
+        }
+
         $role = ($request->role_id == 1 ? 'admin' : ($request->role_id == 2 ? 'organizer' : 'user'));
         $redirectRoute = 'admin.users.' . ($role == 'admin' ? 'admins' : ($role == 'organizer' ? 'organizers' : 'users'));
         
@@ -88,6 +93,11 @@ class UserManagementController extends Controller
         
         if ($request->filled('password')) {
             $user->pass = Hash::make($request->password);
+        }
+        
+        // Auto-verify if the user is promoted to Admin/Organizer and is not yet verified
+        if (($request->role_id == 1 || $request->role_id == 2) && !$user->isEmailVerified()) {
+            $user->email_verified_at = now();
         }
         
         $user->save();

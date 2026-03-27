@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class EventManagementController extends Controller
@@ -102,14 +103,14 @@ class EventManagementController extends Controller
                         'description' => $performer['description'] ?? '',
                         'photo' => null,
                     ];
-                    
+
                     // Handle performer photo upload
                     if ($request->hasFile("performers.{$index}.photo")) {
                         $photo = $request->file("performers.{$index}.photo");
                         $path = $photo->store('events/performers', 'public');
                         $performerData['photo'] = '/storage/' . $path;
                     }
-                    
+
                     $performers[] = $performerData;
                 }
             }
@@ -121,17 +122,17 @@ class EventManagementController extends Controller
         // Improved Google Maps Cleaner to ensure it works in iframes
         if (!empty($validated['maps_url'])) {
             $mapsUrl = $validated['maps_url'];
-            
+
             // Extract src from iframe tag if pasted
             if (preg_match('/src="([^"]+)"/', $mapsUrl, $matches)) {
                 $mapsUrl = $matches[1];
             }
-            
+
             // If provided a standard link (like maps.app.goo.gl), convert to a functional embed via search
             if (!str_contains($mapsUrl, 'output=embed') && !str_contains($mapsUrl, '/embed/')) {
                 $mapsUrl = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
             }
-            
+
             $validated['maps_url'] = $mapsUrl;
         } elseif (!empty($validated['location'])) {
             // If no URL provided but location exists, create a default embed
@@ -150,7 +151,7 @@ class EventManagementController extends Controller
                 DB::statement('CALL GenerateEventID(@new_id)');
                 $newIdResult = DB::select('SELECT @new_id AS new_id');
                 $eventId = $newIdResult[0]->new_id ?? ('EV-' . time());
-                
+
                 // Final safety check: if ID already exists, modify the suffix to avoid error
                 // The column limit is exactly 14 characters (VARCHAR(14)). We cannot append.
                 if (Event::where('event_id', $eventId)->exists()) {
@@ -267,7 +268,7 @@ class EventManagementController extends Controller
                         'description' => $performer['description'] ?? '',
                         'photo' => $performer['photo'] ?? null,
                     ];
-                    
+
                     // Handle new performer photo upload
                     if ($request->hasFile("performers.{$index}.photo")) {
                         // Delete old photo if exists
@@ -275,12 +276,12 @@ class EventManagementController extends Controller
                             $oldPath = str_replace('/storage/', '', $performerData['photo']);
                             Storage::disk('public')->delete($oldPath);
                         }
-                        
+
                         $photo = $request->file("performers.{$index}.photo");
                         $path = $photo->store('events/performers', 'public');
                         $performerData['photo'] = '/storage/' . $path;
                     }
-                    
+
                     $performers[] = $performerData;
                 }
             }
@@ -297,7 +298,7 @@ class EventManagementController extends Controller
             if (preg_match('/src="([^"]+)"/', $mapsUrl, $matches)) {
                 $mapsUrl = $matches[1];
             }
-            
+
             if (!str_contains($mapsUrl, 'output=embed') && !str_contains($mapsUrl, '/embed/')) {
                 $mapsUrl = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
             }
@@ -385,14 +386,96 @@ class EventManagementController extends Controller
     public function destroy($event_id)
     {
         $event = Event::findOrFail($event_id);
+
+        // Delete banner if exists
         if ($event->banner_url) {
             $path = str_replace('/storage/', '', $event->banner_url);
             Storage::disk('public')->delete($path);
         }
 
-        $event->delete();
+        // Delete performer photos if exist
+        if ($event->performers && is_array($event->performers)) {
+            foreach ($event->performers as $performer) {
+                if (!empty($performer['photo'])) {
+                    $path = str_replace('/storage/', '', $performer['photo']);
+                    Storage::disk('public')->delete($path);
+                }
+            }
+        }
 
-        return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus');
+        // Use transaction for reliability
+        DB::beginTransaction();
+        try {
+            // Get all ticket type IDs belonging to this event
+            $ticketTypeIds = TicketType::where('event_id', $event_id)->pluck('id');
+            // Get all ticket IDs belonging to these types
+            $ticketIds = DB::table('ticket')->whereIn('ticket_type_id', $ticketTypeIds)->pluck('ticket_id');
+
+            // 1. Get all transaction IDs related to these tickets
+            // We find transaction_ids from the ticket table
+            $transactionIdsFromTickets = DB::table('ticket')
+                ->whereIn('ticket_type_id', $ticketTypeIds)
+                ->pluck('transaction_id')
+                ->filter()
+                ->unique();
+
+            // Also find transaction IDs from transaksi table where either ticket_id matches or transaction_id is in the set
+            $transactionIdsFromOrders = DB::table('transaksi')
+                ->whereIn('ticket_id', $ticketIds)
+                ->pluck('transaction_id')
+                ->filter()
+                ->unique();
+
+            $allTransactionIds = $transactionIdsFromTickets->merge($transactionIdsFromOrders)->unique();
+
+            // 2. Perform Exhaustive Dependency Cleanup (Checking table existence first)
+
+            // Cleanup: Waiting Lists
+            if (Schema::hasTable('waiting_lists')) {
+                DB::table('waiting_lists')->where('event_id', $event_id)->delete();
+                if ($ticketTypeIds->isNotEmpty()) {
+                    DB::table('waiting_lists')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
+                }
+            }
+
+            // Cleanup: Ticket Reservations
+            if (Schema::hasTable('ticket_reservations') && $ticketTypeIds->isNotEmpty()) {
+                DB::table('ticket_reservations')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
+            }
+
+            // Cleanup: Order Items
+            if (Schema::hasTable('order_items') && $ticketTypeIds->isNotEmpty()) {
+                DB::table('order_items')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
+            }
+
+            // Cleanup: Payments
+            if (Schema::hasTable('payments') && $allTransactionIds->isNotEmpty()) {
+                DB::table('payments')->whereIn('order_id', $allTransactionIds)->delete();
+            }
+
+            // Cleanup: Transactions/Orders (transaksi)
+            if ($allTransactionIds->isNotEmpty()) {
+                DB::table('transaksi')->whereIn('transaction_id', $allTransactionIds)->delete();
+            }
+
+            // Fallback for transactions that might only be linked by old ticket_id field
+            DB::table('transaksi')->whereIn('ticket_id', $ticketIds)->delete();
+
+            // 3. Delete associated tickets
+            DB::table('ticket')->whereIn('ticket_type_id', $ticketTypeIds)->orWhere('event_id', $event_id)->delete();
+
+            // 4. Delete the ticket types themselves
+            TicketType::where('event_id', $event_id)->delete();
+
+            // 5. Delete the event record (acara)
+            $event->delete();
+
+            DB::commit();
+            return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus beserta semua data terkait.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.events.index')->with('error', 'Gagal menghapus event: ' . $e->getMessage());
+        }
     }
 
     /**
