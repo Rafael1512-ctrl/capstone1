@@ -236,10 +236,19 @@
                                     </div>
 
                                     <div class="concert-price-box mt-auto">
-                                        <div class="mb-2 text-left">
-                                            <span class="price-label d-block text-center">Starting from</span>
+                                        <div class="mb-2 text-left w-100">
+                                            @php
+                                                // Find 'Regular' ticket, or fallback to the cheapest one
+                                                $regTicket = $event->ticketTypes->first(function($t) {
+                                                    return stripos($t->name, 'reg') !== false;
+                                                }) ?: $event->ticketTypes->sortBy('price')->first();
+                                                
+                                                $displayPrice = $regTicket ? $regTicket->price : 0;
+                                                $priceTag = $regTicket ? ($regTicket->name . ' Price') : 'Starting from';
+                                            @endphp
+                                            <span class="price-label d-block text-center">{{ $priceTag }}</span>
                                             <span class="price-value font-weight-bold d-block text-center">
-                                                Rp. {{ number_format($event->ticket_price ?? 0, 0, ',', '.') }}
+                                                Rp. {{ number_format($displayPrice, 0, ',', '.') }}
                                             </span>
                                         </div>
                                         <a href="{{ route('public.event.show', $event->event_id) }}"

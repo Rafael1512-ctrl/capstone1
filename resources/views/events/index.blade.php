@@ -42,22 +42,32 @@
                                         <div class="col-md-6 col-lg-4 mb-4">
                                             <div class="card h-100 event-card">
                                                 <!-- Banner Event -->
-                                                @if ($event->banner_url)
-                                                    @php
-                                                        if (str_starts_with($event->banner_url, '/storage/')) {
-                                                            $imgSrc = $event->banner_url;
-                                                        } elseif (str_starts_with($event->banner_url, '/')) {
-                                                            $imgSrc = asset($event->banner_url);
+                                                @php
+                                                    $banner = $event->banner_url;
+                                                    // Jika sudah ada /storage/, buang sementara untuk pengecekan atau gunakan langsung
+                                                    if ($banner) {
+                                                        if (str_starts_with($banner, 'http')) {
+                                                            $imgSrc = $banner;
+                                                        } elseif (str_starts_with($banner, '/storage/')) {
+                                                            $imgSrc = asset($banner);
+                                                        } elseif (str_starts_with($banner, 'storage/')) {
+                                                            $imgSrc = asset($banner);
                                                         } else {
-                                                            $imgSrc = Storage::url($event->banner_url);
+                                                            $imgSrc = Storage::disk('public')->url($banner);
                                                         }
-                                                    @endphp
+                                                    } else {
+                                                        $imgSrc = null;
+                                                    }
+                                                @endphp
+
+                                                @if ($imgSrc)
                                                     <img src="{{ $imgSrc }}" class="card-img-top"
-                                                        alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
+                                                        alt="{{ $event->title }}" style="height: 200px; object-fit: cover;"
+                                                        onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=800';">
                                                 @else
                                                     <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                                                        style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                                        <i class="fas fa-ticket fa-3x text-white"></i>
+                                                        style="height: 200px; background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);">
+                                                        <i class="fas fa-ticket fa-3x text-danger opacity-50"></i>
                                                     </div>
                                                 @endif
 

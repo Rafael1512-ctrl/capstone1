@@ -76,11 +76,13 @@
         .main-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
+            margin-left: 0px;             /* geser sesuai lebar sidebar */
+            width: calc(100% - 0px);      /* sisakan ruang sidebar */
             background: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-            flex-shrink: 0;
-        }
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            z-index: 1000;
+            }
+
 
         /* Content Area - Scrollable */
         .main-content-area {
@@ -169,8 +171,6 @@
 
             <div class="main-content-area">
                 @yield('content')
-
-                @include('layouts.footer')
             </div>
 
 
