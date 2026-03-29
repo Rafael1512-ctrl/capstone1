@@ -70,21 +70,19 @@
                             @php
                                 $imgUrl = str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url);
                             @endphp
-                            <img src="{{ $imgUrl }}" alt="{{ $event->title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <img src="{{ $imgUrl }}" alt="{{ $event->title }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/140x180/1a0a0a/dc143c?text=Concert';">
                         @else
                             <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center;">
                                 <i class="fa fa-music text-muted"></i>
                             </div>
                         @endif
-                        <div class="position-absolute" style="top: 10px; left: 10px;">
-                            <span class="badge" style="background: {{ $statusColor }}; color: #000; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; padding: 4px 8px; border-radius: 5px;">
-                                {{ $ticket->ticket_status }}
-                            </span>
-                        </div>
                     </div>
 
                     <!-- Details -->
-                    <div class="p-3 flex-grow-1 border-right" style="border-right: 2px dashed rgba(255,255,255,0.1) !important;">
+                    <div class="p-3 flex-grow-1 border-right" style="border-right: 2px dashed rgba(255,255,255,0.1) !important; position: relative;">
+                        <span class="badge position-absolute" style="top: 15px; right: 15px; background: {{ $statusColor }}; color: #000; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; padding: 4px 8px; border-radius: 5px;">
+                            {{ $ticket->ticket_status }}
+                        </span>
                         <h5 class="text-white font-weight-bold mb-1" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $event->title ?? 'Event' }}</h5>
                         <p class="text-white-50 small mb-2"><i class="fa fa-calendar mr-1"></i> {{ $event && $event->schedule_time ? $event->schedule_time->format('d M Y') : 'TBA' }}</p>
                         

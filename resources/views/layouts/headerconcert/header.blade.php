@@ -44,11 +44,14 @@
                             <div class="main-menu  d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
-                                        <li><a href="#concert">home</a></li>
-                                        <li><a href="#performers">Performer</a></li>
-                                        <li><a href="#about">About</a></li>
-                                        <li><a href="#program">Program</a></li>
-                                        <li><a href="#venue">Venue</a></li>
+                                        <li><a href="{{ url('/') }}#concert">home</a></li>
+                                        <li><a href="{{ url('/') }}#performers">Performer</a></li>
+                                        <li><a href="{{ url('/') }}#about">About</a></li>
+                                        <li><a href="{{ url('/') }}#program">Program</a></li>
+                                        <li><a href="{{ url('/') }}#venue">Venue</a></li>
+                                        @auth
+                                            <li><a href="{{ route('tickets.index') }}">My Tickets</a></li>
+                                        @endauth
                                     </ul>
                                 </nav>
                             </div>

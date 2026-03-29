@@ -61,9 +61,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ Auth::check() ? '#concerts' : route('login') }}">Discover</a>
                         </li>
+                        @auth
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ Auth::check() ? '#my-tickets' : route('login') }}">My Tickets</a>
+                            <a class="nav-link" href="{{ route('tickets.index') }}">My Tickets</a>
                         </li>
+                        @endauth
                         <li class="nav-item">
                             <a class="nav-link" href="#footer">Contact</a>
                         </li>
@@ -123,8 +125,8 @@
                                 {{ Auth::user()->name }}
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown"
-                                style="background: #1a1a1a; border: 1px solid rgba(220,20,60,0.2);
-                                       border-radius: 10px; min-width: 180px;">
+                                 style="background: #121212 !important; border: 1px solid rgba(220,20,60,0.25);
+                                        border-radius: 12px; min-width: 200px; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
                                 @if (Auth::user()->role === 'Admin')
                                     <a class="dropdown-item" href="{{ route('admin.dashboard') }}"
                                         style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
@@ -137,21 +139,20 @@
                                     </a>
                                 @endif
                                 <a class="dropdown-item" href="{{ route('profile.show') }}"
-                                    style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
-                                    <i class="fa fa-user" style="width:18px; color:#dc143c;"></i> My Profile
+                                    style="color: rgba(255,255,255,0.7); font-size:0.87rem; padding: 12px 20px; transition: all 0.2s ease; border-radius: 8px;"
+                                    onmouseover="this.style.background='rgba(220,20,60,0.1)'; this.style.color='#fff';"
+                                    onmouseout="this.style.background='transparent'; this.style.color='rgba(255,255,255,0.7)';">
+                                    <i class="fa fa-user" style="width:20px; color:#dc143c;"></i> My Profile
                                 </a>
-                                @if (Auth::user()->role !== 'Organizer' && Auth::user()->role !== 'organizer')
-                                    <a class="dropdown-item" href="{{ route('tickets.index') }}"
-                                        style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
-                                        <i class="fa fa-ticket" style="width:18px; color:#dc143c;"></i> My Tickets
-                                    </a>
-                                @endif
+                                <!-- My Tickets deleted per request -->
                                 
                                 <div style="border-top: 1px solid rgba(255,255,255,0.08); margin: 4px 0;"></div>
                                 <a class="dropdown-item" href="#logout"
-                                    style="color: #ff6b6b; font-size:0.88rem; padding: 10px 18px;"
+                                    style="color: #ff6b6b; font-size:0.87rem; padding: 12px 20px; transition: all 0.2s ease; border-radius: 8px;"
+                                    onmouseover="this.style.background='rgba(255,107,107,0.1)';"
+                                    onmouseout="this.style.background='transparent';"
                                     onclick="event.preventDefault(); document.getElementById('logout-confirm-modal').style.display='flex';">
-                                    <i class="fa fa-sign-out" style="width:18px;"></i> Logout
+                                    <i class="fa fa-sign-out" style="width:20px;"></i> Logout
                                 </a>
                             </div>
                         </li>
@@ -245,20 +246,23 @@
 
             document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
                 anchor.addEventListener('click', function(e) {
-                    var targetId = this.getAttribute('href').slice(1);
-                    if (!targetId) return; // href="#" only
+                    var href = this.getAttribute('href');
+                    if (href === '#') return;
+                    
+                    var targetId = href.slice(1);
                     var target = document.getElementById(targetId);
-                    if (!target) return;
-                    e.preventDefault();
+                    
+                    if (target) {
+                        e.preventDefault();
+                        // Close mobile navbar if open
+                        var navCollapse = document.getElementById('navbarsExample05');
+                        if (navCollapse && navCollapse.classList.contains('show')) {
+                            navCollapse.classList.remove('show');
+                        }
 
-                    // Close mobile navbar if open
-                    var navCollapse = document.getElementById('navbarsExample05');
-                    if (navCollapse && navCollapse.classList.contains('show')) {
-                        navCollapse.classList.remove('show');
+                        var targetTop = target.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
+                        window.scrollTo({ top: targetTop, behavior: 'smooth' });
                     }
-
-                    var targetTop = target.getBoundingClientRect().top + window.scrollY - HEADER_HEIGHT;
-                    window.scrollTo({ top: targetTop, behavior: 'smooth' });
                 });
             });
 

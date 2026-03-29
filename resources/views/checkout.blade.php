@@ -24,8 +24,8 @@
             animation: pageFadeIn 0.4s ease forwards;
         }
         @keyframes pageFadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
         .checkout-container {
             padding: 100px 0 60px;
@@ -140,7 +140,7 @@
             overflow-y: auto !important;
         }
         #paymentModal .modal-dialog {
-            margin: 30px auto !important;
+            margin: 5vh auto !important;
             max-width: 500px;
         }
         .modal-backdrop {
@@ -167,7 +167,7 @@
             <div class="row">
                 <div class="col-lg-7">
                     <div class="checkout-card mb-4 wow fadeInLeft">
-                        <h2 class="mb-4">Billing Information</h2>
+                        <h2 class="mb-4 font-weight-bold" style="color: white !important;">Billing Information</h2>
                         <form id="checkoutForm">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -180,29 +180,29 @@
                                 </div>
                             </div>
                             
-                            <h4 class="mt-4 mb-3">Quantity Selection</h4>
+                            <h4 class="mt-4 mb-3 font-weight-bold" style="color: white !important;">Quantity Selection</h4>
                             <div class="qty-controls mb-4">
                                 <button type="button" class="qty-btn" id="minus">-</button>
                                 <span id="qty-val" style="font-size: 20px; font-weight: bold;">1</span>
                                 <button type="button" class="qty-btn" id="plus">+</button>
                             </div>
 
-                            <h4 class="mt-4 mb-3">Payment Method</h4>
+                            <h4 class="mt-4 mb-3 font-weight-bold" style="color: white !important;">Payment Method</h4>
                             <div class="payment-option active" onclick="selectPayment(this, 'qris')">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-qrcode mr-3 text-primary"></i>
+                                    <i class="fa fa-qrcode mr-3" style="color: #dc143c;"></i>
                                     <div>
-                                        <div class="font-weight-bold">QRIS</div>
+                                        <div class="font-weight-bold text-white">QRIS</div>
                                         <small class="text-muted">GOPAY, OVO, DANA, SHOPEEPAY</small>
                                     </div>
                                 </div>
-                                <i class="fa fa-check-circle text-primary"></i>
+                                <i class="fa fa-check-circle" style="color: #dc143c;"></i>
                             </div>
                             <div class="payment-option" onclick="selectPayment(this, 'va')">
                                 <div class="d-flex align-items-center">
-                                    <i class="fa fa-credit-card mr-3 text-primary"></i>
+                                    <i class="fa fa-credit-card mr-3" style="color: #dc143c;"></i>
                                     <div>
-                                        <div class="font-weight-bold">Bank Transfer / VA</div>
+                                        <div class="font-weight-bold text-white">Bank Transfer / VA</div>
                                         <small class="text-muted">BCA, Mandiri, BNI, BRI</small>
                                     </div>
                                 </div>
@@ -214,7 +214,7 @@
 
                 <div class="col-lg-5">
                     <div class="checkout-card wow fadeInRight">
-                        <h3 class="mb-4">Order Summary</h3>
+                        <h3 class="mb-4 font-weight-bold" style="color: white !important;">Order Summary</h3>
                         <div class="event-summary d-flex align-items-start">
                             @php
                                 if ($event->banner_url) {
@@ -248,10 +248,10 @@
                                 <span class="text-muted">Quantity</span>
                                 <span id="summary-qty">1x</span>
                             </div>
-                            <hr style="border-color: #333;">
+                            <hr style="border-color: rgba(255,255,255,0.1);">
                             <div class="d-flex justify-content-between mb-0">
-                                <h4 class="mb-0">Total Amount</h4>
-                                <h4 class="mb-0 text-primary" id="total-amount">RP {{ number_format($ticketType->price, 0, ',', '.') }}</h4>
+                                <h4 class="mb-0 font-weight-bold" style="color: #dc143c;">Total Amount</h4>
+                                <h4 class="mb-0 font-weight-bold" style="color: #dc143c;" id="total-amount">RP {{ number_format($ticketType->price, 0, ',', '.') }}</h4>
                             </div>
                         </div>
 
@@ -265,37 +265,37 @@
 
     <!-- Payment Modal -->
     <div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" style="z-index: 9999;">
-        <div class="modal-dialog" role="document" style="width: 90%; max-width: 500px;">
-            <div class="modal-content" style="background-color: #ffffff !important; color: #111111 !important; border-radius: 20px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.5); position: relative; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="width: 90%; max-width: 500px;">
+            <div class="modal-content" style="background-color: #161616 !important; color: #ffffff !important; border-radius: 20px; border: 1px solid rgba(220,20,60,0.15); box-shadow: 0 25px 50px rgba(0,0,0,0.5); position: relative; max-height: 85vh; overflow-y: auto;">
 
                 <!-- ======= STEP 1: Detail Pembayaran ======= -->
                 <div id="p-step-1">
                     <div class="modal-header border-0 pb-0">
-                        <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Detail Pembayaran</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #333 !important; opacity: 1;">
+                        <h5 class="modal-title font-weight-bold" style="color: #fff !important;">Detail Pembayaran</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff !important; opacity: 1;">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body p-4">
-                        <div class="p-3 rounded mb-3" style="background: #f8f9fa !important; border: 1px solid #eee;">
-                            <p class="mb-1 font-weight-bold" style="color: #333 !important;">{{ $event->title }}</p>
-                            <p class="small mb-0" style="color: #777 !important;">{{ $ticketType->name }}</p>
+                        <div class="p-3 rounded mb-3" style="background: #1f0808 !important; border: 1px solid rgba(220,20,60,0.15);">
+                            <p class="mb-1 font-weight-bold" style="color: #fff !important;">{{ $event->title }}</p>
+                            <p class="small mb-0" style="color: #aaa !important;">{{ $ticketType->name }}</p>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" style="color: #555 !important;">
+                        <div class="d-flex justify-content-between mb-2" style="color: #ccc !important;">
                             <span>Harga Tiket</span>
                             <span>RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" style="color: #555 !important;">
+                        <div class="d-flex justify-content-between mb-2" style="color: #ccc !important;">
                             <span>Jumlah</span>
                             <span id="modal-qty">1x</span>
                         </div>
-                        <div class="d-flex justify-content-between mb-2" style="color: #555 !important;">
+                        <div class="d-flex justify-content-between mb-2" style="color: #ccc !important;">
                             <span>Metode Pembayaran</span>
                             <span id="modal-method" class="font-weight-bold" style="color: #dc143c !important;">QRIS</span>
                         </div>
-                        <hr style="border-color: #eee;">
+                        <hr style="border-color: rgba(255,255,255,0.1);">
                         <div class="d-flex justify-content-between">
-                            <span class="font-weight-bold" style="font-size: 1.1rem; color: #333 !important;">Total Bayar</span>
+                            <span class="font-weight-bold" style="font-size: 1.1rem; color: #fff !important;">Total Bayar</span>
                             <span class="font-weight-bold" style="font-size: 1.1rem; color: #dc143c !important;" id="modal-total">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
                         </div>
                     </div>
@@ -309,21 +309,21 @@
                 <!-- ======= STEP 2: Scan / Transfer ======= -->
                 <div id="p-step-2" style="display:none;">
                     <div class="modal-header border-0 pb-0">
-                        <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Selesaikan Pembayaran</h5>
-                        <button type="button" class="close" onclick="goToStep1()" style="color: #333 !important; opacity: 1;">
+                        <h5 class="modal-title font-weight-bold" style="color: #fff !important;">Selesaikan Pembayaran</h5>
+                        <button type="button" class="close" onclick="goToStep1()" style="color: #fff !important; opacity: 1;">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body text-center p-4">
                         <!-- Total amount reminder -->
                         <div class="mb-3 p-2 rounded" style="background: rgba(220,20,60,0.06) !important; border: 1px solid rgba(220,20,60,0.15); border-radius: 10px !important;">
-                            <span style="color: #888 !important; font-size: 13px;">Total Pembayaran</span><br>
+                            <span style="color: #aaa !important; font-size: 13px;">Total Pembayaran</span><br>
                             <span class="font-weight-bold" style="font-size: 1.3rem; color: #dc143c !important;" id="modal-total-2">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
                         </div>
 
                         <div id="qrisSection2">
-                            <p class="mb-3" style="color: #666 !important; font-size: 14px;">Silakan pindai QRIS di bawah ini untuk membayar</p>
-                            <div class="p-3 bg-white d-inline-block rounded-lg mb-3" style="border: 2px solid #f0f0f0;">
+                            <p class="mb-3" style="color: #aaa !important; font-size: 14px;">Silakan pindai QRIS di bawah ini untuk membayar</p>
+                            <div class="p-3 bg-white d-inline-block rounded-lg mb-3" style="border: 2px solid rgba(220,20,60,0.15);">
                                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=00020101021226590014ID.LINKAJA.WWW011893600503000007672202150000000000000005204541153033605802ID5914LUXTIX%20OFFICIAL6007JAKARTA6105123456304CA5A" alt="QRIS" style="width: 220px; height: 220px;">
                             </div>
                             <div class="d-flex justify-content-center align-items-center mb-3">
@@ -333,11 +333,16 @@
                         </div>
 
                         <div id="vaSection2" style="display:none;">
-                            <p class="mb-2" style="color: #666 !important; font-size: 14px;">Nomor Virtual Account</p>
-                            <h2 class="font-weight-bold mb-3" style="letter-spacing: 2px; color: #dc143c !important; font-size: 1.5rem;">8806 0812 3456 7890</h2>
-                            <div class="p-3 rounded mb-3 text-left" style="border: 1px solid #eee; background-color: #f8f9fa !important;">
-                                <p class="small mb-1" style="color: #999 !important;">Nama Bank</p>
-                                <p class="mb-0 font-weight-bold" style="color: #333 !important;">BCA Virtual Account</p>
+                            <p class="mb-2" style="color: #aaa !important; font-size: 14px;">Nomor Virtual Account</p>
+                            <div class="d-flex justify-content-center align-items-center mb-3">
+                                <h2 class="font-weight-bold mb-0 mr-3" id="va-number" style="letter-spacing: 2px; color: #dc143c !important; font-size: 1.5rem;">8806 0812 3456 7890</h2>
+                                <button type="button" class="btn btn-sm" onclick="copyVA()" style="background: rgba(220,20,60,0.1); border: 1px solid rgba(220,20,60,0.3); color: #dc143c; border-radius: 8px; padding: 5px 10px; transition: 0.3s;" id="copy-btn" title="Salin Nomor VA">
+                                    <i class="fa fa-copy"></i> Salin
+                                </button>
+                            </div>
+                            <div class="p-3 rounded mb-3 text-left" style="border: 1px solid rgba(220,20,60,0.15); background-color: #1f0808 !important;">
+                                <p class="small mb-1" style="color: #aaa !important;">Nama Bank</p>
+                                <p class="mb-0 font-weight-bold" style="color: #fff !important;">BCA Virtual Account</p>
                             </div>
                         </div>
 
@@ -349,7 +354,7 @@
                         <button type="button" class="btn w-100 py-3 mb-2" onclick="goToStep3()" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(220,20,60,0.35);">
                             <i class="fa fa-check mr-2"></i> Saya Sudah Bayar
                         </button>
-                        <button type="button" class="btn w-100 py-2" onclick="goToStep1()" style="border-radius: 50px; background: transparent !important; border: 1px solid #ddd !important; color: #888 !important; font-weight: 500; font-size: 0.9rem;">
+                        <button type="button" class="btn w-100 py-2" onclick="goToStep1()" style="border-radius: 50px; background: transparent !important; border: 1px solid rgba(255,255,255,0.2) !important; color: #aaa !important; font-weight: 500; font-size: 0.9rem;">
                             <i class="fa fa-arrow-left mr-1"></i> Kembali
                         </button>
                     </div>
@@ -358,23 +363,23 @@
                 <!-- ======= STEP 3: Konfirmasi Pembayaran ======= -->
                 <div id="p-step-3" style="display:none;">
                     <div class="modal-header border-0 pb-0">
-                        <h5 class="modal-title font-weight-bold" style="color: #333 !important;">Konfirmasi Pembayaran</h5>
+                        <h5 class="modal-title font-weight-bold" style="color: #fff !important;">Konfirmasi Pembayaran</h5>
                     </div>
                     <div class="modal-body text-center p-4">
                         <div class="mb-4">
                             <i class="fa fa-question-circle" style="font-size: 70px; color: #f0ad4e !important;"></i>
                         </div>
-                        <h4 class="font-weight-bold mb-2" style="color: #333 !important;">Apakah Anda yakin sudah membayar?</h4>
-                        <p class="mb-3" style="color: #666 !important; font-size: 14px;">Pastikan pembayaran sebesar <strong style="color: #dc143c !important;" id="modal-total-3">RP 0</strong> sudah berhasil sebelum melanjutkan.</p>
-                        <div class="p-3 rounded mb-3 text-left" style="background: #fff8e1 !important; border: 1px solid #ffe082; border-radius: 10px !important;">
-                            <p class="mb-0 small" style="color: #795548 !important;"><i class="fa fa-info-circle mr-1"></i> Jika pembayaran belum dilakukan, tiket tidak akan diproses.</p>
+                        <h4 class="font-weight-bold mb-2" style="color: #fff !important;">Apakah Anda yakin sudah membayar?</h4>
+                        <p class="mb-3" style="color: #aaa !important; font-size: 14px;">Pastikan pembayaran sebesar <strong style="color: #dc143c !important;" id="modal-total-3">RP 0</strong> sudah berhasil sebelum melanjutkan.</p>
+                        <div class="p-3 rounded mb-3 text-left" style="background: rgba(220,20,60,0.06) !important; border: 1px solid rgba(220,20,60,0.15); border-radius: 10px !important;">
+                            <p class="mb-0 small" style="color: #fff !important;"><i class="fa fa-info-circle mr-1"></i> Jika pembayaran belum dilakukan, tiket tidak akan diproses.</p>
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0 px-4 pb-4 d-flex flex-column">
                         <button type="button" class="btn w-100 py-3 mb-2" onclick="confirmPaymentDone()" style="border-radius: 50px; background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(40,167,69,0.35);">
                             <i class="fa fa-check-circle mr-2"></i> Ya, Saya Sudah Bayar
                         </button>
-                        <button type="button" class="btn w-100 py-2" onclick="backToStep2()" style="border-radius: 50px; background: transparent !important; border: 1px solid #ddd !important; color: #888 !important; font-weight: 500; font-size: 0.9rem;">
+                        <button type="button" class="btn w-100 py-2" onclick="backToStep2()" style="border-radius: 50px; background: transparent !important; border: 1px solid rgba(255,255,255,0.2) !important; color: #aaa !important; font-weight: 500; font-size: 0.9rem;">
                             <i class="fa fa-arrow-left mr-1"></i> Belum, Kembali
                         </button>
                     </div>
@@ -386,22 +391,22 @@
                         <div class="mb-3" style="animation: successPop 0.5s ease;">
                             <i class="fa fa-check-circle" style="font-size: 90px; color: #28a745 !important;"></i>
                         </div>
-                        <h2 class="font-weight-bold mb-2" style="color: #333 !important;">Pembayaran Berhasil!</h2>
-                        <p class="mb-4" style="color: #666 !important; font-size: 14px;">Tiket Anda sudah terbeli. Silakan cek di halaman <strong>My Tickets</strong> untuk melihat detail tiket.</p>
-                        <div class="p-3 rounded text-left mb-3" style="background: #f8f9fa !important; color: #333 !important; border: 1px solid #eee;">
-                            <p class="mb-1 font-weight-bold" style="color: #333 !important;">{{ $event->title }}</p>
-                            <div class="d-flex justify-content-between small" style="color: #777 !important;">
+                        <h2 class="font-weight-bold mb-2" style="color: #fff !important;">Pembayaran Berhasil!</h2>
+                        <p class="mb-4" style="color: #aaa !important; font-size: 14px;">Tiket Anda sudah terbeli. Silakan cek di halaman <strong>My Tickets</strong> untuk melihat detail tiket.</p>
+                        <div class="p-3 rounded text-left mb-3" style="background: #1f0808 !important; color: #fff !important; border: 1px solid rgba(220,20,60,0.15);">
+                            <p class="mb-1 font-weight-bold" style="color: #fff !important;">{{ $event->title }}</p>
+                            <div class="d-flex justify-content-between small" style="color: #aaa !important;">
                                 <span>{{ $ticketType->name }}</span>
                                 <span id="modal-summary-qty">1x</span>
                             </div>
-                            <hr style="border-color: #eee; margin: 8px 0;">
+                            <hr style="border-color: rgba(255,255,255,0.1); margin: 8px 0;">
                             <div class="d-flex justify-content-between">
-                                <span class="font-weight-bold" style="color: #333 !important;">Total</span>
+                                <span class="font-weight-bold" style="color: #fff !important;">Total</span>
                                 <span class="font-weight-bold" style="color: #dc143c !important;" id="modal-total-4">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
                             </div>
                         </div>
-                        <div class="p-3 rounded mb-4" style="background: #e8f5e9 !important; border: 1px solid #a5d6a7; border-radius: 10px !important;">
-                            <p class="mb-0 small" style="color: #2e7d32 !important;"><i class="fa fa-ticket mr-1"></i> E-Tiket sudah tersedia di halaman <strong>My Tickets</strong></p>
+                        <div class="p-3 rounded mb-4" style="background: rgba(40,167,69,0.1) !important; border: 1px solid rgba(40,167,69,0.2); border-radius: 10px !important;">
+                            <p class="mb-0 small" style="color: #28a745 !important;"><i class="fa fa-ticket mr-1"></i> E-Tiket sudah tersedia di halaman <strong>My Tickets</strong></p>
                         </div>
                         <a href="{{ route('tickets.index') }}" class="btn w-100 py-3 mb-2" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(220,20,60,0.35); display: block; text-decoration: none;">
                             <i class="fa fa-ticket mr-2"></i> Lihat My Tickets
@@ -440,6 +445,24 @@
         let selectedMethod = 'qris';
         let timerInterval = null;
 
+        function copyVA() {
+            let vaText = document.getElementById("va-number").innerText.replace(/\s+/g, '');
+            navigator.clipboard.writeText(vaText).then(function() {
+                let btn = document.getElementById("copy-btn");
+                let originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa fa-check"></i> Tersalin';
+                btn.style.backgroundColor = 'rgba(40,167,69,0.1)';
+                btn.style.color = '#28a745';
+                btn.style.borderColor = 'rgba(40,167,69,0.3)';
+                setTimeout(function(){
+                    btn.innerHTML = originalHtml;
+                    btn.style.backgroundColor = 'rgba(220,20,60,0.1)';
+                    btn.style.color = '#dc143c';
+                    btn.style.borderColor = 'rgba(220,20,60,0.3)';
+                }, 2000);
+            });
+        }
+
         $('#plus').click(function() {
             if(qty < 5) {
                 qty++;
@@ -467,12 +490,18 @@
 
         function selectPayment(el, method) {
             $('.payment-option').removeClass('active').find('i.fa-check-circle').replaceWith('<i class="fa fa-circle-thin text-muted"></i>');
-            $(el).addClass('active').find('i.fa-circle-thin').replaceWith('<i class="fa fa-check-circle text-primary"></i>');
+            $(el).addClass('active').find('i.fa-circle-thin').replaceWith('<i class="fa fa-check-circle" style="color: #dc143c;"></i>');
             selectedMethod = method;
         }
 
         // Open modal at Step 1
         function confirmPurchase() {
+            let form = document.getElementById('checkoutForm');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
             let total = qty * pricePerUnit;
             let totalFormatted = formatPrice(total);
 

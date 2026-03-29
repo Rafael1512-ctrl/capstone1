@@ -314,68 +314,7 @@
     <div class="section" id="my-tickets">
         <div class="container">
             @auth
-                <div class="row mb-5" data-aos="fade-up">
-                    <div class="col-md-8">
-                        <h2 class="mb-4 section-title" style="font-family: 'DM Serif Display', serif; color: #dc143c;">My Tickets</h2>
-                        <p>Your current and past concert experiences are gathered here. Access your tickets anytime with ease.
-                        </p>
-                    </div>
-                </div>
-
-                @if ($myTickets->isEmpty())
-                    <div class="row" data-aos="fade-up">
-                        <div class="col-md-12 text-center py-5 rounded-lg shadow-sm"
-                            style="border: 1px dashed rgba(220,20,60,0.3); background: #1a0a0a;">
-                            <div class="mb-3">
-                                <i class="fa fa-ticket" style="font-size: 50px; opacity: 0.3; color: #dc143c;"></i>
-                            </div>
-                            <h4 style="color: #ccc;">You haven't ordered any tickets yet.</h4>
-                            <p style="color: #888;">Discover our featured concerts above to start your musical journey!</p>
-                            <a href="#concerts" class="btn btn-sm px-4 py-2 mt-2"
-                                style="border-radius: 50px; background: linear-gradient(135deg, #dc143c, #8b0000); color: #fff; border: none;">Browse Concerts</a>
-                        </div>
-                    </div>
-                @else
-                    <div class="row no-gutters" data-aos="fade-up">
-                        @foreach ($myTickets as $ticket)
-                            <div class="col-lg-4 col-md-6 mb-4 px-2">
-                                <div class="ticket-history-card p-4 rounded-lg"
-                                    style="background: #1a0a0a; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(220,20,60,0.2); transition: all 0.3s ease; height: 100%;">
-                                    <div class="d-flex justify-content-between mb-3 align-items-center">
-                                        <span
-                                            class="badge {{ $ticket->isActive() ? 'badge-success' : 'badge-secondary' }} px-3 py-1"
-                                            style="border-radius: 20px;">
-                                            {{ $ticket->ticket_status }}
-                                        </span>
-                                        <small
-                                            style="color: #888;">{{ $ticket->created_at ? $ticket->created_at->format('d M Y') : 'N/A' }}</small>
-                                    </div>
-
-                                    <h4 class="font-weight-bold mb-1" style="color: #fff; font-size: 1.1rem;">
-                                        {{ $ticket->ticketType->event->title ?? 'Concert Event' }}</h4>
-                                    <p class="small mb-3" style="color: #aaa;"><i class="fa fa-map-marker mr-1" style="color: #dc143c;"></i>
-                                        {{ $ticket->ticketType->event->location ?? 'Venue Location' }}</p>
-
-                                    <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-auto"
-                                        style="border-color: rgba(220,20,60,0.2) !important;">
-                                        <div>
-                                            <p class="mb-0 small text-uppercase font-weight-bold"
-                                                style="font-size: 0.7rem; color: #888;">Category</p>
-                                            <p class="mb-0 font-weight-bold" style="color: #dc143c;">
-                                                {{ $ticket->ticketType->name }}</p>
-                                        </div>
-                                        <a href="{{ route('tickets.view', $ticket->ticket_id) }}"
-                                            class="btn btn-sm"
-                                            style="border-radius: 20px; border: 1.5px solid #dc143c; color: #dc143c; transition: all 0.3s ease;"
-                                            onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
-                                            onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">View Detail</a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-
+                <!-- My Tickets link has been moved to the Navigation Bar -->
             @else
                 <div class="row">
                     <div class="col-12 text-center mb-5">
