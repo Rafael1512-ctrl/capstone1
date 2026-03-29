@@ -5,10 +5,10 @@
 <style>
     /* ── Organizer Dashboard Styles ── */
     :root {
-        --org-gold: #ff3366; /* Using Tixly pink/red */
+        --org-gold: #dc143c; /* Crimson Red matching User Theme */
         --org-dark: #0d0d0d;
-        --org-card-bg: #1a1a1a;
-        --org-border: rgba(255, 51, 102, 0.25);
+        --org-card-bg: #111111;
+        --org-border: rgba(220, 20, 60, 0.2);
     }
     
     /* Hero */
@@ -31,7 +31,7 @@
     }
     .org-hero .badge-role {
         display: inline-block;
-        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        background: linear-gradient(90deg, #dc143c, #8b0000);
         color: #fff;
         font-size: 11px;
         font-weight: 700;
@@ -49,7 +49,7 @@
         line-height: 1.2;
     }
     .org-hero h1 span {
-        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        background: linear-gradient(90deg, #dc143c, #ff4d6d);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -63,7 +63,7 @@
         width: 72px;
         height: 72px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #ff3366, #ff6b8b);
+        background: linear-gradient(135deg, #dc143c, #8b0000);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -71,7 +71,7 @@
         font-weight: 800;
         color: #fff;
         flex-shrink: 0;
-        box-shadow: 0 0 0 4px rgba(255, 51, 102, 0.2);
+        box-shadow: 0 0 0 4px rgba(220, 20, 60, 0.15);
     }
 
     /* Stats */
@@ -95,20 +95,20 @@
         position: absolute;
         top: 0; left: 0; right: 0;
         height: 3px;
-        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        background: linear-gradient(90deg, #dc143c, #8b0000);
         opacity: 0;
         transition: opacity 0.3s;
     }
     .stat-card:hover {
         transform: translateY(-5px);
         border-color: rgba(255, 51, 102, 0.5);
-        box-shadow: 0 12px 40px rgba(255, 51, 102, 0.1);
+        box-shadow: 0 12px 40px rgba(220, 20, 60, 0.12);
     }
     .stat-card:hover::before { opacity: 1; }
     .stat-card .stat-icon {
         width: 48px; height: 48px;
         border-radius: 12px;
-        background: rgba(255, 51, 102, 0.12);
+        background: rgba(220, 20, 60, 0.1);
         display: flex; align-items: center; justify-content: center;
         margin: 0 auto 14px;
         font-size: 20px;
@@ -229,7 +229,7 @@
     }
     .event-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        background: linear-gradient(90deg, #dc143c, #8b0000);
         border-radius: 10px;
         transition: width 1s ease;
     }
@@ -262,7 +262,7 @@
         display: block;
         width: 100%;
         text-align: center;
-        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        background: linear-gradient(90deg, #dc143c, #8b0000);
         color: #fff !important;
         font-weight: 700;
         font-size: 13px;
@@ -391,7 +391,7 @@
         text-decoration: none;
     }
     .org-tab-btn.active, .org-tab-btn:hover {
-        background: linear-gradient(90deg, #ff3366, #ff6b8b);
+        background: linear-gradient(90deg, #dc143c, #8b0000);
         border-color: transparent;
         color: #fff !important;
     }

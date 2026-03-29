@@ -55,11 +55,15 @@ class OrganizerController extends Controller
                     'buyer_email'  => $order->user->email ?? 'Unknown',
                     'ticket_type'  => $type,
                     'qty'          => $qty,
-                    'amount'       => $order->total_amount, // Note: total amount migt be over whole transaction
+                    'amount'       => $order->total_amount, 
                     'status'       => strtolower($order->payment_status),
                     'date'         => $order->payment_date ? $order->payment_date->format('d M Y') : '-',
+                    'raw_date'     => $order->payment_date ? $order->payment_date->timestamp : 0,
                 ];
             }
+
+            // Urutkan list berdasarkan tanggal bayar terbaru (descending)
+            $ordersList = collect($ordersList)->sortByDesc('raw_date')->values()->all();
 
             // Generate daily sales data for chart
             $dailySales = [];
@@ -165,8 +169,12 @@ class OrganizerController extends Controller
                 'amount'       => $order->total_amount,
                 'status'       => strtolower($order->payment_status),
                 'date'         => $order->payment_date ? $order->payment_date->format('d M Y') : '-',
+                'raw_date'     => $order->payment_date ? $order->payment_date->timestamp : 0,
             ];
         }
+
+        // Urutkan list berdasarkan tanggal bayar terbaru (descending)
+        $ordersList = collect($ordersList)->sortByDesc('raw_date')->values()->all();
 
         $dailySalesData = collect($ordersList)
             ->where('status', 'verified')

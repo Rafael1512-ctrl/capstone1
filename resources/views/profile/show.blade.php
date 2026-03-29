@@ -220,6 +220,7 @@
                     </div>
                 </div>
 
+                @if (Auth::user()->role !== 'Organizer' && Auth::user()->role !== 'organizer')
                 <div class="profile-card">
                     <div class="side-widget">
                         <div class="side-widget-icon">
@@ -234,6 +235,7 @@
                         </p>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>

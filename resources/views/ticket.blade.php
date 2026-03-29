@@ -159,7 +159,8 @@
 
                         <div class="ticket-title" @if(strtolower($type->name) == 'vip') style="color: #dc143c;" @endif>{{ $type->name }}</div>
                         <div class="ticket-price">RP {{ number_format($type->price, 0, ',', '.') }}</div>
-                        <p>Available Seats: {{ $type->availableStock() }} / {{ $type->quantity_total }}</p>
+                        @php $available = $type->availableStock(); @endphp
+                        <p>Available Seats: {{ max(0, $available) }} / {{ $type->quantity_total }}</p>
                         
                         <ul class="ticket-features text-left mt-4">
                             <li><i class="fa fa-check"></i> Standard entry for event</li>
@@ -169,7 +170,11 @@
                             <li><i class="fa fa-check"></i> Free Welcome Drink</li>
                             @endif
                         </ul>
-                        <a href="{{ route('public.checkout.show', [$event->event_id, $type->id]) }}" class="buy-btn mt-3">Select {{ $type->name }}</a>
+                        @if($available > 0)
+                            <a href="{{ route('public.checkout.show', [$event->event_id, $type->id]) }}" class="buy-btn mt-3">Select {{ $type->name }}</a>
+                        @else
+                            <button class="buy-btn mt-3" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
+                        @endif
                     </div>
                 </div>
                 @empty

@@ -4,10 +4,10 @@
 
 <style>
     :root {
-        --org-gold: #ff3366; /* Tixly pink/red */
+        --org-gold: #dc143c; /* Crimson Red matching User Theme */
         --org-dark: #0d0d0d;
-        --org-card-bg: #1a1a1a;
-        --org-border: rgba(255, 51, 102, 0.25);
+        --org-card-bg: #111111;
+        --org-border: rgba(220, 20, 60, 0.2);
     }
 
     .report-hero {
@@ -23,7 +23,7 @@
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(ellipse at center, rgba(255, 51, 102, 0.08) 0%, transparent 65%);
+        background: radial-gradient(ellipse at center, rgba(220, 20, 60, 0.1) 0%, transparent 65%);
         pointer-events: none;
     }
     
@@ -308,13 +308,13 @@
                         datasets: [{
                             label: 'Tickets Sold',
                             data: eventData.chart_data,
-                            borderColor: '#ff3366',
-                            backgroundColor: 'rgba(255, 51, 102, 0.1)',
+                            borderColor: '#dc143c',
+                            backgroundColor: 'rgba(220, 20, 60, 0.1)',
                             borderWidth: 2,
                             tension: 0.4,
                             fill: true,
-                            pointBackgroundColor: '#1a1a1a',
-                            pointBorderColor: '#ff3366',
+                            pointBackgroundColor: '#111111',
+                            pointBorderColor: '#dc143c',
                             pointBorderWidth: 2,
                             pointRadius: 4,
                             pointHoverRadius: 6
@@ -325,10 +325,10 @@
                         plugins: {
                             legend: { display: false },
                             tooltip: {
-                                backgroundColor: '#1a1a1a',
-                                titleColor: '#ff3366',
+                                backgroundColor: '#111111',
+                                titleColor: '#dc143c',
                                 bodyColor: '#fff',
-                                borderColor: 'rgba(255, 51, 102, 0.3)',
+                                borderColor: 'rgba(220, 20, 60, 0.3)',
                                 borderWidth: 1,
                                 padding: 10,
                                 displayColors: false
