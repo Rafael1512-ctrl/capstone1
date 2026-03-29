@@ -209,12 +209,12 @@
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch concert-item" style="{{ $loopIndex >= 8 ? 'display: none !important;' : '' }}">
                             <div class="concert-card h-100 d-flex flex-column text-center shadow-sm rounded" style="width: 100%; min-width: 250px;">
                                 @php
-                                    // Handle both storage paths and relative paths
+                                    // Handle both storage paths, external URLs, and fallback paths
                                     if ($event->banner_url) {
-                                        if (str_starts_with($event->banner_url, '/storage/')) {
+                                        if (filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
                                             $imageUrl = $event->banner_url;
                                         } else {
-                                            $imageUrl = Storage::url($event->banner_url);
+                                            $imageUrl = str_starts_with($event->banner_url, '/') ? asset($event->banner_url) : Storage::url($event->banner_url);
                                         }
                                     } else {
                                         $imageUrl = asset('cardboard-assets/img/concert_' . (($loopIndex % 4) + 1) . '.jpg');

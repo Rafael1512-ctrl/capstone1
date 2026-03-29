@@ -44,16 +44,11 @@
                                                 <!-- Banner Event -->
                                                 @php
                                                     $banner = $event->banner_url;
-                                                    // Jika sudah ada /storage/, buang sementara untuk pengecekan atau gunakan langsung
                                                     if ($banner) {
-                                                        if (str_starts_with($banner, 'http')) {
+                                                        if (filter_var($banner, FILTER_VALIDATE_URL)) {
                                                             $imgSrc = $banner;
-                                                        } elseif (str_starts_with($banner, '/storage/')) {
-                                                            $imgSrc = asset($banner);
-                                                        } elseif (str_starts_with($banner, 'storage/')) {
-                                                            $imgSrc = asset($banner);
                                                         } else {
-                                                            $imgSrc = Storage::disk('public')->url($banner);
+                                                            $imgSrc = str_starts_with($banner, '/') ? asset($banner) : Storage::url($banner);
                                                         }
                                                     } else {
                                                         $imgSrc = null;

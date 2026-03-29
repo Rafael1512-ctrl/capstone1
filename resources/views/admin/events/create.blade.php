@@ -126,9 +126,8 @@
                         @enderror
                     </div>
 
-                    <div class="row mb-3">
                         <div class="col-md-3">
-                            <label for="banner" class="form-label">Banner Event</label>
+                            <label for="banner" class="form-label">Banner Event (Upload)</label>
                             <input type="file" class="form-control @error('banner') is-invalid @enderror" name="banner"
                                 id="banner" accept="image/*">
                             <small class="text-muted">Format: JPG, PNG, GIF. Max: 2MB</small>
@@ -137,7 +136,14 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-9">
+                        <div class="col-md-6">
+                            <label for="banner_url_external" class="form-label">Atau URL Banner Luar (Google Drive, dll)</label>
+                            <input type="url" class="form-control" name="banner_url_external" id="banner_url_external" 
+                                placeholder="https://drive.google.com/file/d/..." value="{{ old('banner_url_external') }}">
+                            <small class="text-muted">Jika diisi, URL ini akan digunakan sebagai banner.</small>
+                        </div>
+
+                        <div class="col-md-3">
                             <label for="status" class="form-label">Status *</label>
                             <select class="form-select @error('status') is-invalid @enderror" name="status" id="status"
                                 required>
@@ -183,10 +189,15 @@
                                                             placeholder="Vokalis, DJ, Band, dll" value="{{ $performer['role'] ?? '' }}">
                                                     </div>
                                                     <div class="col-md-4">
-                                                        <label class="form-label">Foto Performer</label>
+                                                        <label class="form-label">Foto Performer (Upload)</label>
                                                         <input type="file" class="form-control performer-photo" accept="image/*"
                                                             name="performers[{{ $index }}][photo]" data-index="{{ $index }}">
                                                         <small class="text-muted">Max: 2MB</small>
+                                                    </div>
+                                                    <div class="col-md-12 mt-2">
+                                                        <label class="form-label">Atau URL Foto Luar</label>
+                                                        <input type="url" class="form-control" name="performers[{{ $index }}][photo_external]" 
+                                                            placeholder="https://..." value="{{ $performer['photo_external'] ?? '' }}">
                                                     </div>
                                                 </div>
                                                 <div class="mt-3">
@@ -376,10 +387,15 @@
                                     placeholder="Vokalis, DJ, Band, dll" required>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label">Foto Performer</label>
+                                <label class="form-label">Foto Performer (Upload)</label>
                                 <input type="file" class="form-control performer-photo" accept="image/*"
                                     name="performers[${performerCount}][photo]" data-index="${performerCount}">
                                 <small class="text-muted">Max: 2MB</small>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label">Atau URL Foto Luar</label>
+                                <input type="url" class="form-control" name="performers[${performerCount}][photo_external]" 
+                                    placeholder="https://...">
                             </div>
                         </div>
                         <div class="mt-3">

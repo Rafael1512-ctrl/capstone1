@@ -85,11 +85,13 @@ class EventManagementController extends Controller
             'vvip_price' => 'required|integer|min:0',
         ]);
 
-        // Handle banner upload
+        // Handle banner upload or external URL
         if ($request->hasFile('banner')) {
             $banner = $request->file('banner');
             $path = $banner->store('events/banners', 'public');
             $validated['banner_url'] = '/storage/' . $path;
+        } elseif ($request->filled('banner_url_external')) {
+            $validated['banner_url'] = $this->resolveImageUrl($request->banner_url_external);
         }
 
         // Handle performers for festival events
@@ -104,11 +106,13 @@ class EventManagementController extends Controller
                         'photo' => null,
                     ];
 
-                    // Handle performer photo upload
+                    // Handle performer photo upload or external URL
                     if ($request->hasFile("performers.{$index}.photo")) {
                         $photo = $request->file("performers.{$index}.photo");
                         $path = $photo->store('events/performers', 'public');
                         $performerData['photo'] = '/storage/' . $path;
+                    } elseif (!empty($performer['photo_external'])) {
+                        $performerData['photo'] = $this->resolveImageUrl($performer['photo_external']);
                     }
 
                     $performers[] = $performerData;
@@ -245,9 +249,9 @@ class EventManagementController extends Controller
             'vvip_price' => 'required|integer|min:0',
         ]);
 
-        // Handle banner upload
+        // Handle banner upload or external URL
         if ($request->hasFile('banner')) {
-            if ($event->banner_url) {
+            if ($event->banner_url && !filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
                 $oldPath = str_replace('/storage/', '', $event->banner_url);
                 Storage::disk('public')->delete($oldPath);
             }
@@ -255,6 +259,8 @@ class EventManagementController extends Controller
             $banner = $request->file('banner');
             $path = $banner->store('events/banners', 'public');
             $validated['banner_url'] = '/storage/' . $path;
+        } elseif ($request->filled('banner_url_external')) {
+            $validated['banner_url'] = $this->resolveImageUrl($request->banner_url_external);
         }
 
         // Handle performers for festival events
@@ -269,10 +275,10 @@ class EventManagementController extends Controller
                         'photo' => $performer['photo'] ?? null,
                     ];
 
-                    // Handle new performer photo upload
+                    // Handle new performer photo upload or external URL
                     if ($request->hasFile("performers.{$index}.photo")) {
-                        // Delete old photo if exists
-                        if (!empty($performerData['photo'])) {
+                        // Delete old local photo if exists
+                        if (!empty($performerData['photo']) && !filter_var($performerData['photo'], FILTER_VALIDATE_URL)) {
                             $oldPath = str_replace('/storage/', '', $performerData['photo']);
                             Storage::disk('public')->delete($oldPath);
                         }
@@ -280,6 +286,8 @@ class EventManagementController extends Controller
                         $photo = $request->file("performers.{$index}.photo");
                         $path = $photo->store('events/performers', 'public');
                         $performerData['photo'] = '/storage/' . $path;
+                    } elseif (!empty($performer['photo_external'])) {
+                        $performerData['photo'] = $this->resolveImageUrl($performer['photo_external']);
                     }
 
                     $performers[] = $performerData;
@@ -513,5 +521,34 @@ class EventManagementController extends Controller
     {
         // logika untuk menampilkan atau mengelola tiket
         return view('admin.tickets.index');
+    }
+
+    /**
+     * Resolve image URL to direct link for common services like Google Drive
+     */
+    private function resolveImageUrl($url)
+    {
+        if (empty($url)) return null;
+
+        // Handle Google Drive
+        if (str_contains($url, 'drive.google.com')) {
+            $fileId = null;
+            // Pattern for /file/d/ID/view
+            if (preg_match('/\/file\/d\/([^\/?]+)/', $url, $matches)) {
+                $fileId = $matches[1];
+            }
+            // Pattern for id=ID
+            elseif (preg_match('/id=([^\/&?]+)/', $url, $matches)) {
+                $fileId = $matches[1];
+            }
+
+            if ($fileId) {
+                // Using thumbnail link is much more reliable for embedding than uc?export=view
+                // It bypasses some "large file" warnings and works better in CSS background-image
+                return "https://drive.google.com/thumbnail?id=" . $fileId . "&sz=w1600";
+            }
+        }
+
+        return $url;
     }
 }
