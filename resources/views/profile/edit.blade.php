@@ -207,9 +207,33 @@
         <div class="row justify-content-center">
             <div class="col-lg-7">
                 <div class="edit-card">
-                    <form action="{{ route('profile.update') }}" method="POST">
+                    <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
+
+                        <!-- Profile Picture Section -->
+                        <h3 class="form-section-title"><i class="fa fa-camera"></i> Profile Picture</h3>
+                        <div class="d-flex align-items-center mb-4 p-3 rounded" style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1);">
+                            <div class="mr-4">
+                                @if($user->profile_photo)
+                                    <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Avatar" 
+                                         style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #dc143c;">
+                                @else
+                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=dc143c&color=fff&size=128" alt="Avatar" 
+                                         style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.1);">
+                                @endif
+                            </div>
+                            <div class="flex-grow-1">
+                                <label for="profile_photo" class="form-label" style="margin-bottom: 5px;">Upload New Photo</label>
+                                <input type="file" id="profile_photo" name="profile_photo" 
+                                       class="form-control @error('profile_photo') is-invalid @enderror" 
+                                       accept="image/*" style="padding: 8px; font-size: 0.85rem; height: auto;">
+                                <small class="text-white-50 mt-1 d-block" style="font-size: 0.75rem;">JPG, PNG up to 2MB</small>
+                                @error('profile_photo')
+                                    <span class="invalid-feedback">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
 
                         <!-- Personal Information -->
                         <h3 class="form-section-title"><i class="fa fa-user"></i> Personal Information</h3>
@@ -224,15 +248,39 @@
                             @enderror
                         </div>
 
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input type="email" id="email" name="email"
+                                        class="form-control @error('email') is-invalid @enderror"
+                                        value="{{ old('email', $user->email) }}" required placeholder="your@email.com">
+                                    @error('email')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">Phone Number</label>
+                                    <input type="text" id="phone" name="phone"
+                                        class="form-control @error('phone') is-invalid @enderror"
+                                        value="{{ old('phone', $user->phone) }}" placeholder="+62 821...">
+                                    @error('phone')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" id="email" name="email"
-                                class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email', $user->email) }}" required placeholder="your@email.com">
-                            @error('email')
+                            <label for="bio" class="form-label">Bio / About Me</label>
+                            <textarea id="bio" name="bio" rows="3"
+                                class="form-control @error('bio') is-invalid @enderror"
+                                placeholder="Tell us a little about yourself...">{{ old('bio', $user->bio) }}</textarea>
+                            @error('bio')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
-                            <p class="password-hint">Used for account notifications and password recovery</p>
                         </div>
 
                         <hr class="form-divider">
@@ -251,14 +299,12 @@
                             @error('pass')
                                 <span class="invalid-feedback">{{ $message }}</span>
                             @enderror
-                            <p class="password-hint">Minimum 8 characters for security</p>
                         </div>
 
                         <div class="form-group">
                             <label for="pass_confirmation" class="form-label">Confirm Password</label>
                             <input type="password" id="pass_confirmation" name="pass_confirmation"
                                 class="form-control" placeholder="Repeat your new password">
-                            <p class="password-hint">Must match the password above</p>
                         </div>
 
                         <!-- Actions -->

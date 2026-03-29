@@ -188,7 +188,13 @@
                 </h1>
                 <p class="org-section-sub mb-0">Sales chart and detailed purchase list for this event</p>
             </div>
-            <span class="event-badge {{ $eventData['status_class'] }}">{{ $eventData['status_label'] }}</span>
+            <div class="d-flex gap-3 align-items-center">
+                <a href="{{ route('tickets.scanner') }}" class="btn btn-danger py-2 px-4 shadow-lg d-flex align-items-center mr-3" 
+                   style="border-radius: 12px; background: linear-gradient(90deg, #dc143c, #8b0000); border: none; font-weight: 700;">
+                    <i class="fa fa-camera mr-2"></i> OPEN SCANNER
+                </a>
+                <span class="event-badge {{ $eventData['status_class'] }}">{{ $eventData['status_label'] }}</span>
+            </div>
         </div>
     </div>
 </div>
@@ -278,10 +284,70 @@
                     </tbody>
                 </table>
             </div>
+            @endif
+        </div>
+
+        {{-- Attendee List / Scannable Tickets --}}
+        <div class="org-table-wrap mt-5">
+            <div class="org-table-header" style="background: rgba(255, 255, 255, 0.02);">
+                <h6>📋 Guest Check-in List (Detailed Tickets)</h6>
+                <span style="color:rgba(255,255,255,0.4);font-size:13px">
+                    {{ count($eventData['ticket_list']) }} total ticket(s)
+                </span>
+            </div>
+
+            @if(count($eventData['ticket_list']) > 0)
+            <div class="table-responsive">
+                <table class="org-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Tier</th>
+                            <th>Buyer Name</th>
+                            <th>Check-in Status</th>
+                            <th>Date Purchased</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($eventData['ticket_list'] as $ticket)
+                        <tr>
+                            <td data-label="Ticket ID">
+                                <span style="font-family:monospace;color:#fff;font-size:13px;font-weight:700">
+                                    {{ $ticket['id'] }}
+                                </span>
+                            </td>
+                            <td data-label="Tier">
+                                <span class="badge badge-outline-light" style="border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px 10px; border-radius: 5px; font-size: 11px;">
+                                    {{ $ticket['type'] }}
+                                </span>
+                            </td>
+                            <td data-label="Buyer Name">
+                                <span class="text-white">{{ $ticket['buyer'] }}</span>
+                            </td>
+                            <td data-label="Check-in Status">
+                                @if($ticket['status'] === 'Active')
+                                    <span class="status-badge paid" style="background: rgba(0, 255, 127, 0.1); color: #00ff7f; border-color: rgba(0, 255, 127, 0.2);">
+                                        <i class="fa fa-circle mr-1" style="font-size: 8px;"></i> READY
+                                    </span>
+                                @else
+                                    <span class="status-badge" style="background: rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); border-color: rgba(255, 255, 255, 0.1);">
+                                        <i class="fa fa-check-circle mr-1"></i> USED
+                                    </span>
+                                @endif
+                            </td>
+                            <td data-label="Date Purchased">
+                                <span style="color:rgba(255,255,255,0.4);font-size:12px">
+                                    {{ $ticket['date'] }}
+                                </span>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
             @else
             <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <p>No purchases recorded for this event yet.</p>
+                <p>No tickets available for check-in list.</p>
             </div>
             @endif
         </div>

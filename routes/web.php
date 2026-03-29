@@ -150,6 +150,7 @@ Route::post('/verify-email', [AuthController::class, 'verifyEmail'])->name('veri
 Route::post('/resend-verification-email', [AuthController::class, 'resendVerificationEmail'])->name('resend-verification-email')->middleware('guest');
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth');
 
 // ============================================================
 // PROFILE ROUTES (Authenticated Users)
@@ -197,6 +198,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}/download', [TicketController::class, 'download'])->name('tickets.download');
     Route::post('/tickets/validate', [TicketController::class, 'verifyTicket'])->name('tickets.validate');
     Route::post('/tickets/scan', [TicketController::class, 'scan'])->name('tickets.scan');
+    Route::get('/scan-ticket/{ticket}', [TicketController::class, 'scanDirect'])->name('tickets.scan.direct');
+
 
     // ============================================================
     // ORGANIZER ROUTES (role: organizer or admin)
@@ -216,6 +219,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/organizer/events/{event}/tickets/{category}/edit', [TicketCategoryController::class, 'edit'])->name('ticket-categories.edit');
         Route::put('/organizer/events/{event}/tickets/{category}', [TicketCategoryController::class, 'update'])->name('ticket-categories.update');
         Route::delete('/organizer/events/{event}/tickets/{category}', [TicketCategoryController::class, 'destroy'])->name('ticket-categories.destroy');
+
+        // QR Scanner
+        Route::get('/organizer/scanner', [TicketController::class, 'showScanner'])->name('tickets.scanner');
+        
+        // Global Ticket Management for Admin/Organizer
+        Route::get('/admin/tickets', [TicketController::class, 'allTickets'])->name('admin.tickets.index');
+        Route::post('/admin/tickets/{ticket}/validate', [TicketController::class, 'validateAjax'])->name('tickets.validate.ajax');
     });
 
     // ============================================================

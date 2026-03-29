@@ -143,14 +143,29 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <p style="color: #dc143c; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 10px;">
-                        <i class="fa fa-user mr-2"></i>Account
-                    </p>
-                    <h1 style="font-family: 'DM Serif Display', serif; font-size: 2.8rem; color: #fff; margin-bottom: 10px;">My Profile</h1>
-                    <p style="color: rgba(255,255,255,0.45); font-size: 1rem; margin: 0;">Manage your TIXLY account information and preferences</p>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="mr-4 position-relative">
+                            @if($user->profile_photo)
+                                <img src="{{ asset('storage/' . $user->profile_photo) }}" alt="Avatar" 
+                                     style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #dc143c; box-shadow: 0 0 20px rgba(220,20,60,0.3);">
+                            @else
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=dc143c&color=fff&size=128" alt="Avatar" 
+                                     style="width: 100px; height: 100px; border-radius: 50%; border: 3px solid rgba(220,20,60,0.4); box-shadow: 0 0 15px rgba(220,20,60,0.2);">
+                            @endif
+                        </div>
+                        <div>
+                            <p style="color: #dc143c; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 5px;">
+                                <i class="fa fa-shield mr-1"></i> Verified Account
+                            </p>
+                            <h1 style="font-family: 'DM Serif Display', serif; font-size: 2.8rem; color: #fff; margin-bottom: 5px; line-height: 1.1;">{{ $user->name }}</h1>
+                            <p style="color: rgba(255,255,255,0.45); font-size: 1rem; margin: 0;">{{ $user->role == 'admin' ? 'System Administrator' : ($user->role == 'organizer' ? 'Event Organizer' : 'Music Enthusiast') }}</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-4 text-right d-none d-md-block">
-                    <i class="fa fa-user-circle" style="font-size: 90px; color: rgba(220,20,60,0.15);"></i>
+                    <div class="member-badge" style="font-size: 0.9rem; padding: 8px 18px; border-radius: 50px;">
+                        <i class="fa fa-star text-warning"></i> {{ strtoupper($user->role) }} STATUS
+                    </div>
                 </div>
             </div>
         </div>
@@ -168,11 +183,21 @@
                 <div class="profile-card">
                     <div class="profile-info">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 border-right" style="border-color: rgba(255,255,255,0.05) !important;">
                                 <div class="profile-field">
                                     <span class="profile-field-label">Full Name</span>
                                     <span class="profile-field-value">{{ $user->name }}</span>
                                 </div>
+                                <div class="profile-field">
+                                    <span class="profile-field-label">Email Address</span>
+                                    <span class="profile-field-value">{{ $user->email }}</span>
+                                </div>
+                                <div class="profile-field">
+                                    <span class="profile-field-label">Phone Number</span>
+                                    <span class="profile-field-value">{{ $user->phone ?? 'Not provided' }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 pl-md-4">
                                 <div class="profile-field">
                                     <span class="profile-field-label">Account Status</span>
                                     <div>
@@ -181,16 +206,16 @@
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="profile-field">
-                                    <span class="profile-field-label">Email Address</span>
-                                    <span class="profile-field-value">{{ $user->email }}</span>
-                                </div>
                                 <div class="profile-field">
                                     <span class="profile-field-label">Member Since</span>
                                     <span class="profile-field-value">
-                                        {{ $user->created_at ? $user->created_at->format('d M Y') : 'N/A' }}
+                                        {{ $user->member_since ? $user->member_since->format('d M Y') : 'N/A' }}
+                                    </span>
+                                </div>
+                                <div class="profile-field">
+                                    <span class="profile-field-label">Bio / About Me</span>
+                                    <span class="profile-field-value text-white-50 small" style="display: block; line-height: 1.5;">
+                                        {{ $user->bio ?? 'No bio provided yet.' }}
                                     </span>
                                 </div>
                             </div>
@@ -201,7 +226,7 @@
                         <a href="{{ route('profile.edit') }}" class="btn-edit-profile">
                             <i class="fa fa-edit"></i> Edit Profile
                         </a>
-                        <a href="{{ route('landing') }}" class="btn-back">
+                        <a href="{{ route('home') }}" class="btn-back">
                             <i class="fa fa-arrow-left"></i> Back to Home
                         </a>
                     </div>

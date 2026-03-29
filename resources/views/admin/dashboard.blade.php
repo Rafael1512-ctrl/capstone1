@@ -9,6 +9,9 @@
                 <p class="text-muted small">Selamat datang, {{ Auth::user()->name }}</p>
             </div>
             <div class="btn-group" role="group">
+                <a href="{{ route('tickets.scanner') }}" class="btn btn-dark">
+                    <i class="fas fa-clipboard-check"></i> GUEST CHECK-IN LIST
+                </a>
                 <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Event Baru
                 </a>

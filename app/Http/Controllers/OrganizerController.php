@@ -194,6 +194,18 @@ class OrganizerController extends Controller
         elseif ($pct >= 50) $performance = 'Good Progress';
         elseif ($pct >= 10) $performance = 'Slow Starter';
 
+        // Detailed Attendee/Ticket List
+        $ticketList = $event->tickets->map(function($t) {
+            return [
+                'id' => $t->ticket_id,
+                'type' => $t->ticketType->name ?? 'N/A',
+                'buyer' => $t->order->user->name ?? 'N/A',
+                'status' => $t->ticket_status,
+                'order_id' => $t->transaction_id,
+                'date' => $t->order->payment_date ? $t->order->payment_date->format('d M H:i') : '-',
+            ];
+        })->sortByDesc('status'); // Group by active vs used
+
         $eventData = [
             'id'           => $event->event_id,
             'name'         => $event->title,
@@ -211,6 +223,7 @@ class OrganizerController extends Controller
             'chart_dates'  => $chartDates,
             'chart_data'   => $chartData,
             'orders_list'  => $ordersList,
+            'ticket_list'  => $ticketList,
         ];
 
         return view('organizer_report', compact('eventData'));

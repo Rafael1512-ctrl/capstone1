@@ -38,11 +38,24 @@ class ProfileController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:100|unique:users,email,' . $user->user_id . ',user_id',
             'pass' => 'nullable|min:8|confirmed',
+            'phone' => 'nullable|string|max:20',
+            'bio' => 'nullable|string|max:500',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Update name and email
+        // Update name, email, phone, bio
         $user->name = $validated['name'];
         $user->email = $validated['email'];
+        $user->phone = $validated['phone'];
+        $user->bio = $validated['bio'];
+
+        // Handle Profile Photo Upload
+        if ($request->hasFile('profile_photo')) {
+            $file = $request->file('profile_photo');
+            $filename = $user->user_id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('profile-photos', $filename, 'public');
+            $user->profile_photo = $path;
+        }
 
         // Update password if provided
         if (!empty($validated['pass'])) {

@@ -22,10 +22,16 @@
                 <span class="caption-text" style="color: #999; font-size: 14px;">Sudirman Central Business District, Jakarta, Indonesia</span>
               </li>
               <li class="d-block mb-3">
-                <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Concierge</span><span class="caption-text" style="color: #999; font-size: 14px;">+62 21 555 0123</span>
+                <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Concierge</span>
+                <span class="caption-text" style="color: #999; font-size: 14px;">+62 895 0810 1257</span><br>
+                <span class="caption-text" style="color: #999; font-size: 14px;">+62 853 2555 3535</span><br>
+                <span class="caption-text" style="color: #999; font-size: 14px;">+62 895 3608 28717</span>
               </li>
               <li class="d-block">
-                <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Email</span><span class="caption-text" style="color: #999; font-size: 14px;">concierge@tixly.com</span>
+                <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Email</span>
+                <span class="caption-text" style="color: #999; font-size: 14px;">2472020@maranatha.ac.id</span><br>
+                <span class="caption-text" style="color: #999; font-size: 14px;">2472024@maranatha.ac.id</span><br>
+                <span class="caption-text" style="color: #999; font-size: 14px;">2472025@maranatha.ac.id</span>
               </li>
             </ul>
           </div>

@@ -24,6 +24,13 @@
     <div class="sidebar-wrapper scrollbar scrollbar-inner">
         <div class="sidebar-content">
             <ul class="nav nav-secondary">
+                <li class="nav-item {{ Request::is('admin/tickets*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.tickets.index') }}">
+                        <i class="fas fa-clipboard-check"></i>
+                        <p>Guest Check-in</p>
+                        <span class="badge badge-success">FAST</span>
+                    </a>
+                </li>
                 <li class="nav-item {{ Request::is('admin*') ? 'active' : '' }}">
                     <a data-bs-toggle="collapse" href="#adminDashboard" class="{{ Request::is('admin*') ? '' : 'collapsed' }}" aria-expanded="{{ Request::is('admin*') ? 'true' : 'false' }}">
                         <i class="fas fa-home"></i>

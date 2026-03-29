@@ -29,6 +29,10 @@ class User extends Authenticatable
         'email_verification_token',
         'password_reset_token',
         'password_reset_expires_at',
+        'phone',
+        'bio',
+        'profile_photo',
+        'member_since',
     ];
 
     protected $hidden = [
@@ -42,6 +46,7 @@ class User extends Authenticatable
         'role_id' => 'integer',
         'email_verified_at' => 'datetime',
         'password_reset_expires_at' => 'datetime',
+        'member_since' => 'datetime',
     ];
 
     // Tell Laravel to use 'pass' as the password field

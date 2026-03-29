@@ -425,6 +425,22 @@
                 <h1>Welcome back, <span>{{ explode(' ', auth()->user()->name)[0] }}</span> 👋</h1>
                 <p class="subtitle mb-0">Manage your concerts, track ticket sales, and monitor buyer activity.</p>
             </div>
+            
+            <!-- Quick Actions -->
+            <div class="ml-auto d-none d-md-flex gap-3" style="gap:15px">
+                <a href="{{ route('admin.tickets.index') }}" class="btn btn-danger py-3 px-4 shadow-lg d-flex align-items-center" 
+                   style="border-radius: 14px; background: linear-gradient(90deg, #dc143c, #ff4d6d); border: none; font-weight: 700;">
+                    <i class="fa fa-clipboard-check mr-2" style="font-size: 1.2rem;"></i> GUEST CHECK-IN LIST
+                </a>
+            </div>
+        </div>
+        
+        <!-- Mobile Quick Action -->
+        <div class="d-md-none mt-3">
+            <a href="{{ route('admin.tickets.index') }}" class="btn btn-danger btn-block py-3 font-weight-bold" 
+               style="border-radius: 12px; background: #dc143c; border: none;">
+                <i class="fa fa-clipboard-check mr-2"></i> OPEN GUEST CHECK-IN
+            </a>
         </div>
     </div>
 </div>

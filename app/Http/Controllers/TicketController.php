@@ -15,21 +15,29 @@ class TicketController extends Controller
      */
     public function generateQrCode(Ticket $ticket)
     {
-        if (Auth::id() !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
+        $user = Auth::user();
+        $isOwner = $user->user_id === $ticket->order->user_id;
+        $isAdmin = $user->isAdmin();
+        $isOrganizer = $user->isOrganizer() && ($ticket->ticketType->event->organizer_id ?? null) === $user->user_id;
+
+        if (!$isOwner && !$isAdmin && !$isOrganizer) {
             abort(403);
         }
 
         try {
-            $qrCode = QrCode::format('png')->size(300)->generate($ticket->ticket_id);
+            // Encode a full URL in the QR code for status updates
+            $url = route('tickets.scan.direct', $ticket->ticket_id);
+            
+            // Generate as SVG for better compatibility
+            $qrCode = QrCode::size(300)->generate($url);
 
-            $filename = 'qr-codes/' . $ticket->ticket_id . '.png';
+            $filename = 'qr-codes/' . $ticket->ticket_id . '.svg';
             Storage::disk('public')->put($filename, $qrCode);
 
             $ticket->update(['qr_code' => $filename]);
 
             return response($qrCode)
-                ->header('Content-Type', 'image/png')
-                ->header('Content-Disposition', 'inline; filename="' . $ticket->ticket_id . '.png"');
+                ->header('Content-Type', 'image/svg+xml');
         } catch (\Exception $e) {
             return response()->json(['error' => 'Gagal membuat QR code: ' . $e->getMessage()], 500);
         }
@@ -40,7 +48,12 @@ class TicketController extends Controller
      */
     public function download(Ticket $ticket)
     {
-        if (Auth::id() !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
+        $user = Auth::user();
+        $isOwner = $user->user_id === $ticket->order->user_id;
+        $isAdmin = $user->isAdmin();
+        $isOrganizer = $user->isOrganizer() && ($ticket->ticketType->event->organizer_id ?? null) === $user->user_id;
+
+        if (!$isOwner && !$isAdmin && !$isOrganizer) {
             abort(403);
         }
 
@@ -60,7 +73,12 @@ class TicketController extends Controller
      */
     public function view(Ticket $ticket)
     {
-        if (Auth::id() !== $ticket->order->user_id && !Auth::user()->isAdmin()) {
+        $user = Auth::user();
+        $isOwner = $user->user_id === $ticket->order->user_id;
+        $isAdmin = $user->isAdmin();
+        $isOrganizer = $user->isOrganizer() && ($ticket->ticketType->event->organizer_id ?? null) === $user->user_id;
+
+        if (!$isOwner && !$isAdmin && !$isOrganizer) {
             abort(403);
         }
 
@@ -134,17 +152,122 @@ class TicketController extends Controller
     }
 
     /**
+     * Scan direct (GET) from Phone Camera
+     */
+    public function scanDirect(Ticket $ticket)
+    {
+        $user = Auth::user();
+
+        // Organizer/Admin only
+        if (!$user || (!$user->isAdmin() && !$user->isOrganizer())) {
+            return view('tickets.scan-result', [
+                'success' => false,
+                'message' => 'Unauthorized. Please login as an Organizer or Admin to validate tickets.',
+                'ticket' => $ticket
+            ]);
+        }
+
+        if (!$ticket->isActive()) {
+            return view('tickets.scan-result', [
+                'success' => false,
+                'message' => 'This ticket has already been used or is inactive.',
+                'ticket' => $ticket
+            ]);
+        }
+
+        // Mark as used
+        $ticket->validate();
+
+        return view('tickets.scan-result', [
+            'success' => true,
+            'message' => 'Ticket verified successfully! Access granted.',
+            'ticket' => $ticket
+        ]);
+    }
+
+    /**
+     * Scanner Page for Organizer/Admin
+     */
+    public function showScanner()
+    {
+        return view('tickets.scanner');
+    }
+
+    /**
+     * AJAX Validate Ticket from Check-in Table
+     */
+    public function validateAjax(Ticket $ticket)
+    {
+        $user = Auth::user();
+
+        // 1. Permission check
+        if (!$user->isAdmin() && !$user->isOrganizer()) {
+             return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        // 2. Organizer specific check
+        if ($user->isOrganizer() && $ticket->ticketType->event->organizer_id !== $user->user_id) {
+             return response()->json(['success' => false, 'message' => 'Unauthorized: This ticket belongs to another event.'], 403);
+        }
+
+        // 3. Status check
+        if (!$ticket->isActive()) {
+            return response()->json(['success' => false, 'message' => 'Ticket is already used or inactive.'], 400);
+        }
+
+        // 4. Update status
+        $ticket->validate();
+
+        return response()->json([
+            'success' => true, 
+            'message' => "Ticket #{$ticket->ticket_id} for {$ticket->order->user->name} has been marked as used."
+        ]);
+    }
+
+    /**
+     * All tickets in the system (Admin only)
+     */
+    public function allTickets(Request $request)
+    {
+        $query = Ticket::with(['order.user', 'ticketType.event']);
+
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('ticket_id', 'LIKE', "%{$search}%")
+                  ->orWhereHas('order.user', function($qu) use ($search) {
+                      $qu->where('name', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('ticketType.event', function($qe) use ($search) {
+                      $qe->where('title', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $tickets = $query->orderBy('ticket_id', 'desc')->paginate(20);
+        return view('admin.tickets.index', compact('tickets'));
+    }
+
+    /**
      * Daftar tiket milik user yang sedang login
      */
     public function myTickets()
     {
-        $tickets = Ticket::whereHas('order', function ($query) {
-            $query->where('user_id', Auth::id());
-        })
-            ->with(['ticketType.event', 'order'])
+        $userId = Auth::id();
+        
+        // Base query for stats (no pagination)
+        $baseQuery = Ticket::whereHas('order', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        });
+
+        $totalCount = (clone $baseQuery)->count();
+        $activeCount = (clone $baseQuery)->where('ticket_status', 'Active')->count();
+        $usedCount = (clone $baseQuery)->where('ticket_status', 'Used')->count();
+
+        // Paginated list
+        $tickets = $baseQuery->with(['ticketType.event', 'order'])
             ->orderBy('ticket_id', 'desc')
             ->paginate(12);
 
-        return view('tickets.my-tickets', compact('tickets'));
+        return view('tickets.my-tickets', compact('tickets', 'totalCount', 'activeCount', 'usedCount'));
     }
 }

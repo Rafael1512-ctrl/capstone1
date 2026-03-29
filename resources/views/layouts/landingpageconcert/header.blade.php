@@ -49,6 +49,11 @@
                             <a class="nav-link {{ request()->routeIs('organizer.dashboard') ? 'active' : '' }}" href="{{ route('organizer.dashboard') }}">Dashboard</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('tickets.scanner') ? 'active' : '' }}" href="{{ route('tickets.scanner') }}">
+                                <i class="fa fa-camera mr-1"></i> Scanner
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">User Site</a>
                         </li>
                         <li class="nav-item">

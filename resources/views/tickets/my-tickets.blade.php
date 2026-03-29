@@ -21,7 +21,7 @@
                     </div>
                     <div class="ml-3">
                         <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 1px; font-size: 0.7rem;">Total Tickets</small>
-                        <h3 class="text-white mb-0 font-weight-bold">{{ $tickets->total() }}</h3>
+                        <h3 class="text-white mb-0 font-weight-bold">{{ $totalCount }}</h3>
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                     </div>
                     <div class="ml-3">
                         <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 1px; font-size: 0.7rem;">Active</small>
-                        <h3 class="text-white mb-0 font-weight-bold">{{ $tickets->count() }}</h3>
+                        <h3 class="text-white mb-0 font-weight-bold">{{ $activeCount }}</h3>
                     </div>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                     </div>
                     <div class="ml-3">
                         <small class="text-white-50 text-uppercase font-weight-bold" style="letter-spacing: 1px; font-size: 0.7rem;">Used</small>
-                        <h3 class="text-white mb-0 font-weight-bold">0</h3>
+                        <h3 class="text-white mb-0 font-weight-bold">{{ $usedCount }}</h3>
                     </div>
                 </div>
             </div>
@@ -123,8 +123,8 @@
     </div>
 
     @if($tickets->hasPages())
-    <div class="d-flex justify-content-center mt-5">
-        {{ $tickets->links() }}
+    <div class="d-flex justify-content-center mt-5 mb-5 pb-5 custom-pagination">
+        {{ $tickets->links('pagination::bootstrap-4') }}
     </div>
     @endif
 </div>
@@ -135,14 +135,37 @@
         box-shadow: 0 10px 25px rgba(220, 20, 60, 0.15);
         border-color: rgba(220, 20, 60, 0.3) !important;
     }
-    .page-link {
-        background: #1a1a1a;
-        color: #fff;
-        border-color: #333;
+    
+    /* Pagination Styling */
+    .custom-pagination .pagination {
+        gap: 8px;
     }
-    .page-item.active .page-link {
-        background: #dc143c;
+    .custom-pagination .page-link {
+        background: #1a1a1a;
+        color: rgba(255,255,255,0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px !important;
+        padding: 10px 18px;
+        font-weight: 700;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 45px;
+        text-align: center;
+    }
+    .custom-pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #dc143c 0%, #a30f2d 100%);
         border-color: #dc143c;
+        color: #fff;
+        box-shadow: 0 5px 15px rgba(220,20,60,0.4);
+    }
+    .custom-pagination .page-link:hover {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+        border-color: rgba(220,20,60,0.5);
+    }
+    .custom-pagination .page-item.disabled .page-link {
+        background: #111;
+        color: #444;
+        border-color: #222;
     }
 </style>
 @endsection
