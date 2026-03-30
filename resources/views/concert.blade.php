@@ -151,7 +151,9 @@
 @php
     $footerDate = isset($event) && $event->schedule_time ? $event->schedule_time->format('d M, Y') : 'Event Date';
     $footerLocation = $event->location ?? 'Jakarta, Indonesia';
-    $footerButtonLink = isset($event) ? route('public.ticket.show', $event->event_id) : '#';
-    $footerButtonText = 'Get Your Ticket';
+    $isOverdue = $event->status === 'overdue' || ($event->schedule_time && $event->schedule_time < now());
+    $footerButtonLink = (!$isOverdue && isset($event)) ? route('public.ticket.show', $event->event_id) : '#';
+    $footerButtonText = $isOverdue ? 'Event Passed' : 'Get Your Ticket';
+    $footerSlogan = $isOverdue ? 'SALES CLOSED' : 'GET YOUR TICKETS NOW';
     $footerCopyright = 'LuxTix';
 @endphp

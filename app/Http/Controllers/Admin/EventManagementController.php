@@ -19,6 +19,9 @@ class EventManagementController extends Controller
      */
     public function index(Request $request)
     {
+        // Auto-update overdue events
+        Event::updateOverdueEvents();
+
         $query = Event::with(['organizer']);
 
         // Filter by category
@@ -26,12 +29,14 @@ class EventManagementController extends Controller
             $query->where('category_id', $request->category);
         }
 
-        // Filter by status (active/non-active mapping)
+        // Filter by status
         if ($request->has('status') && $request->status) {
             if ($request->status == 'active') {
                 $query->where('status', 'published');
+            } elseif ($request->status == 'overdue') {
+                $query->where('status', 'overdue');
             } elseif ($request->status == 'non-active') {
-                $query->whereIn('status', ['draft', 'cancelled']);
+                $query->whereIn('status', ['draft', 'cancelled', 'overdue']);
             }
         }
 

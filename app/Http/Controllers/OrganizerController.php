@@ -11,6 +11,7 @@ class OrganizerController extends Controller
 {
     public function index()
     {
+        Event::updateOverdueEvents();
         $user = Auth::user();
 
         // Ambil events milik organizer beserta ticketTypes dan tickets (melalui Order)
@@ -87,7 +88,7 @@ class OrganizerController extends Controller
             $chartDates = $dailySalesData->keys()->toArray();
             $chartData = $dailySalesData->values()->toArray();
 
-            $statusClass = $event->status === 'published' ? 'active' : 'upcoming';
+            $statusClass = $event->status === 'published' ? 'active' : ($event->status === 'overdue' ? 'overdue' : 'upcoming');
 
             $pct = $event->ticket_quota > 0 ? round(($sold / $event->ticket_quota) * 100) : 0;
             $performance = 'Needs Marketing Boost';
@@ -187,7 +188,7 @@ class OrganizerController extends Controller
         $chartDates = $dailySalesData->keys()->toArray();
         $chartData = $dailySalesData->values()->toArray();
 
-        $statusClass = $event->status === 'published' ? 'active' : 'upcoming';
+        $statusClass = $event->status === 'published' ? 'active' : ($event->status === 'overdue' ? 'overdue' : 'upcoming');
         $pct = $event->ticket_quota > 0 ? round(($sold / $event->ticket_quota) * 100) : 0;
         $performance = 'Needs Marketing Boost';
         if ($pct >= 90) $performance = 'Excellent (Almost Sold Out!)';

@@ -36,6 +36,25 @@ class Event extends Model
         'performers' => 'array',
     ];
 
+    /**
+     * Scope a query to only include active (published and NOT overdue) events.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'published')
+                     ->where('schedule_time', '>=', now());
+    }
+
+    /**
+     * Update status of events that have passed their schedule time to 'overdue'.
+     */
+    public static function updateOverdueEvents()
+    {
+        return self::where('status', 'published')
+            ->where('schedule_time', '<', now())
+            ->update(['status' => 'overdue']);
+    }
+
     public function organizer()
     {
         return $this->belongsTo(User::class, 'organizer_id', 'user_id');

@@ -17,7 +17,9 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::where('status', 'published')
+        Event::updateOverdueEvents();
+        
+        $events = Event::active()
             ->with(['organizer', 'category', 'ticketTypes'])
             ->orderBy('schedule_time', 'desc')
             ->paginate(15);

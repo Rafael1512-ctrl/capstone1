@@ -302,5 +302,16 @@ Route::middleware('auth')->group(function () {
             Route::put('/{category}', [App\Http\Controllers\Admin\EventCategoryController::class, 'update'])->name('update');
             Route::delete('/{category}', [App\Http\Controllers\Admin\EventCategoryController::class, 'destroy'])->name('destroy');
         });
+
+        // Banner Management
+        Route::prefix('admin/banners')->name('admin.banners.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\BannerManagementController::class, 'index'])->name('index');
+            Route::get('/create', [App\Http\Controllers\Admin\BannerManagementController::class, 'create'])->name('create');
+            Route::post('/', [App\Http\Controllers\Admin\BannerManagementController::class, 'store'])->name('store');
+            Route::get('/{banner}/edit', [App\Http\Controllers\Admin\BannerManagementController::class, 'edit'])->name('edit');
+            Route::put('/{banner}', [App\Http\Controllers\Admin\BannerManagementController::class, 'update'])->name('update');
+            Route::delete('/{banner}', [App\Http\Controllers\Admin\BannerManagementController::class, 'destroy'])->name('destroy');
+            Route::post('/{banner}/toggle-active', [App\Http\Controllers\Admin\BannerManagementController::class, 'toggleActive'])->name('toggle-active');
+        });
     });
 });

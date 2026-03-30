@@ -32,6 +32,7 @@
                         <select class="form-select" name="status">
                             <option value="">Semua Status</option>
                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>🟢 Active (Published)</option>
+                            <option value="overdue" {{ request('status') == 'overdue' ? 'selected' : '' }}>🟠 Overdue (Passed)</option>
                             <option value="non-active" {{ request('status') == 'non-active' ? 'selected' : '' }}>🔴 Non-Active (Draft/Cancel)</option>
                         </select>
                     </div>
@@ -67,6 +68,9 @@
                                     @if ($event->status === 'published')
                                         <i class="fas fa-circle text-success" title="Active"></i>
                                         <span class="ms-1 small text-muted">Active</span>
+                                    @elseif ($event->status === 'overdue')
+                                        <i class="fas fa-circle text-warning" title="Overdue"></i>
+                                        <span class="ms-1 small text-muted">Overdue</span>
                                     @else
                                         <i class="fas fa-circle text-danger" title="Non-Active"></i>
                                         <span class="ms-1 small text-muted">Non-Active</span>

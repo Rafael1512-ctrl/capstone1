@@ -13,15 +13,19 @@ class PublicController extends Controller
 {
     public function index(Request $request)
     {
+        // Auto-update overdue events before showing them
+        Event::updateOverdueEvents();
+
+        $banners = \App\Models\Banner::where('is_active', true)->orderBy('sort_order', 'asc')->get();
         $categories = \Illuminate\Support\Facades\DB::table('kategori_acara')->get();
         
-        $query = Event::orderBy('schedule_time', 'desc');
+        $query = Event::active()->orderBy('schedule_time', 'desc');
 
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);
         }
 
-        // Ambil semua untuk "View All", tapi default landing tampilkan 8/serapah
+        // Ambil SEMUA event aktif (yg belum overdue & published)
         $events = $query->get();
 
         // Ambil tiket milik user (jika login)
@@ -29,7 +33,7 @@ class PublicController extends Controller
             $query->where('user_id', auth()->id());
         })->with(['ticketType.event', 'order'])->get() : collect();
 
-        return view('user', compact('events', 'myTickets', 'categories'));
+        return view('user', compact('events', 'myTickets', 'categories', 'banners'));
     }
 
     public function showEvent(Event $event)

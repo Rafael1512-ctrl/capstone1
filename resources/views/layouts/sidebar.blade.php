@@ -53,6 +53,11 @@
                                     <span class="sub-item">Event Categories</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('admin.banners.index') }}">
+                                    <span class="sub-item">Hero Banners</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

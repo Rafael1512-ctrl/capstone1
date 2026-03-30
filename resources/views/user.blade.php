@@ -133,6 +133,108 @@
             box-shadow: 0 15px 45px rgba(220, 20, 60, 0.15) !important;
             border-color: #dc143c !important;
         }
+
+        /* Banner Carousel Styles */
+        .banner-carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .banner-slider {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+            width: 100%;
+        }
+
+        .banner-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            min-height: 400px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #8b0000, transparent);
+            opacity: 0.7;
+            z-index: 1;
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+        }
+
+        .banner-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .banner-nav:hover {
+            background: #dc143c;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .banner-nav-prev { left: 20px; }
+        .banner-nav-next { right: 20px; }
+
+        .banner-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .banner-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .banner-dot.active {
+            background: #dc143c;
+            width: 24px;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .banner-slide { padding: 30px; min-height: 500px; }
+            .concert-card img { height: 200px; }
+        }
     </style>
 
     <div class="slider-item overlay" data-stellar-background-ratio="0.5"
@@ -160,29 +262,80 @@
                         <i class="fa fa-user mr-2"></i>My Profile
                     </a>
                 </div>
-                <div class="promo-banner-container"
-                    style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('cardboard-assets/img/hero_1.jpg') }}'); background-size: cover; background-position: center; border-radius: 20px; padding: 60px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
-                    <div
-                        style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(90deg, #8b0000, transparent); opacity: 0.6;">
-                    </div>
-                    <div class="row align-items-center" style="position: relative; z-index: 2;">
-                        <div class="col-md-7">
-                            <span class="badge badge-danger mb-3 px-3 py-2"
-                                style="border-radius: 50px; font-weight: 600;">UPCOMING DEALS</span>
-                            <h2 class="display-4 font-weight-bold mb-4"
-                                style="font-family: 'DM Serif Display', serif; color: #fff;">Special Ticket Pre-Sale!</h2>
-                            <p class="lead mb-4">Exclusive for registered members. Get early access to the most anticipated
-                                concerts of 2026/2027 before everyone else.</p>
-                            <a href="#concert" class="btn btn-white px-5 py-3"
-                                style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse
-                                Available Tickets</a>
+
+                @if($banners->count() > 0)
+                    <div class="banner-carousel">
+                        <div class="banner-slider" id="bannerSlider">
+                            @foreach($banners as $banner)
+                                @php
+                                    $bgUrl = $banner->background_url ?: asset('cardboard-assets/img/hero_1.jpg');
+                                    $isFullImage = empty($banner->badge_text) && empty($banner->subtitle) && ($banner->title == ('Banner #' . $banner->id) || empty($banner->title));
+                                @endphp
+                                <div class="banner-slide" 
+                                     style="background-image: {{ $isFullImage ? '' : 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),' }} url('{{ $bgUrl }}'); cursor: {{ $banner->link_url ? 'pointer' : 'default' }};"
+                                     @if($banner->link_url) onclick="window.location.href='{{ $banner->link_url }}'" @endif>
+                                     
+                                     @if(!$isFullImage)
+                                         <div class="banner-overlay"></div>
+                                         <div class="banner-content">
+                                             <div class="row align-items-center">
+                                                 <div class="col-md-7">
+                                                     @if($banner->badge_text)
+                                                         <span class="badge badge-danger mb-3 px-3 py-2" style="border-radius: 50px; font-weight: 600;">{{ $banner->badge_text }}</span>
+                                                     @endif
+                                                     <h2 class="display-4 font-weight-bold mb-4" style="font-family: 'DM Serif Display', serif; color: #fff;">{{ $banner->title }}</h2>
+                                                     @if($banner->subtitle)
+                                                         <p class="lead mb-4">{{ $banner->subtitle }}</p>
+                                                     @endif
+                                                     <a href="{{ $banner->link_url }}" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">
+                                                         {{ $banner->button_text ?: 'Learn More' }}
+                                                     </a>
+                                                 </div>
+                                                 <div class="col-md-5 d-none d-md-block text-right">
+                                                     @if($banner->image_url)
+                                                         <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
+                                                     @endif
+                                                 </div>
+                                             </div>
+                                         </div>
+                                     @endif
+                                 </div>
+                             @endforeach
                         </div>
-                        <div class="col-md-5 d-none d-md-block text-right">
-                            <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Featured"
-                                style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
+                        
+                        {{-- Controls --}}
+                        @if($banners->count() > 1)
+                            <button class="banner-nav banner-nav-prev" onclick="moveBanner(-1)">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button class="banner-nav banner-nav-next" onclick="moveBanner(1)">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                            <div class="banner-dots">
+                                @foreach($banners as $index => $banner)
+                                    <div class="banner-dot {{ $index === 0 ? 'active' : '' }}" onclick="goToBanner({{ $index }})"></div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    {{-- Fallback: Original static banner if no dynamic banners found --}}
+                    <div class="promo-banner-container"
+                        style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ asset('cardboard-assets/img/hero_1.jpg') }}'); background-size: cover; background-position: center; border-radius: 20px; padding: 60px; color: white; position: relative; overflow: hidden; box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
+                        <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(90deg, #8b0000, transparent); opacity: 0.6;"></div>
+                        <div class="row align-items-center" style="position: relative; z-index: 2;">
+                            <div class="col-md-7">
+                                <span class="badge badge-danger mb-3 px-3 py-2" style="border-radius: 50px; font-weight: 600;">UPCOMING DEALS</span>
+                                <h2 class="display-4 font-weight-bold mb-4" style="font-family: 'DM Serif Display', serif; color: #fff;">Special Ticket Pre-Sale!</h2>
+                                <p class="lead mb-4">Exclusive for registered members. Get early access to the most anticipated concerts of 2026/2027 before everyone else.</p>
+                                <a href="#concert" class="btn btn-white px-5 py-3" style="border-radius: 50px; font-weight: bold; background: white; color: #333; text-decoration: none;">Browse Available Tickets</a>
+                            </div>
+                            <div class="col-md-5 d-none d-md-block text-right">
+                                <img src="{{ asset('cardboard-assets/img/concert_1.jpg') }}" alt="Featured" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     @endauth
@@ -522,4 +675,58 @@
 
 
 @section('ExtraJS2')
+<script>
+    let currentBannerIndex = 0;
+    const bannerSlider = document.getElementById('bannerSlider');
+    const bannerDots = document.querySelectorAll('.banner-dot');
+    const totalBanners = {{ $banners->count() }};
+    let bannerInterval;
+
+    function updateBannerSlider() {
+        if (!bannerSlider) return;
+        bannerSlider.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+        
+        // Update dots
+        bannerDots.forEach((dot, index) => {
+            if (index === currentBannerIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
+
+    function moveBanner(direction) {
+        currentBannerIndex += direction;
+        if (currentBannerIndex >= totalBanners) {
+            currentBannerIndex = 0;
+        } else if (currentBannerIndex < 0) {
+            currentBannerIndex = totalBanners - 1;
+        }
+        updateBannerSlider();
+        if (typeof bannerInterval !== 'undefined') resetBannerInterval();
+    }
+
+    function goToBanner(index) {
+        currentBannerIndex = index;
+        updateBannerSlider();
+        if (typeof bannerInterval !== 'undefined') resetBannerInterval();
+    }
+
+    function resetBannerInterval() {
+        if (typeof bannerInterval !== 'undefined') clearInterval(bannerInterval);
+        if (totalBanners > 1) {
+            bannerInterval = setInterval(() => {
+                moveBanner(1);
+            }, 5000);
+        }
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        if (totalBanners > 1) {
+            resetBannerInterval();
+        }
+    });
+</script>
 @endsection

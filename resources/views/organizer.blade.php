@@ -199,6 +199,11 @@
         color: #ff3366;
         border: 1px solid rgba(255, 51, 102, 0.3);
     }
+    .event-badge.overdue {
+        background: rgba(251, 191, 36, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.3);
+    }
     .event-card-title {
         font-size: 20px;
         font-weight: 800;
