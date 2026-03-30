@@ -166,7 +166,10 @@
                             <h5 class="mb-0">
                                 <i class="fas fa-users"></i> Daftar Performer
                             </h5>
-                            <small class="text-muted">Tambahkan performer untuk festival ini</small>
+                            <div class="alert alert-info mt-2 mb-0 py-2 small border-0 shadow-none">
+                                <i class="fas fa-sync-alt me-1"></i> 
+                                <strong>Tips Kolaborasi:</strong> Gunakan <strong>URL Foto Luar</strong> (Google Drive/Imgur) agar foto performer muncul di laptop teman Anda tanpa perlu kirim file gambar.
+                            </div>
                         </div>
                         <div class="card-body">
                             <button type="button" class="btn btn-sm btn-primary mb-3" id="add-performer-btn">
@@ -197,7 +200,9 @@
                                                     <div class="col-md-12 mt-2">
                                                         <label class="form-label">Atau URL Foto Luar</label>
                                                         <input type="url" class="form-control" name="performers[{{ $index }}][photo_external]" 
-                                                            placeholder="https://..." value="{{ $performer['photo_external'] ?? '' }}">
+                                                            placeholder="Contoh: https://images.unsplash.com/..." value="{{ $performer['photo_external'] ?? '' }}">
+                                                        <small class="text-muted text-primary">Jika diisi, URL ini akan digunakan sebagai foto performer.</small>
+
                                                     </div>
                                                 </div>
                                                 <div class="mt-3">
@@ -330,9 +335,8 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Set count based on current items (from old input)
             performerCount = document.querySelectorAll('.performer-item').length;
-            if (performerCount === 0) performerCount = 0;
-            else performerCount += 1;
 
             // Listen to category change
             document.getElementById('category_id').addEventListener('change', function() {
@@ -395,7 +399,9 @@
                             <div class="col-md-12 mt-2">
                                 <label class="form-label">Atau URL Foto Luar</label>
                                 <input type="url" class="form-control" name="performers[${performerCount}][photo_external]" 
-                                    placeholder="https://...">
+                                    placeholder="Contoh: https://images.unsplash.com/...">
+                                <small class="text-muted">Jika diisi, URL ini akan digunakan sebagai foto performer.</small>
+
                             </div>
                         </div>
                         <div class="mt-3">
@@ -426,15 +432,19 @@
         }
 
         function reindexPerformers() {
-            document.querySelectorAll('.performer-item').forEach((item, index) => {
-                item.querySelectorAll('input[type="text"], input[type="file"], textarea').forEach(input => {
-                    const oldName = input.getAttribute('name');
-                    if (oldName) {
-                        const newName = oldName.replace(/\d+\]/, index + ']');
+            const items = document.querySelectorAll('.performer-item');
+            items.forEach((item, index) => {
+                item.querySelectorAll('input, textarea').forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name && name.includes('performers[')) {
+                        // Replace the numeric index in name like performers[0][name] -> performers[1][name]
+                        const newName = name.replace(/performers\[\d+\]/, `performers[${index}]`);
                         input.setAttribute('name', newName);
                     }
                 });
             });
+            // Update global count to match current number of items
+            performerCount = items.length;
         }
     </script>
 @endsection

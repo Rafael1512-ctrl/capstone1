@@ -25,7 +25,10 @@
         <div class="row mb-4">
             <div class="col-md-8">
                 @if ($event->banner_url)
-                    <img src="{{ asset($event->banner_url) }}" alt="Banner" class="img-fluid rounded shadow-sm" style="max-height: 400px; width: 100%; object-fit: cover;">
+                    @php
+                        $bannerUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL) ? $event->banner_url : asset($event->banner_url);
+                    @endphp
+                    <img src="{{ $bannerUrl }}" alt="Banner" class="img-fluid rounded shadow-sm" style="max-height: 400px; width: 100%; object-fit: cover;">
                 @else
                     <div class="bg-light rounded p-4 text-center text-muted">
                         <i class="fas fa-image" style="font-size: 3rem;"></i>
@@ -113,7 +116,13 @@
         </div>
 
         <!-- Performers Section (Only for Festival) -->
-        @if ($event->category && strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+        @php
+            $isFestival = $event->category && (
+                strtolower($event->category->name) === 'festival' || 
+                str_contains(strtolower($event->category->name), 'festival')
+            );
+        @endphp
+        @if ($isFestival && $event->performers && count($event->performers) > 0)
             <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
@@ -126,7 +135,10 @@
                             <div class="col-md-6 mb-3">
                                 <div class="card border-0 shadow-sm h-100">
                                     @if (isset($performer['photo']) && $performer['photo'])
-                                        <img src="{{ $performer['photo'] }}" class="card-img-top"
+                                        @php
+                                            $photoUrl = filter_var($performer['photo'], FILTER_VALIDATE_URL) ? $performer['photo'] : asset($performer['photo']);
+                                        @endphp
+                                        <img src="{{ $photoUrl }}" class="card-img-top"
                                             alt="{{ $performer['name'] }}"
                                             style="height: 200px; object-fit: cover;">
                                     @else

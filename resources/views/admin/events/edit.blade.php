@@ -171,7 +171,10 @@
                             <h5 class="mb-0">
                                 <i class="fas fa-users"></i> Daftar Performer
                             </h5>
-                            <small class="text-muted">Tambahkan/edit performer untuk festival ini</small>
+                            <div class="alert alert-info mt-2 mb-0 py-2 small border-0 shadow-none">
+                                <i class="fas fa-sync-alt me-1"></i> 
+                                <strong>Tips Kolaborasi:</strong> Gunakan <strong>URL Foto Luar</strong> (Google Drive/Imgur) agar foto performer muncul di laptop teman Anda tanpa perlu kirim file gambar.
+                            </div>
                         </div>
                         <div class="card-body">
                             <button type="button" class="btn btn-sm btn-primary mb-3" id="add-performer-btn">
@@ -181,6 +184,8 @@
                                 @if($event->performers && count($event->performers) > 0)
                                     @foreach($event->performers as $index => $performer)
                                         <div class="performer-item card mb-3 border-secondary">
+                                            <!-- Hidden input to keep track of existing photo path -->
+                                            <input type="hidden" name="performers[{{ $index }}][existing_photo]" value="{{ $performer['photo'] ?? '' }}">
                                             <div class="card-body">
                                                 <div class="row g-3">
                                                     <div class="col-md-4">
@@ -195,10 +200,13 @@
                                                     </div>
                                                     <div class="col-md-4">
                                                         <label class="form-label">Foto Performer (Upload)</label>
-                                                        @if(isset($performer['photo']) && $performer['photo'] && !filter_var($performer['photo'], FILTER_VALIDATE_URL))
+                                                        @if(isset($performer['photo']) && $performer['photo'])
                                                             <div class="mb-2">
-                                                                <img src="{{ $performer['photo'] }}" alt="Performer"
-                                                                    style="max-width: 100px; max-height: 80px;">
+                                                                @php
+                                                                    $thumbUrl = filter_var($performer['photo'], FILTER_VALIDATE_URL) ? $performer['photo'] : asset($performer['photo']);
+                                                                @endphp
+                                                                <img src="{{ $thumbUrl }}" alt="Performer"
+                                                                    style="max-width: 100px; max-height: 80px; object-fit: cover; border-radius: 4px;">
                                                             </div>
                                                         @endif
                                                         <input type="file" class="form-control performer-photo" accept="image/*"
@@ -214,7 +222,9 @@
                                                             </div>
                                                         @endif
                                                         <input type="url" class="form-control" name="performers[{{ $index }}][photo_external]" 
-                                                            placeholder="https://..." value="{{ filter_var($performer['photo'] ?? '', FILTER_VALIDATE_URL) ? $performer['photo'] : '' }}">
+                                                            placeholder="Contoh: https://images.unsplash.com/..." value="{{ filter_var($performer['photo'] ?? '', FILTER_VALIDATE_URL) ? $performer['photo'] : '' }}">
+                                                        <small class="text-muted text-primary">Jika diisi, foto akan diambil dari link ini.</small>
+
                                                     </div>
                                                 </div>
                                                 <div class="mt-3">
@@ -421,7 +431,9 @@
                             <div class="col-md-12 mt-2">
                                 <label class="form-label">Atau URL Foto Luar</label>
                                 <input type="url" class="form-control" name="performers[${performerCount}][photo_external]" 
-                                    placeholder="https://...">
+                                    placeholder="Contoh: https://images.unsplash.com/...">
+                                <small class="text-muted">Jika diisi, foto akan diambil dari link ini.</small>
+
                             </div>
                         </div>
                         <div class="mt-3">
@@ -452,15 +464,17 @@
         }
 
         function reindexPerformers() {
-            document.querySelectorAll('.performer-item').forEach((item, index) => {
-                item.querySelectorAll('input[type="text"], input[type="file"], textarea').forEach(input => {
+            const items = document.querySelectorAll('.performer-item');
+            items.forEach((item, index) => {
+                item.querySelectorAll('input, textarea').forEach(input => {
                     const oldName = input.getAttribute('name');
                     if (oldName) {
-                        const newName = oldName.replace(/\d+\]/, index + ']');
+                        const newName = oldName.replace(/performers\[\d+\]/, `performers[${index}]`);
                         input.setAttribute('name', newName);
                     }
                 });
             });
+            performerCount = items.length;
         }
     </script>
 @endsection

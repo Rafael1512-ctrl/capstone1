@@ -62,7 +62,13 @@
     <!-- performar_area_end  -->
 
     <!-- Performers Section (Only for Festival) -->
-    @if ($event->category && strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+    @php
+        $isFestival = $event->category && (
+            strtolower($event->category->name) === 'festival' || 
+            str_contains(strtolower($event->category->name), 'festival')
+        );
+    @endphp
+    @if ($isFestival && $event->performers && count($event->performers) > 0)
         <div id="performers-lineup" class="performar_area black_bg pt-120">
             <div class="container">
                 <div class="row">

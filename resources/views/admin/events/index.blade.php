@@ -80,7 +80,13 @@
                                 <td>
                                     @if ($event->category)
                                         <span class="badge bg-info text-white">{{ $event->category->name }}</span>
-                                        @if (strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+                                        @php
+                                            $isFestival = $event->category && (
+                                                strtolower($event->category->name) === 'festival' || 
+                                                str_contains(strtolower($event->category->name), 'festival')
+                                            );
+                                        @endphp
+                                        @if ($isFestival && $event->performers && count($event->performers) > 0)
                                             <br>
                                             <small class="text-success mt-1 d-inline-block">
                                                 <i class="fas fa-users"></i> {{ count($event->performers) }} Performer

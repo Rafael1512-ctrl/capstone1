@@ -93,7 +93,13 @@
                                                             <i class="fas fa-map-marker-alt"></i>
                                                             {{ Str::limit($event->location, 40) }}
                                                         </p>
-                                                        @if ($event->category && strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+                                                        @php
+                                                            $isFestival = $event->category && (
+                                                                strtolower($event->category->name) === 'festival' || 
+                                                                str_contains(strtolower($event->category->name), 'festival')
+                                                            );
+                                                        @endphp
+                                                        @if ($isFestival && $event->performers && count($event->performers) > 0)
                                                             <p class="mb-2 text-info">
                                                                 <i class="fas fa-users"></i>
                                                                 <strong>{{ count($event->performers) }} Performer</strong>

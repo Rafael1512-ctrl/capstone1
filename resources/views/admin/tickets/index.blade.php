@@ -4,8 +4,8 @@
 <div class="container-fluid px-4">
     <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
         <div>
-            <h1 class="h3 mb-0 text-dark">Guest Check-in List</h1>
-            <p class="text-muted small">Manage attendee arrivals and validate tickets quickly.</p>
+            <h1 class="h3 mb-0 text-dark">Tickets Management</h1>
+            <p class="text-muted small">Manage all issued tickets, activate them upon entry, or delete if necessary.</p>
         </div>
         <div class="btn-group">
             <a href="{{ route('tickets.scanner') }}" class="btn btn-dark">
@@ -73,14 +73,22 @@
                                                 class="btn btn-sm btn-success validate-btn" 
                                                 data-id="{{ $ticket->ticket_id }}"
                                                 data-url="{{ route('tickets.validate.ajax', $ticket->ticket_id) }}" 
-                                                title="Mark as Used/Check-in">
-                                            <i class="fas fa-check"></i> CHECK-IN
+                                                title="Activate Ticket">
+                                            <i class="fas fa-power-off"></i> ACTIVATE
                                         </button>
                                     @else
-                                        <button class="btn btn-sm btn-light disabled" disabled>
-                                            <i class="fas fa-check-double text-muted"></i>
+                                        <button class="btn btn-sm btn-light disabled" disabled title="Ticket Already Activated">
+                                            <i class="fas fa-check text-success"></i> ACTIVATED
                                         </button>
                                     @endif
+
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger delete-ticket-btn"
+                                            data-id="{{ $ticket->ticket_id }}"
+                                            data-url="{{ route('admin.tickets.destroy', $ticket->ticket_id) }}"
+                                            title="Delete Ticket">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -106,6 +114,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Activation Logic
         const validateBtns = document.querySelectorAll('.validate-btn');
         
         validateBtns.forEach(btn => {
@@ -116,13 +125,13 @@
                 const row = document.getElementById(`ticket-row-${ticketId}`);
                 
                 Swal.fire({
-                    title: 'Check-in Guest?',
-                    text: `Mark ticket #${ticketId} as used? This cannot be undone.`,
+                    title: 'Activate Ticket?',
+                    text: `Mark ticket #${ticketId} as activated? This cannot be undone.`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#adadad',
-                    confirmButtonText: 'Yes, Check-in'
+                    confirmButtonText: 'Yes, Activate'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         this.disabled = true;
@@ -140,7 +149,7 @@
                         .then(data => {
                             if (data.success) {
                                 Swal.fire({
-                                    title: 'Check-in Success!',
+                                    title: 'Activation Success!',
                                     text: data.message,
                                     icon: 'success',
                                     timer: 1500,
@@ -151,29 +160,93 @@
                                 const statusCol = row.querySelector('.ticket-status-col');
                                 statusCol.innerHTML = '<span class="badge bg-secondary status-badge" style="font-size: 10px;">USED</span>';
                                 
-                                this.parentElement.innerHTML = `
+                                // Reset the button group to remove ACTIVATE and keep VIEW/DELETE
+                                const btnGroup = this.parentElement;
+                                btnGroup.innerHTML = `
                                     <a href="{{ url('tickets/view') }}/${ticketId}" class="btn btn-sm btn-outline-info" target="_blank">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <button class="btn btn-sm btn-light disabled" disabled>
-                                        <i class="fas fa-check-double text-muted"></i>
+                                        <i class="fas fa-check text-success"></i> ACTIVATED
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-danger delete-ticket-btn"
+                                            data-id="${ticketId}"
+                                            data-url="{{ url('admin/tickets') }}/${ticketId}"
+                                            title="Delete Ticket">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 `;
+                                // Re-attach delete listener to new button
+                                attachDeleteListener(btnGroup.querySelector('.delete-ticket-btn'));
                             } else {
                                 this.disabled = false;
-                                this.innerHTML = '<i class="fas fa-check"></i> CHECK-IN';
+                                this.innerHTML = '<i class="fas fa-power-off"></i> ACTIVATE';
                                 Swal.fire('Error', data.message, 'error');
                             }
                         })
                         .catch(err => {
                             this.disabled = false;
-                            this.innerHTML = '<i class="fas fa-check"></i> CHECK-IN';
+                            this.innerHTML = '<i class="fas fa-power-off"></i> ACTIVATE';
                              Swal.fire('Error', 'Something went wrong!', 'error');
                         });
                     }
                 });
             });
         });
+
+        // Delete Logic
+        function attachDeleteListener(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const ticketId = this.dataset.id;
+                const url = this.dataset.url;
+                const row = document.getElementById(`ticket-row-${ticketId}`);
+                
+                Swal.fire({
+                    title: 'Delete Ticket?',
+                    text: `Are you sure you want to delete ticket #${ticketId}? This will remove it permanently.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#adadad',
+                    confirmButtonText: 'Yes, Delete'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ _method: 'DELETE' })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({
+                                    title: 'Deleted!',
+                                    text: data.message,
+                                    icon: 'success',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                });
+                                row.classList.add('fade-out');
+                                setTimeout(() => row.remove(), 500);
+                            } else {
+                                Swal.fire('Error', data.message, 'error');
+                            }
+                        })
+                        .catch(err => {
+                             Swal.fire('Error', 'Something went wrong!', 'error');
+                        });
+                    }
+                });
+            });
+        }
+
+        document.querySelectorAll('.delete-ticket-btn').forEach(btn => attachDeleteListener(btn));
     });
 </script>
 
@@ -181,7 +254,8 @@
     .card { border-radius: 12px; }
     .table thead th { border-top: none; }
     code { color: #dc143c; }
-    .validate-btn { border-radius: 8px; font-weight: 700; transform: scale(1); transition: all 0.2s; }
-    .validate-btn:hover { transform: scale(1.05); }
+    .validate-btn, .delete-ticket-btn { border-radius: 8px; font-weight: 700; transform: scale(1); transition: all 0.2s; }
+    .validate-btn:hover, .delete-ticket-btn:hover { transform: scale(1.05); }
+    .fade-out { opacity: 0; transform: translateX(-20px); transition: all 0.5s; }
 </style>
 @endsection

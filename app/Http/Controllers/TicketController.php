@@ -248,6 +248,37 @@ class TicketController extends Controller
     }
 
     /**
+     * Delete a ticket (Admin only)
+     */
+    public function destroy(Ticket $ticket)
+    {
+        if (!Auth::user()->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        try {
+            $ticketId = $ticket->ticket_id;
+            
+            // Optional: delete associated QR code file if it exists
+            if ($ticket->qr_code && Storage::disk('public')->exists($ticket->qr_code)) {
+                Storage::disk('public')->delete($ticket->qr_code);
+            }
+
+            $ticket->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Ticket #{$ticketId} has been deleted successfully."
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete ticket: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Daftar tiket milik user yang sedang login
      */
     public function myTickets()

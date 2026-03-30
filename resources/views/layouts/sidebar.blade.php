@@ -27,8 +27,7 @@
                 <li class="nav-item {{ Request::is('admin/tickets*') ? 'active' : '' }}">
                     <a href="{{ route('admin.tickets.index') }}">
                         <i class="fas fa-clipboard-check"></i>
-                        <p>Guest Check-in</p>
-                        <span class="badge badge-success">FAST</span>
+                        <p>Tickets Management</p>
                     </a>
                 </li>
                 <li class="nav-item {{ Request::is('admin*') ? 'active' : '' }}">

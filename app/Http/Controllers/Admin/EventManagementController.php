@@ -272,7 +272,7 @@ class EventManagementController extends Controller
                         'name' => $performer['name'],
                         'role' => $performer['role'],
                         'description' => $performer['description'] ?? '',
-                        'photo' => $performer['photo'] ?? null,
+                        'photo' => $performer['existing_photo'] ?? null,
                     ];
 
                     // Handle new performer photo upload or external URL

@@ -122,7 +122,13 @@
                             <hr class="my-4">
 
                             <!-- Performers Section (Only for Festival) -->
-                            @if ($event->category && strtolower($event->category->name) === 'festival' && $event->performers && count($event->performers) > 0)
+                            @php
+                                $isFestival = $event->category && (
+                                    strtolower($event->category->name) === 'festival' || 
+                                    str_contains(strtolower($event->category->name), 'festival')
+                                );
+                            @endphp
+                            @if ($isFestival && $event->performers && count($event->performers) > 0)
                                 <div class="performers-section mb-4">
                                     <h5 class="mb-3">
                                         <i class="fas fa-users"></i> Daftar Performer
