@@ -1,4 +1,28 @@
     <header>
+        <style>
+            /* Ensure header looks good on both transparent and dark backgrounds */
+            @if(!request()->routeIs('public.event.show'))
+            .header-area {
+                position: relative !important;
+                background: #0a0a0a !important;
+            }
+            .header-area .main-header-area {
+                background: #0a0a0a !important;
+                border-bottom: 1px solid rgba(220, 20, 60, 0.25) !important;
+                box-shadow: 0 2px 24px rgba(0, 0, 0, 0.6) !important;
+                padding-top: 12px !important;
+            }
+            @endif
+
+            /* Navigation menu styles */
+            .header-area .main-header-area .main-menu ul li {
+                margin: 0 10px !important;
+            }
+            
+            @media (max-width: 991px) {
+                .main-menu { display: none; }
+            }
+        </style>
         <div class="header-area ">
             <div id="sticky-header" class="main-header-area">
                 <div class="container">
@@ -15,11 +39,22 @@
                                 <div class="main-menu  d-none d-lg-block">
                                     <nav>
                                         <ul id="navigation">
+                                            @php
+                                                $isEventPage = request()->routeIs('public.event.show');
+                                                $eventUrl = isset($event) ? route('public.event.show', $event->event_id) : route('home');
+                                            @endphp
                                             <li><a href="{{ route('home') }}">Main Home</a></li>
-                                            <li><a href="#performers">Performer</a></li>
-                                            <li><a href="#about">About</a></li>
-                                            <li><a href="#program">Program</a></li>
-                                            <li><a href="#venue">Venue</a></li>
+
+                                            <li><a href="{{ $isEventPage ? '#venue' : $eventUrl . '#venue' }}">Venue</a></li>
+                                            <!-- My Ticket link to scroll to ticket section -->
+                                            @if (isset($event) && $event->category && (strtolower($event->category->name) === 'festival' || str_contains(strtolower($event->category->name), 'festival')))
+                                                <li><a href="{{ $isEventPage ? '#performers' : $eventUrl . '#performers' }}">Performer</a></li>
+                                            @endif
+                                            <li><a href="{{ $isEventPage ? '#tickets' : $eventUrl . '#tickets' }}">My Ticket</a></li>
+
+                                            
+                                            
+                                            
                                         </ul>
                                     </nav>
                                 </div>
@@ -28,7 +63,7 @@
                                 <div class="buy_tkt">
                                     <div class="book_btn">
                                         @auth
-                                            <a href="{{ auth()->user()->isAdmin() ? route('admin.starter') : (auth()->user()->isOrganizer() ? route('organizer.dashboard') : route('landing')) }}" class="boxed-btn3">Dashboard</a>
+                                            <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isOrganizer() ? route('organizer.dashboard') : route('dashboard')) }}" class="boxed-btn3">Dashboard</a>
                                         @else
                                             <a href="{{ route('login') }}" class="boxed-btn3">Login</a>
                                         @endauth
