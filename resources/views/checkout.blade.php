@@ -324,7 +324,13 @@
                         <div id="qrisSection2">
                             <p class="mb-3" style="color: #aaa !important; font-size: 14px;">Silakan pindai QRIS di bawah ini untuk membayar</p>
                             <div class="p-3 bg-white d-inline-block rounded-lg mb-3" style="border: 2px solid rgba(220,20,60,0.15);">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=00020101021226590014ID.LINKAJA.WWW011893600503000007672202150000000000000005204541153033605802ID5914LUXTIX%20OFFICIAL6007JAKARTA6105123456304CA5A" alt="QRIS" style="width: 220px; height: 220px;">
+                                @php
+                                    $amountStr = str_pad($ticketType->price, 10, '0', STR_PAD_LEFT);
+                                    $randomSalt = strtoupper(Str::random(12));
+                                    // Simulated dynamic QRIS payload including amount and a unique salt
+                                    $qrisPayload = "00020101021226590014ID.LINKAJA.WWW01189360050" . $amountStr . "2202" . $randomSalt . "5204541153033605802ID5914LUXTIX%20OFFICIAL6007JAKARTA6105123456304CA5A";
+                                @endphp
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ urlencode($qrisPayload) }}" alt="QRIS" style="width: 220px; height: 220px;">
                             </div>
                             <div class="d-flex justify-content-center align-items-center mb-3">
                                 <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" height="25" class="mr-3">
@@ -334,8 +340,11 @@
 
                         <div id="vaSection2" style="display:none;">
                             <p class="mb-2" style="color: #aaa !important; font-size: 14px;">Nomor Virtual Account</p>
+                            @php
+                                $vaNumber = "8806 " . rand(1000, 9999) . " " . rand(1000, 9999) . " " . rand(1000, 9999);
+                            @endphp
                             <div class="d-flex justify-content-center align-items-center mb-3">
-                                <h2 class="font-weight-bold mb-0 mr-3" id="va-number" style="letter-spacing: 2px; color: #dc143c !important; font-size: 1.5rem;">8806 0812 3456 7890</h2>
+                                <h2 class="font-weight-bold mb-0 mr-3" id="va-number" style="letter-spacing: 2px; color: #dc143c !important; font-size: 1.5rem;">{{ $vaNumber }}</h2>
                                 <button type="button" class="btn btn-sm" onclick="copyVA()" style="background: rgba(220,20,60,0.1); border: 1px solid rgba(220,20,60,0.3); color: #dc143c; border-radius: 8px; padding: 5px 10px; transition: 0.3s;" id="copy-btn" title="Salin Nomor VA">
                                     <i class="fa fa-copy"></i> Salin
                                 </button>

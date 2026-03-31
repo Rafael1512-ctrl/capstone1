@@ -238,9 +238,14 @@
                 <li class="nav-item topbar-user dropdown hidden-caret">
                     <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"
                         aria-expanded="false">
-                        <div class="avatar-sm">
-                            <img src="{{ asset('assets/img/profile.jpg') }}" alt="..."
-                                class="avatar-img rounded-circle" />
+                        <div class="avatar-sm text-center">
+                            @if(Auth::user()->profile_photo)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="..."
+                                    class="avatar-img rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
+                            @else
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1e293b&color=fff" alt="..."
+                                    class="avatar-img rounded-circle" />
+                            @endif
                         </div>
                         <span class="profile-username">
                             <span class="op-7">Hi,</span>
@@ -252,15 +257,19 @@
                             <li>
                                 <div class="user-box">
                                     <div class="avatar-lg">
-                                        <img src="{{ asset('assets/img/profile.jpg') }}" alt="image profile"
-                                            class="avatar-img rounded" />
+                                        @if(Auth::user()->profile_photo)
+                                            <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="image profile"
+                                                class="avatar-img rounded" style="width: 80px; height: 80px; object-fit: cover;" />
+                                        @else
+                                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1e293b&color=fff&size=80" alt="image profile"
+                                                class="avatar-img rounded" />
+                                        @endif
                                     </div>
                                     <div class="u-text">
                                         <h4>{{ Auth::user()->name }}</h4>
                                         <p class="text-muted">{{ Auth::user()->email }}</p>
-                                        <a href="profile.html" class="btn btn-xs btn-secondary btn-sm">View
-                                            Profile</a>
-                                        <form method="POST" action="{{ route('logout') }}" class="m-0">
+                                        <a href="{{ route('admin.profile.show') }}" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
+                                        <form method="POST" action="{{ route('logout') }}" class="m-0 d-inline">
                                             @csrf
                                             <button type="submit" class="btn btn-xs btn-danger btn-sm">Logout</button>
                                         </form>

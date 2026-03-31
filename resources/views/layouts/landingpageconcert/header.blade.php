@@ -163,6 +163,12 @@
                         </li>
 
                     @endguest
+
+                    <div class="nav-item ml-2" style="list-style:none;">
+                        <span onclick="toggleTheme()" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
+                            <i class="theme-icon fa fa-moon-o"></i>
+                        </span>
+                    </div>
                 </div>  
 
             </div>

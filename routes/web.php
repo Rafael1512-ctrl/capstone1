@@ -49,6 +49,10 @@ Route::get('/organizer-dashboard/event/{id}', [OrganizerController::class, 'show
     ->name('organizer.report')
     ->middleware(['auth', 'role:organizer,admin']);
 
+Route::post('/organizer/capacity-request', [OrganizerController::class, 'storeCapacityRequest'])
+    ->name('organizer.capacity.request')
+    ->middleware(['auth', 'role:organizer,admin']);
+
 // Concert Pages (Static / Public)
 Route::get('/concert1', function () {
     return view('concert1');
@@ -318,6 +322,19 @@ Route::middleware('auth')->group(function () {
         Route::prefix('admin/settings')->name('admin.settings.')->group(function () {
             Route::get('/', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
             Route::put('/update', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+        });
+
+        Route::prefix('admin/profile')->name('admin.profile.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\ProfileController::class, 'show'])->name('show');
+            Route::get('/edit', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('edit');
+            Route::put('/update', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('update');
+        });
+
+        // Admin Capacity Requests
+        Route::prefix('admin/capacity-requests')->name('admin.capacity.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\CapacityRequestController::class, 'index'])->name('index');
+            Route::post('/{capacityRequest}/approve', [App\Http\Controllers\Admin\CapacityRequestController::class, 'approve'])->name('approve');
+            Route::post('/{capacityRequest}/reject', [App\Http\Controllers\Admin\CapacityRequestController::class, 'reject'])->name('reject');
         });
     });
 });

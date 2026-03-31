@@ -6,6 +6,7 @@ use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
@@ -25,8 +26,8 @@ class TicketController extends Controller
         }
 
         try {
-            // Encode a full URL in the QR code for status updates
-            $url = route('tickets.scan.direct', $ticket->ticket_id);
+            // Encode a full URL with a unique signature in the QR code
+            $url = route('tickets.scan.direct', $ticket->ticket_id) . '?sig=' . Str::random(16);
             
             // Generate as SVG for better compatibility
             $qrCode = QrCode::size(300)->generate($url);
@@ -64,8 +65,9 @@ class TicketController extends Controller
         }
 
         $path = Storage::disk('public')->path($ticket->qr_code);
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-        return response()->download($path, $ticket->ticket_id . '.png');
+        return response()->download($path, $ticket->ticket_id . '.' . $extension);
     }
 
     /**

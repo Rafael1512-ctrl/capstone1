@@ -40,6 +40,26 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-8">
+                                        @if (auth()->user()->isAdmin())
+                                            <!-- Organizer Select (Admin only) -->
+                                            <div class="form-group">
+                                                <label for="organizer_id">Organizer <span class="text-danger">*</span></label>
+                                                <select class="form-control @error('organizer_id') is-invalid @enderror"
+                                                    id="organizer_id" name="organizer_id" required>
+                                                    <option value="">-- Pilih Organizer --</option>
+                                                    @foreach ($organizers as $org)
+                                                        <option value="{{ $org->user_id }}"
+                                                            {{ old('organizer_id') == $org->user_id ? 'selected' : '' }}>
+                                                            {{ $org->name }} ({{ $org->email }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('organizer_id')
+                                                    <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                                @enderror
+                                            </div>
+                                        @endif
+                                        
                                         <!-- Judul Event -->
                                         <div class="form-group">
                                             <label for="title">Judul Event <span class="text-danger">*</span></label>

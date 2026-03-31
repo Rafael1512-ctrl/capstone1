@@ -105,7 +105,10 @@
                     <!-- QR Area -->
                     <div class="d-flex align-items-center justify-content-center p-3" style="width: 100px; min-width: 100px; background: #1a1a1a;">
                         <div class="text-center">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($ticket->ticket_id) }}" alt="QR" style="width: 60px; height: 60px; filter: grayscale(1) invert(1); opacity: 0.9;">
+                            @php
+                                $scanUrl = route('tickets.scan.direct', $ticket->ticket_id);
+                            @endphp
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($scanUrl) }}" alt="QR" style="width: 60px; height: 60px; filter: grayscale(1) invert(1); opacity: 0.9;">
                         </div>
                     </div>
                 </div>

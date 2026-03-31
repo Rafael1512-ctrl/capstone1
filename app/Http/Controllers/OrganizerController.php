@@ -225,8 +225,45 @@ class OrganizerController extends Controller
             'chart_data'   => $chartData,
             'orders_list'  => $ordersList,
             'ticket_list'  => $ticketList,
+            'ticket_types' => $event->ticketTypes,
+            'pending_requests' => \App\Models\CapacityRequest::where('event_id', $id)
+                                    ->where('status', 'pending')
+                                    ->get()
+                                    ->groupBy('ticket_type_id'),
         ];
 
         return view('organizer_report', compact('eventData'));
+    }
+
+    public function storeCapacityRequest(Request $request)
+    {
+        $request->validate([
+            'event_id' => 'required|exists:acara,event_id',
+            'ticket_type_id' => 'required|exists:ticket_type,id',
+            'requested_capacity' => 'required|integer|min:1',
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $type = \App\Models\TicketType::findOrFail($request->ticket_type_id);
+
+        // Check for existing pending requests
+        $existing = \App\Models\CapacityRequest::where('ticket_type_id', $request->ticket_type_id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existing) {
+            return back()->with('error', 'You already have a pending request for this ticket type.');
+        }
+
+        \App\Models\CapacityRequest::create([
+            'event_id' => $request->event_id,
+            'ticket_type_id' => $request->ticket_type_id,
+            'current_capacity' => $type->quantity_total,
+            'requested_capacity' => $request->requested_capacity,
+            'reason' => $request->reason,
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', 'Capacity change request submitted to admin!');
     }
 }

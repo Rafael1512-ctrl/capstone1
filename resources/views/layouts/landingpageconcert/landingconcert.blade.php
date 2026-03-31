@@ -62,38 +62,79 @@
       }
     }
 
-    /* ===== DARK RED THEME GLOBAL OVERRIDE ===== */
+    /* ===== THEME TOGGLER & GLOBAL STYLES ===== */
+    :root {
+      --bg-color: #0d0d0d;
+      --text-color: #ffffff;
+      --card-bg: #111111;
+      --border-color: rgba(220, 20, 60, 0.2);
+    }
+
+    body.light-mode {
+      --bg-color: #f8f9fa;
+      --text-color: #212529;
+      --card-bg: #ffffff;
+      --border-color: rgba(0, 0, 0, 0.1);
+    }
+
     body {
-      background: #0d0d0d !important;
+      background: var(--bg-color) !important;
+      color: var(--text-color) !important;
+      transition: background 0.3s ease, color 0.3s ease;
       animation: pageFadeIn 0.4s ease forwards;
     }
+
+    body.light-mode p, body.light-mode li, body.light-mode .text-muted {
+      color: #4b5563 !important;
+    }
+
+    body.light-mode .section, body.light-mode .portfolio-section {
+      background: var(--bg-color) !important;
+    }
+
     @keyframes pageFadeIn {
       from { opacity: 0; transform: translateY(6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+    
     html {
       scroll-behavior: smooth;
     }
-    .section {
-      background: transparent !important;
+
+    .theme-toggle-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1.5px solid var(--border-color);
+      color: var(--text-color);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
     }
-    .portfolio-section {
-      background: #0d0d0d !important;
+    .theme-toggle-btn:hover {
+      background: rgba(220, 20, 60, 0.1);
+      border-color: #dc143c;
+      transform: rotate(15deg);
     }
-    /* Override template's white backgrounds on the page */
-    body > .section,
-    #my-tickets .section {
-      background: #0d0d0d !important;
-    }
-    /* Text color defaults */
-    p, li {
-      color: #cccccc;
-    }
-    /* Slider text */
-    .slider-item h1 {
-      color: #fff !important;
+
+    body.light-mode .theme-toggle-btn {
+      background: rgba(0, 0, 0, 0.05);
     }
   </style>
+
+  <script>
+    // Immediate script to prevent flicker
+    (function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      if (theme === 'light') {
+        document.documentElement.classList.add('light-mode-init');
+      }
+    })();
+  </script>
 
 </head>
 
@@ -125,6 +166,41 @@
   <script src="{{ asset('cardboard-assets/js/aos.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ asset('cardboard-assets/js/main.js') }}"></script>
+  <script>
+    // Theme toggle logic
+    function toggleTheme() {
+      const body = document.body;
+      const isLight = body.classList.toggle('light-mode');
+      const icon = document.querySelector('.theme-icon');
+      
+      if (isLight) {
+        localStorage.setItem('theme', 'light');
+        if (icon) {
+          icon.classList.remove('fa-moon-o');
+          icon.classList.add('fa-sun-o');
+        }
+      } else {
+        localStorage.setItem('theme', 'dark');
+        if (icon) {
+          icon.classList.remove('fa-sun-o');
+          icon.classList.add('fa-moon-o');
+        }
+      }
+    }
+
+    // Initialize theme based on preference
+    document.addEventListener('DOMContentLoaded', function() {
+      const theme = localStorage.getItem('theme') || 'dark';
+      const icon = document.querySelector('.theme-icon');
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        if (icon) {
+          icon.classList.remove('fa-moon-o');
+          icon.classList.add('fa-sun-o');
+        }
+      }
+    });
+  </script>
   @yield('ExtraJS2')
 </body>
 

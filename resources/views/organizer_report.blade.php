@@ -221,7 +221,60 @@
             @endif
         </div>
 
-        {{-- Users list / Orders --}}
+        {{-- Ticket Capacity Control --}}
+        <div class="org-table-wrap mb-5">
+            <div class="org-table-header">
+                <h6>📑 Ticket Capacity Control</h6>
+                <span class="badge badge-info" style="font-size: 10px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <i class="fa fa-info-circle mr-1"></i> Request Admin for quota changes
+                </span>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="org-table">
+                    <thead>
+                        <tr>
+                            <th>Ticket Name</th>
+                            <th>Current Capacity</th>
+                            <th>Sold</th>
+                            <th>Remaining</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($eventData['ticket_types'] as $type)
+                        @php
+                            $isPending = isset($eventData['pending_requests'][$type->id]);
+                            $remaining = $type->quantity_total - $type->quantity_sold;
+                        @endphp
+                        <tr>
+                            <td><strong style="color: #fff;">{{ $type->name }}</strong></td>
+                            <td>{{ $type->quantity_total }} Slot</td>
+                            <td style="color: #22c55e;">{{ $type->quantity_sold }}</td>
+                            <td style="color: #fbbf24;">{{ $remaining }}</td>
+                            <td>
+                                @if($isPending)
+                                    <span class="status-badge pending">Awaiting Admin Approval</span>
+                                @else
+                                    <span class="status-badge verified">Stable</span>
+                                @endif
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-light" 
+                                        onclick="openCapacityModal({{ $type->id }}, '{{ $type->name }}', {{ $type->quantity_total }})"
+                                        style="border-radius: 8px; font-size: 11px; {{ $isPending ? 'opacity: 0.5; pointer-events: none;' : '' }}">
+                                    <i class="fa fa-edit mr-1"></i> Request Change
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {{-- Purchase Records --}}
         <div class="org-table-wrap">
             <div class="org-table-header">
                 <h6>👥 Purchase Records (User List)</h6>
@@ -358,9 +411,69 @@
 @endsection
 
 @section('ExtraJS2')
+<!-- Capacity Request Modal -->
+<div class="modal fade" id="capacityModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background: #111; border: 1px solid var(--org-border); border-radius: 20px;">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title text-white fw-bold">Request Capacity Change</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="capacityForm" action="{{ route('organizer.capacity.request') }}" method="POST">
+                @csrf
+                <input type="hidden" name="event_id" value="{{ $eventData['id'] }}">
+                <input type="hidden" name="ticket_type_id" id="modal_type_id">
+                
+                <div class="modal-body p-4">
+                    <div class="mb-4 text-center">
+                        <span id="modal_ticket_name" class="badge badge-outline-light py-2 px-3 mb-2" style="border:1px solid #444; color: #ff3366;">TIER NAME</span>
+                        <p class="text-muted small">Update your event slot availability. Requests must be approved by the admin.</p>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted small">Current Capacity</label>
+                            <input type="text" id="modal_current_capacity" class="form-control text-white border-0" 
+                                   style="background: rgba(255,255,255,0.05); cursor: not-allowed;" readonly>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted small">New Requested Slots</label>
+                            <input type="number" name="requested_capacity" class="form-control text-white" 
+                                   style="background: rgba(255,255,255,0.1); border: 1px solid #444;" 
+                                   min="1" required placeholder="Ex: 500">
+                        </div>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="form-label text-muted small">Reason for Change</label>
+                        <textarea name="reason" rows="3" class="form-control text-white" 
+                                  style="background: rgba(255,255,255,0.1); border: 1px solid #444;" 
+                                  placeholder="Why do you need this change?" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 p-4">
+                    <button type="button" class="btn btn-dark px-4" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger px-5" style="background: #dc143c; border: none; font-weight: 700;">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    function openCapacityModal(id, name, current) {
+        document.getElementById('modal_type_id').value = id;
+        document.getElementById('modal_ticket_name').innerText = name;
+        document.getElementById('modal_current_capacity').value = current + ' Slots';
+        
+        const modal = new bootstrap.Modal(document.getElementById('capacityModal'));
+        modal.show();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const eventData = @json($eventData);
         

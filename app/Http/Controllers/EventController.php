@@ -44,9 +44,14 @@ class EventController extends Controller
     public function create()
     {
         $categories = EventCategory::where('is_active', true)->get();
-        $organizer = Auth::user();
+        
+        // If admin, they can choose any organizer. If organizer, they are the organizer.
+        $organizers = null;
+        if (Auth::user()->isAdmin()) {
+            $organizers = \App\Models\User::where('role_id', 2)->get();
+        }
 
-        return view('events.create', compact('categories', 'organizer'));
+        return view('events.create', compact('categories', 'organizers'));
     }
 
     /**
@@ -63,10 +68,18 @@ class EventController extends Controller
             'maps_url'          => ['nullable', 'string', 'max:1000'],
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'organizer_id'      => ['nullable', 'exists:users,user_id'], // Optional choice for admin
         ]);
 
         $data = $validated;
-        $data['organizer_id'] = Auth::user()->user_id;
+        
+        // Logic for organizer_id
+        if (Auth::user()->isAdmin() && $request->filled('organizer_id')) {
+            $data['organizer_id'] = $request->organizer_id;
+        } else {
+            $data['organizer_id'] = Auth::user()->user_id;
+        }
+        
         $data['status'] = 'draft';
 
         // Handle banner upload
@@ -120,8 +133,14 @@ class EventController extends Controller
         }
 
         $categories = EventCategory::where('is_active', true)->get();
+        
+        // If admin, they can change the organizer
+        $organizers = null;
+        if (Auth::user()->isAdmin()) {
+            $organizers = \App\Models\User::where('role_id', 2)->get();
+        }
 
-        return view('events.edit', compact('event', 'categories'));
+        return view('events.edit', compact('event', 'categories', 'organizers'));
     }
 
     /**
@@ -146,9 +165,15 @@ class EventController extends Controller
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'status'            => ['required', 'in:draft,published,cancelled'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'organizer_id'      => ['nullable', 'exists:users,user_id'], // For admin
         ]);
 
         $data = $validated;
+
+        // Only admins can change the organizer
+        if (!Auth::user()->isAdmin() || !$request->filled('organizer_id')) {
+            unset($data['organizer_id']);
+        }
 
         // Handle banner upload
         if ($request->hasFile('banner_url')) {

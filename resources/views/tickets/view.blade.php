@@ -4,7 +4,8 @@
 
 @section('contentlandingconcert')
 <div class="container py-5 d-flex align-items-center justify-content-center" style="min-height: 80vh;">
-    <div class="ticket-wrapper position-relative" style="width: 1000px; max-width: 100%;">
+    {{-- SCREEN VIEW: The Horizontal Dark Card the user likes --}}
+    <div class="ticket-wrapper position-relative no-print" style="width: 1000px; max-width: 100%;">
         
         <!-- Main E-Ticket Horizontal Card -->
         <div class="card bg-dark border-0 overflow-hidden shadow-2xl main-ticket-card" 
@@ -82,40 +83,16 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            {{-- Admin/Organizer View: Buyer Info --}}
-                            @if(auth()->check() && (auth()->user()->isAdmin() || auth()->user()->isOrganizer()))
-                            <div class="col-12 mb-4">
-                                <div class="p-3 shadow-inner" style="background: rgba(220, 20, 60, 0.08); border: 1px dashed rgba(220, 20, 60, 0.3); border-radius: 18px;">
-                                    <label class="text-danger d-block text-uppercase mb-2 font-weight-bold" style="font-size: 0.6rem; letter-spacing: 2px;">
-                                        <i class="fa fa-shield mr-1"></i> Staff Only: Buyer Info
-                                    </label>
-                                    <div class="d-flex align-items-center">
-                                        <div class="mr-3">
-                                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-danger text-white font-weight-bold" style="width: 42px; height: 42px; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(220,20,60,0.3);">
-                                                {{ strtoupper(substr($transaction->user->name ?? 'U', 0, 1)) }}
-                                            </div>
-                                        </div>
-                                        <div style="line-height: 1.2;">
-                                            <span class="text-white font-weight-bold d-block mb-1" style="font-size: 0.95rem;">{{ $transaction->user->name ?? 'Unknown User' }}</span>
-                                            <span class="text-white-50 small">{{ $transaction->user->email ?? '-' }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
                         </div>
 
                         <!-- QR Code Section -->
                         <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center p-3 mb-4 rounded-xl shadow-inner" 
                              style="background: #ffffff; border-radius: 20px; border: 8px solid #f8f9fa;">
                             @php
-                                // Ensure we use the SVG if it exists, or fallback to the URL-encoded direct scan link
                                 $qrSource = $qrCodeUrl ? $qrCodeUrl : "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=" . urlencode(route('tickets.scan.direct', $ticket->ticket_id));
                             @endphp
                             <img src="{{ $qrSource }}" alt="Ticket QR" class="img-fluid mb-3" style="max-height: 180px; width: auto;">
-                            
-                            <p class="text-muted small mb-0 font-weight-bold" style="letter-spacing: 1px;">SCAN ME TO VALIDATE</p>
+                            <p class="text-dark small mb-0 font-weight-bold" style="letter-spacing: 1px;">SCAN ME TO VALIDATE</p>
                         </div>
 
                         <!-- Action Buttons -->
@@ -124,7 +101,7 @@
                                 <div class="col-sm-8 mb-2">
                                     <a href="{{ route('tickets.index') }}" class="btn btn-danger btn-block py-3 font-weight-bold" 
                                        style="border-radius: 12px; background: #dc143c; border: none; box-shadow: 0 10px 20px rgba(220,20,60,0.3);">
-                                       <i class="fa fa-arrow-left mr-2"></i> KEMBALI KE MY TICKETS
+                                       <i class="fa fa-arrow-left mr-2"></i> MY TICKETS
                                     </a>
                                 </div>
                                 <div class="col-sm-4 mb-2">
@@ -139,12 +116,47 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Order Additional Details (Optional but adds value) -->
-        <div class="mt-4 text-center">
-            <p class="text-white-50 small" style="opacity: 0.6;">
-                Need help? <a href="/contact" class="text-danger">Contact Support</a> with Transaction ID: #{{ $transaction->transaction_id }}
-            </p>
+    {{-- PRINT VIEW: Pure High Quality Printable Stub (Hidden on Screen) --}}
+    <div class="print-only-container">
+        <div class="print-stub">
+            <div class="print-stub-left">
+                <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="Poster" referrerpolicy="no-referrer">
+                <div class="print-overlay"></div>
+                <div class="print-header">
+                    <div class="print-badge">OFFICIAL ENTRY</div>
+                    <h1 class="print-title">{{ $event->title }}</h1>
+                </div>
+            </div>
+            <div class="print-stub-right">
+                <div class="print-branding">TIXLY CONCERTS</div>
+                <div class="print-tier">{{ strtoupper($ticket->ticketType->name) }}</div>
+                
+                <div class="print-qr">
+                    <img src="{{ $qrSource }}" alt="QR">
+                    <div class="print-hint">SCAN AT THE GATE</div>
+                </div>
+
+                <div class="print-info">
+                    <div class="p-info-item">
+                        <small>DATE / TIME</small>
+                        <p>{{ $event->schedule_time ? $event->schedule_time->format('d M Y | H:i') : 'TBA' }} WIB</p>
+                    </div>
+                    <div class="p-info-item">
+                        <small>VENUE</small>
+                        <p>{{ $event->location }}</p>
+                    </div>
+                    <div class="p-info-item">
+                        <small>ATTENDEE</small>
+                        <p>{{ $transaction->user->name }}</p>
+                    </div>
+                </div>
+
+                <div class="print-serial">
+                    SERIAL: #{{ $ticket->ticket_id }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -157,115 +169,118 @@
         font-family: 'Inter', sans-serif;
     }
 
-    .main-ticket-card {
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
+    /* Screen Styles */
     .perforation-top, .perforation-bottom {
         position: absolute;
         left: -15px;
         width: 30px;
         height: 30px;
-        background:rgb(15, 0, 0);
+        background: #0d0d0d;
         border-radius: 50%;
         z-index: 10;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
     }
-
     .perforation-top { top: -15px; }
     .perforation-bottom { bottom: -15px; }
 
-    .no-gutters {
-        margin-right: 0;
-        margin-left: 0;
-    }
-    .no-gutters > .col,
-    .no-gutters > [class*="col-"] {
-        padding-right: 0;
-        padding-left: 0;
-    }
-
-    @media (max-width: 768px) {
-        .ticket-wrapper {
-            padding: 15px;
-        }
-        .main-ticket-card .row {
-            flex-direction: column;
-        }
-        .col-md-5 {
-            min-height: 250px !important;
-        }
-        .perforation-top, .perforation-bottom {
-            display: none;
-        }
-        .card-body {
-            padding: 30px !important;
-        }
+    /* Print Only Container - Hidden on Screen */
+    .print-only-container {
+        display: none;
     }
 
     @media print {
         @page {
             size: landscape;
-            margin: 0;
+            margin: 0.5cm;
         }
         body {
             background: #fff !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .main-header, .main-footer, .btn, .text-center.mt-4 {
-            display: none !important;
-        }
-        .container {
-            width: 100% !important;
-            max-width: none !important;
             padding: 0 !important;
             margin: 0 !important;
         }
-        .ticket-wrapper {
-            width: 100% !important;
-            max-width: none !important;
-            transform: none !important;
+        .no-print, header, footer, .main-header, .navbar {
+            display: none !important;
         }
-        .main-ticket-card {
-            border: none !important;
-            box-shadow: none !important;
-            width: 100% !important;
-            break-inside: avoid;
-            background: #1a1a1a !important; /* Keep dark background in print */
-            color: white !important;
+        .print-only-container {
+            display: block !important;
+            width: 100%;
         }
-        .col-md-5 {
-            width: 40% !important;
-            float: left !important;
-            height: 100% !important;
-            min-height: 480px !important;
+        .print-stub {
+            display: flex;
+            width: 25cm;
+            height: 12cm;
+            border: 2px solid #000;
+            background: #fff;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
         }
-        .col-md-7 {
-            width: 60% !important;
-            float: left !important;
-            background: #121212 !important;
-        }
-        
-        /* Ensure images and colors show up */
-        img {
-            max-width: 100% !important;
+        .print-stub-left {
+            width: 40%;
+            height: 100%;
+            position: relative;
+            background-color: #000 !important;
             -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
-        .badge {
-            background-color: #dc143c !important;
-            color: white !important;
+        .print-stub-left img {
+            display: block !important;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 1 !important;
             -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
-        .text-white { color: #fff !important; }
-        .text-white-50 { color: rgba(255,255,255,0.5) !important; }
-        .text-muted { color: #666 !important; }
-        .bg-dark-soft { background: rgba(255,255,255,0.05) !important; }
+        .print-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent) !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-header {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: #fff;
+        }
+        .print-badge { font-size: 10pt; font-weight: 800; letter-spacing: 2pt; color: #dc143c; }
+        .print-title { font-size: 28pt; margin: 0; font-family: 'DM Serif Display', serif; }
+
+        .print-stub-right {
+            width: 60%;
+            padding: 30px 50px;
+            display: flex;
+            flex-direction: column;
+            border-left: 2px dashed #ccc;
+            text-align: left;
+        }
+        .print-branding { font-size: 12pt; font-weight: 900; color: #dc143c; margin-bottom: 20px; text-align: right;}
+        .print-tier { 
+            background: #000; 
+            color: #fff; 
+            padding: 5px 15px; 
+            display: inline-block; 
+            font-weight: 800; 
+            font-size: 11pt;
+            margin-bottom: 30px;
+            align-self: flex-start;
+        }
+        .print-qr { text-align: center; margin-bottom: 30px; }
+        .print-qr img { height: 4cm; }
+        .print-hint { font-size: 8pt; color: #888; font-weight: 800; margin-top: 5px; }
+
+        .print-info { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .p-info-item small { display: block; font-size: 7pt; color: #888; font-weight: 800; }
+        .p-info-item p { font-size: 11pt; font-weight: 700; color: #000; margin: 0; }
         
-        .perforation-top, .perforation-bottom {
-            background: #fff !important; /* Make holes white in print */
+        .print-serial { 
+            margin-top: auto; 
+            font-size: 7pt; 
+            font-family: monospace; 
+            color: #888;
+            text-align: right;
         }
     }
 </style>
 @endsection
-
