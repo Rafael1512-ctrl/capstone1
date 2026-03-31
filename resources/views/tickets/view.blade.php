@@ -18,7 +18,7 @@
                         $imgUrl = str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url);
                         $transaction = $ticket->order;
                     @endphp
-                    <img src="{{ $imgUrl }}" alt="{{ $event->title }}" class="h-100 w-100" style="object-fit: cover; opacity: 0.7;">
+                    <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="{{ $event->title }}" class="h-100 w-100" style="object-fit: cover; opacity: 0.7;" referrerpolicy="no-referrer">
                     
                     <!-- Glass Overlay -->
                     <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(0,0,0,0.4), transparent, rgba(0,0,0,0.8));"></div>

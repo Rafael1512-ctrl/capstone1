@@ -58,6 +58,11 @@
                                     <span class="sub-item">Hero Banners</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('admin.settings.index') }}">
+                                    <span class="sub-item">Website Settings</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

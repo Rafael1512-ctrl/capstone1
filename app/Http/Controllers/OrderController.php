@@ -8,6 +8,9 @@ use App\Models\TicketType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketMail;
 
 class OrderController extends Controller
 {
@@ -96,6 +99,15 @@ class OrderController extends Controller
             DB::table('ticket_type')
                 ->where('id', $ticket->ticket_type_id)
                 ->increment('quantity_sold', $order->total_ticket);
+        }
+
+        // Send Email
+        try {
+            $user = Auth::user();
+            $order->load(['tickets.ticketType', 'tickets.event', 'event']);
+            Mail::to($user->email)->send(new TicketMail($user, $order, $order->tickets));
+        } catch (\Exception $e) {
+            Log::error('Failed to send simulated ticket email: ' . $e->getMessage());
         }
 
         return back()->with('success', 'Pembayaran berhasil disimulasi! Tiket Anda sudah aktif sekarang.');

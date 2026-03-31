@@ -313,5 +313,11 @@ Route::middleware('auth')->group(function () {
             Route::delete('/{banner}', [App\Http\Controllers\Admin\BannerManagementController::class, 'destroy'])->name('destroy');
             Route::post('/{banner}/toggle-active', [App\Http\Controllers\Admin\BannerManagementController::class, 'toggleActive'])->name('toggle-active');
         });
+
+        // Site Settings
+        Route::prefix('admin/settings')->name('admin.settings.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\SettingController::class, 'index'])->name('index');
+            Route::put('/update', [App\Http\Controllers\Admin\SettingController::class, 'update'])->name('update');
+        });
     });
 });

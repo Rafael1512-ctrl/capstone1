@@ -373,8 +373,8 @@
                                         $imageUrl = asset('cardboard-assets/img/concert_' . (($loopIndex % 4) + 1) . '.jpg');
                                     }
                                 @endphp
-                                <img src="{{ $imageUrl }}"
-                                    alt="{{ $event->title }}" class="img-fluid rounded-top">
+                                <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imageUrl) }}"
+                                    alt="{{ $event->title }}" class="img-fluid rounded-top" referrerpolicy="no-referrer">
 
                                 <div class="concert-card-body p-3 d-flex flex-column justify-content-between">
                                     <div>
@@ -468,57 +468,55 @@
         <div class="container">
             @auth
                 <!-- My Tickets link has been moved to the Navigation Bar -->
-            @else
-                <div class="row">
-                    <div class="col-12 text-center mb-5">
-                        <h2 class="mb-4 section-title" style="font-family: 'DM Serif Display', serif; color: #dc143c;">
-                            Welcome to TIXLY
-                        </h2>
-                        <p class="mb-4" style="color: #ccc;">
-                            Your gateway to the most exclusive live music experiences.
-                            Please log in or register to access your personalized concert dashboard
-                            and start exploring our featured events.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-6 mb-4">
-                        <img src="{{ asset('cardboard-assets/img/hero_1.jpg') }}" alt="Concert Experience" class="img-fluid rounded shadow">
-                    </div>
-
-                    <div class="col-lg-6 mb-4">
-                        <span class="d-block text-uppercase" style="color: #dc143c;">About Us</span>
-                        <h2 class="mb-4 section-title" style="color: #ffffff;">
-                            Your Gateway to Exclusive Live Music Experiences
-                        </h2>
-                        <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
-                            TIXLY is a premium platform dedicated to bringing the world's most magnificent concerts directly to
-                            you.
-                            We revolutionize ticket purchasing by combining cutting-edge technology with unparalleled customer
-                            service.
-                        </p>
-                        <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
-                            Our mission is to eliminate barriers between fans and the artists they love.
-                            From intimate performances to massive stadium shows, we curate the finest musical events
-                            while ensuring absolute security and authenticity in every transaction.
-                        </p>
-                        <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
-                            With blockchain-backed ticketing and dedicated concierge support, TIXLY transforms concert
-                            attendance
-                            from a transaction into an unforgettable experience. We believe every seat deserves to be
-                            extraordinary.
-                        </p>
-                        <p><a href="#" class="btn px-4 py-2"
-                            style="border-radius: 50px; border: 1.5px solid #dc143c; color: #dc143c; transition: all 0.3s ease;"
-                            onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
-                            onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">Learn More About TIXLY</a></p>
-                    </div>
-                </div>
-
             @endauth
+        </div>
+    </div>
 
-            <!-- User Profile Section (for authenticated users) -->
+    <!-- About Us Section (Visible to Everyone) -->
+    <div class="section pt-0">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    @php
+                        $aboutUsImage = \App\Models\SiteSetting::getValue('about_us_image_url', asset('cardboard-assets/img/hero_1.jpg'));
+                    @endphp
+                    <img src="{{ $aboutUsImage }}" alt="Concert Experience" class="img-fluid rounded shadow" referrerpolicy="no-referrer">
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <span class="d-block text-uppercase" style="color: #dc143c;">About Us</span>
+                    <h2 class="mb-4 section-title" style="color: #ffffff;">
+                        {{ \App\Models\SiteSetting::getValue('about_us_title', 'Your Gateway to Exclusive Live Music Experiences') }}
+                    </h2>
+                    <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
+                        TIXLY is a premium platform dedicated to bringing the world's most magnificent concerts directly to
+                        you.
+                        We revolutionize ticket purchasing by combining cutting-edge technology with unparalleled customer
+                        service.
+                    </p>
+                    <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
+                        Our mission is to eliminate barriers between fans and the artists they love.
+                        From intimate performances to massive stadium shows, we curate the finest musical events
+                        while ensuring absolute security and authenticity in every transaction.
+                    </p>
+                    <p style="color: #cccccc; line-height: 1.8; font-size: 1rem;">
+                        With blockchain-backed ticketing and dedicated concierge support, TIXLY transforms concert
+                        attendance
+                        from a transaction into an unforgettable experience. We believe every seat deserves to be
+                        extraordinary.
+                    </p>
+                    <p><a href="#" class="btn px-4 py-2"
+                        style="border-radius: 50px; border: 1.5px solid #dc143c; color: #dc143c; transition: all 0.3s ease;"
+                        onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
+                        onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">Learn More About TIXLY</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section pt-0">
+        <div class="container">
+            <!-- User Profile Section -->
             @auth
                 <div class="row mb-5" data-aos="fade-up" style="margin-top: 60px;">
                     <div class="col-12">

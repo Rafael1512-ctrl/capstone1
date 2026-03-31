@@ -41,6 +41,18 @@ class Order extends Model
         return $this->hasMany(Ticket::class, 'transaction_id', 'transaction_id');
     }
 
+    public function event()
+    {
+        return $this->hasOneThrough(
+            Event::class,
+            Ticket::class,
+            'transaction_id', // Foreign key on tickets table...
+            'event_id',      // Foreign key on acara table...
+            'transaction_id', // Local key on transactions table...
+            'event_id'       // Local key on tickets table...
+        );
+    }
+
     // Helper methods for controller logic
     public function isPaid()
     {

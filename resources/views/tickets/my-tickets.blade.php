@@ -63,14 +63,14 @@
                 $statusColor = $ticket->ticket_status == 'Active' ? '#00ff7f' : '#888';
             @endphp
             <div class="col-md-6 mb-4">
-                <div class="ticket-card d-flex" style="background: #161616; border-radius: 24px; overflow: hidden; height: 180px; border: 1px solid rgba(255,255,255,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                <div class="ticket-card d-flex" style="background: #161616; border-radius: 24px; overflow: hidden; height: 205px; border: 1px solid rgba(255,255,255,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease;">
                     <!-- Image -->
                     <div style="width: 140px; min-width: 140px; height: 100%; position: relative;">
                         @if($event && $event->banner_url)
                             @php
                                 $imgUrl = str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url);
                             @endphp
-                            <img src="{{ $imgUrl }}" alt="{{ $event->title }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/140x180/1a0a0a/dc143c?text=Concert';">
+                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="{{ $event->title }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null;this.src='https://via.placeholder.com/140x180/1a0a0a/dc143c?text=Concert';" referrerpolicy="no-referrer">
                         @else
                             <div style="width: 100%; height: 100%; background: #222; display: flex; align-items: center; justify-content: center;">
                                 <i class="fa fa-music text-muted"></i>
@@ -79,12 +79,13 @@
                     </div>
 
                     <!-- Details -->
-                    <div class="p-3 flex-grow-1 border-right" style="border-right: 2px dashed rgba(255,255,255,0.1) !important; position: relative;">
+                    <div class="p-4 flex-grow-1 border-right" style="border-right: 2px dashed rgba(255,255,255,0.1) !important; position: relative;">
                         <span class="badge position-absolute" style="top: 15px; right: 15px; background: {{ $statusColor }}; color: #000; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; padding: 4px 8px; border-radius: 5px;">
                             {{ $ticket->ticket_status }}
                         </span>
                         <h5 class="text-white font-weight-bold mb-1" style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $event->title ?? 'Event' }}</h5>
-                        <p class="text-white-50 small mb-2"><i class="fa fa-calendar mr-1"></i> {{ $event && $event->schedule_time ? $event->schedule_time->format('d M Y') : 'TBA' }}</p>
+                        <p class="text-white-50 small mb-1"><i class="fa fa-calendar mr-1"></i> {{ $event && $event->schedule_time ? $event->schedule_time->format('d M Y') : 'TBA' }}</p>
+                        <p class="text-white-50 small mb-2" style="font-size: 0.7rem;"><i class="fa fa-shopping-cart mr-1"></i> Dibeli: {{ $order && $order->payment_date ? $order->payment_date->format('d M Y, H:i') : 'Unknown' }} WIB</p>
                         
                         <div class="mt-2">
                             <span class="text-white-50 d-block mb-1" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px;">Ticket Type</span>
@@ -104,8 +105,7 @@
                     <!-- QR Area -->
                     <div class="d-flex align-items-center justify-content-center p-3" style="width: 100px; min-width: 100px; background: #1a1a1a;">
                         <div class="text-center">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($ticket->ticket_id) }}" alt="QR" style="width: 50px; height: 50px; filter: grayscale(1) invert(1); opacity: 0.7;">
-                            <small class="d-block text-white-50 mt-2" style="font-size: 0.55rem; letter-spacing: 1px;">ENTRY CODE</small>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($ticket->ticket_id) }}" alt="QR" style="width: 60px; height: 60px; filter: grayscale(1) invert(1); opacity: 0.9;">
                         </div>
                     </div>
                 </div>

@@ -117,7 +117,7 @@
             $bannerUrl = asset('cardboard-assets/img/concert_1.jpg');
         }
     @endphp
-    <div class="bradcam_area" style="background-image: url('{{ $bannerUrl }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
+    <div class="bradcam_area" style="background-image: url('{{ \App\Models\SiteSetting::forceDirectUrl($bannerUrl) }}'); background-size: cover; background-position: center; padding: 180px 0; position: relative; z-index: 1;">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">

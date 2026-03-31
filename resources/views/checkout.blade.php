@@ -227,7 +227,7 @@
                                     $imgUrl = asset('cardboard-assets/img/concert_1.jpg');
                                 }
                             @endphp
-                            <img src="{{ $imgUrl }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3">
+                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px;" class="mr-3" referrerpolicy="no-referrer">
                             <div>
                                 <h5 class="mb-1 text-white">{{ $event->title }}</h5>
                                 <p class="small text-muted mb-0"><i class="fa fa-calendar mr-1"></i> {{ $event->schedule_time ? $event->schedule_time->format('d M Y') : 'Date TBD' }}</p>

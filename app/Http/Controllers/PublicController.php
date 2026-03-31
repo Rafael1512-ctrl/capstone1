@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TicketMail;
+use App\Models\Order;
 
 class PublicController extends Controller
 {
@@ -89,6 +92,22 @@ class PublicController extends Controller
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             DB::commit();
+
+            // Send Ticket to Email
+            $user = Auth::user();
+            $latestOrder = Order::where('user_id', $user->user_id)
+                ->with(['tickets.ticketType', 'tickets.event', 'event'])
+                ->orderBy('payment_date', 'desc')
+                ->first();
+
+            if ($latestOrder) {
+                try {
+                    Mail::to($user->email)->send(new TicketMail($user, $latestOrder, $latestOrder->tickets));
+                } catch (\Exception $mailEx) {
+                    Log::error('Failed to send ticket email: ' . $mailEx->getMessage());
+                    // We don't abort since the purchase IS successful in the DB
+                }
+            }
 
             return response()->json([
                 'success' => true,
