@@ -269,10 +269,35 @@
                                         <h4>{{ Auth::user()->name }}</h4>
                                         <p class="text-muted">{{ Auth::user()->email }}</p>
                                         <a href="{{ route('admin.profile.show') }}" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
-                                        <form method="POST" action="{{ route('logout') }}" class="m-0 d-inline">
+                                        <form id="admin-logout-form" method="POST" action="{{ route('logout') }}" class="m-0 d-inline">
                                             @csrf
-                                            <button type="submit" class="btn btn-xs btn-danger btn-sm">Logout</button>
+                                            <button type="button" class="btn btn-xs btn-danger btn-sm" id="admin-logout-btn">Logout</button>
                                         </form>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const logoutBtn = document.getElementById('admin-logout-btn');
+                                                if (logoutBtn) {
+                                                    logoutBtn.addEventListener('click', function(e) {
+                                                        e.preventDefault();
+                                                        Swal.fire({
+                                                            title: 'End Session?',
+                                                            text: 'Are you sure you want to logout from the Admin Dashboard?',
+                                                            icon: 'warning',
+                                                            showCancelButton: true,
+                                                            confirmButtonColor: '#dc3545',
+                                                            cancelButtonColor: '#6c757d',
+                                                            confirmButtonText: 'Yes, Sign Out',
+                                                            cancelButtonText: 'Stay Logged In'
+                                                        }).then((result) => {
+                                                            if (result.isConfirmed) {
+                                                                document.getElementById('admin-logout-form').submit();
+                                                            }
+                                                        });
+                                                    });
+                                                }
+                                            });
+                                        </script>
                                     </div>
                                 </div>
                             </li>
