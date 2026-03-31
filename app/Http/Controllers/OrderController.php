@@ -93,6 +93,9 @@ class OrderController extends Controller
         // Update status to Verified
         $order->update(['payment_status' => 'Verified']);
 
+        // Update all related tickets to Active status
+        DB::table('ticket')->where('transaction_id', $transaction_id)->update(['ticket_status' => 'Active']);
+
         // Update Stock via TicketType
         $ticket = DB::table('ticket')->where('transaction_id', $transaction_id)->first();
         if ($ticket) {

@@ -186,7 +186,7 @@
     style="display:none; position:fixed; top:0; left:0%; right:0; bottom:0; width:100%; height:100%; z-index:99999;
            background:rgba(0,0,0,0.82); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
            align-items:center; justify-content:center;">
-    <div id="logout" style="background:#111;top:-43%; border:1px solid rgba(220,20,60,0.3);
+    <div id="logout" style="background:#111; border:1px solid rgba(220,20,60,0.3);
                 border-radius:18px; padding:42px 40px; max-width:380px; width:90%;
                 box-shadow:0 25px 60px rgba(0,0,0,0.8);
                 text-align:center; animation:popIn 0.25s ease-out;

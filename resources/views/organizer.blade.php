@@ -433,19 +433,29 @@
             
             <!-- Quick Actions -->
             <div class="ml-auto d-none d-md-flex gap-3" style="gap:15px">
-                <a href="{{ route('admin.tickets.index') }}" class="btn btn-danger py-3 px-4 shadow-lg d-flex align-items-center" 
+                <a href="{{ route('tickets.scanner') }}" class="btn btn-danger py-3 px-4 shadow-lg d-flex align-items-center" 
                    style="border-radius: 14px; background: linear-gradient(90deg, #dc143c, #ff4d6d); border: none; font-weight: 700;">
-                    <i class="fa fa-clipboard-check mr-2" style="font-size: 1.2rem;"></i> GUEST CHECK-IN LIST
+                    <i class="fa fa-qrcode mr-2" style="font-size: 1.2rem;"></i> SCAN TICKETS
+                </a>
+                <a href="{{ route('admin.tickets.index') }}" class="btn btn-outline-light py-3 px-4 d-flex align-items-center" 
+                   style="border-radius: 14px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); font-weight: 700;">
+                    <i class="fa fa-clipboard-check mr-2" style="font-size: 1.2rem;"></i> GUEST LIST
                 </a>
             </div>
         </div>
         
         <!-- Mobile Quick Action -->
         <div class="d-md-none mt-3">
-            <a href="{{ route('admin.tickets.index') }}" class="btn btn-danger btn-block py-3 font-weight-bold" 
-               style="border-radius: 12px; background: #dc143c; border: none;">
-                <i class="fa fa-clipboard-check mr-2"></i> OPEN GUEST CHECK-IN
-            </a>
+            <div class="d-flex gap-2" style="gap:10px">
+                <a href="{{ route('tickets.scanner') }}" class="btn btn-danger flex-grow-1 py-3 font-weight-bold" 
+                   style="border-radius: 12px; background: #dc143c; border: none;">
+                    <i class="fa fa-qrcode mr-2"></i> SCAN TICKETS
+                </a>
+                <a href="{{ route('admin.tickets.index') }}" class="btn btn-outline-light flex-grow-1 py-3 font-weight-bold" 
+                   style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);">
+                    <i class="fa fa-clipboard-check mr-2"></i> GUEST LIST
+                </a>
+            </div>
         </div>
     </div>
 </div>

@@ -108,7 +108,9 @@
                             @php
                                 $scanUrl = route('tickets.scan.direct', $ticket->ticket_id);
                             @endphp
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($scanUrl) }}" alt="QR" style="width: 60px; height: 60px; filter: grayscale(1) invert(1); opacity: 0.9;">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ urlencode($scanUrl) }}" 
+                                 alt="QR" 
+                                 style="width: 70px; height: 70px; background: white; padding: 5px; border-radius: 5px;">
                         </div>
                     </div>
                 </div>

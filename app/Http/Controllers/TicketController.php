@@ -109,18 +109,29 @@ class TicketController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        $uniqueCode = $request->input('unique_code');
+        $uniqueCode = trim($request->input('unique_code'));
 
         if (!$uniqueCode) {
             return response()->json(['error' => 'Kode unik diperlukan'], 400);
         }
 
-        $ticket = Ticket::where('ticket_id', $uniqueCode)->first(); // Wait, unique_code is now ticket_id?
+        // Try exact match first
+        $ticket = Ticket::where('ticket_id', $uniqueCode)->first();
 
+        // Fallback: try case-insensitive or without common prefixes like '#' or 'TC-' or 'T-'
         if (!$ticket) {
-            return response()->json(['error' => 'Tiket tidak ditemukan'], 404);
+            $cleanCode = $uniqueCode;
+            $cleanCode = ltrim($cleanCode, '# ');
+            $cleanCode = preg_replace('/^(TC-|T-)/i', '', $cleanCode); 
+            
+            $ticket = Ticket::where('ticket_id', 'LIKE', $cleanCode)->first();
         }
 
+        if (!$ticket) {
+            return response()->json(['error' => "Tiket dengan ID '{$uniqueCode}' tidak ditemukan. Pastikan ID sudah benar."], 404);
+        }
+
+        $ticket->load(['ticketType.event', 'order.user']);
         $event = $ticket->ticketType->event;
 
         // Organizer hanya bisa validasi tiket eventnya sendiri
@@ -129,7 +140,7 @@ class TicketController extends Controller
         }
 
         if (!$ticket->isActive()) {
-            return response()->json(['error' => 'Tiket sudah digunakan/kadaluwarsa'], 400);
+            return response()->json(['error' => "Tiket #{$ticket->ticket_id} sudah digunakan atau tidak aktif."], 400);
         }
 
         $ticket->validate();
@@ -139,6 +150,7 @@ class TicketController extends Controller
             'message' => 'Tiket berhasil divalidasi',
             'ticket'  => [
                 'unique_code'  => $ticket->ticket_id,
+                'buyer'        => $ticket->order->user->name ?? 'Guest',
                 'event'        => $event->title,
                 'ticket_type'  => $ticket->ticketType->name,
             ],

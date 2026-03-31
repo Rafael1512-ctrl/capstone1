@@ -34,6 +34,10 @@
                     <div id="scanner-status" class="badge badge-pill badge-outline-light mb-3 p-2 px-3" style="color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.1);">
                         <i class="fa fa-video mr-2"></i> Initializing Camera...
                     </div>
+                    <div class="text-white-50 mt-3 small">
+                        <i class="fa fa-lightbulb-o mr-1 text-warning"></i> 
+                        Tips: Gunakan kamera langsung untuk hasil terbaik. Jika upload file, pastikan gambar terang dan QR code terlihat jelas.
+                    </div>
                 </div>
             </div>
 
@@ -72,6 +76,20 @@
         padding: 20px !important;
         border-radius: 0 0 15px 15px;
     }
+    /* Style library error messages */
+    #reader__status_span {
+        color: #ff4d6d !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+    }
+    #reader__header_message {
+        display: none !important; /* Hide the ugly error header */
+    }
+    #reader__dashboard_section_csr button {
+        background: rgba(220, 20, 60, 0.1) !important;
+        color: #dc143c !important;
+        border: 1.5px solid rgba(220, 20, 60, 0.3) !important;
+    }
     button[id^="html5-qrcode-button"] {
         background: #dc143c !important;
         color: white !important;
@@ -81,6 +99,11 @@
         font-weight: bold !important;
         cursor: pointer !important;
         margin-top: 10px !important;
+        transition: all 0.2s;
+    }
+    button[id^="html5-qrcode-button"]:hover {
+        background: #ff4d6d !important;
+        transform: translateY(-2px);
     }
     select[id^="html5-qrcode-select"] {
         padding: 8px !important;
@@ -104,23 +127,32 @@
 
 @section('ExtraJS2')
 <script>
+    let scanningActive = true;
+
     function onScanSuccess(decodedText, decodedResult) {
+        if (!scanningActive) return;
+        
         // Since decodedText is the direct URL (because we encoded it in the QR)
-        // We can just redirect to it if it belongs to our domain
         const scanStatus = document.getElementById('scanner-status');
         const feedback = document.getElementById('scan-feedback');
         
-        scanStatus.innerHTML = "<i class='fa fa-check-circle text-success mr-2'></i> QR Detected! Redirecting...";
-        feedback.classList.remove('d-none');
-        
-        // Safety check: ensure it's a URL and points to our validation endpoint
+        // Safety check: ensure it matches our domain pattern
         if (decodedText.includes('/scan-ticket/')) {
+            scanningActive = false; // Stop further scans
+            
+            scanStatus.innerHTML = "<i class='fa fa-check-circle text-success mr-2'></i> QR Detected! Redirecting...";
+            feedback.classList.remove('d-none');
+            
+            // Redirect to the validation URL
             window.location.href = decodedText;
+
+            // Simple timeout fallback if redirect hangs (slow server)
+            setTimeout(() => {
+                feedback.innerHTML += `<p class="mt-4"><a href="${decodedText}" class="btn btn-sm btn-outline-danger">Click here if not redirecting</a></p>`;
+            }, 5000);
         } else {
-            // If it's just the ID, try to construct the URL or handle manually
-            // But with our new system, it SHOULD be the URL
+            // Handle cases where it's not our specific URL
             alert("This QR code is not a valid TIXLY Ticket URL.");
-            feedback.classList.add('d-none');
         }
     }
 
@@ -128,16 +160,24 @@
         // Just keep scanning
     }
 
+    const formatsToSupport = [
+        typeof Html5QrcodeSupportedFormats !== 'undefined' 
+            ? Html5QrcodeSupportedFormats.QR_CODE 
+            : 0 // 0 is usually QR_CODE in this library if enum is missing
+    ];
+
     let html5QrcodeScanner = new Html5QrcodeScanner(
         "reader", 
         { 
             fps: 10, 
-            qrbox: {width: 250, height: 250},
+            qrbox: {width: 280, height: 280},
             experimentalFeatures: {
                 useBarCodeDetectorIfSupported: true
             },
             rememberLastUsedCamera: true,
-            aspectRatio: 1.0
+            aspectRatio: 1.0,
+            showTorchButtonIfSupported: true,
+            formatsToSupport: formatsToSupport
         },
         /* verbose= */ false
     );
