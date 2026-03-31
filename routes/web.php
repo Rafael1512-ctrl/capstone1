@@ -229,6 +229,7 @@ Route::middleware('auth')->group(function () {
         
         // Global Ticket Management for Admin/Organizer
         Route::get('/admin/tickets', [TicketController::class, 'allTickets'])->name('admin.tickets.index');
+        Route::get('/admin/tickets/{ticket}', [TicketController::class, 'showAdminTicket'])->name('admin.tickets.show');
         Route::post('/admin/tickets/{ticket}/validate', [TicketController::class, 'validateAjax'])->name('tickets.validate.ajax');
         Route::delete('/admin/tickets/{ticket}', [TicketController::class, 'destroy'])->name('admin.tickets.destroy');
     });

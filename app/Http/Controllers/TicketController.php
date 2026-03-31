@@ -239,6 +239,20 @@ class TicketController extends Controller
     }
 
     /**
+     * Detail tiket untuk tampilan Admin (Sidebar & Dashboard style)
+     */
+    public function showAdminTicket(Ticket $ticket)
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isOrganizer()) {
+            abort(403);
+        }
+
+        $ticket->load(['ticketType.event', 'order.user']);
+        return view('admin.tickets.show', compact('ticket'));
+    }
+
+    /**
      * All tickets in the system (Admin only)
      */
     public function allTickets(Request $request)

@@ -51,7 +51,11 @@
                     <tbody>
                         @forelse($tickets as $ticket)
                         <tr id="ticket-row-{{ $ticket->ticket_id }}">
-                            <td class="px-4"><code>{{ $ticket->ticket_id }}</code></td>
+                            <td class="px-4">
+                                <a href="{{ route('admin.tickets.show', $ticket->ticket_id) }}" target="_blank" style="text-decoration: none;">
+                                    <code>{{ $ticket->ticket_id }}</code>
+                                </a>
+                            </td>
                             <td>{{ $ticket->ticketType->event->title ?? 'N/A' }}</td>
                             <td>{{ $ticket->order->user->name ?? 'N/A' }}</td>
                             <td>{{ $ticket->ticketType->name ?? 'N/A' }}</td>
@@ -64,7 +68,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <a href="{{ route('tickets.view', $ticket->ticket_id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="View Ticket Detail">
+                                    <a href="{{ route('admin.tickets.show', $ticket->ticket_id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="View Ticket Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
@@ -163,7 +167,7 @@
                                 // Reset the button group to remove ACTIVATE and keep VIEW/DELETE
                                 const btnGroup = this.parentElement;
                                 btnGroup.innerHTML = `
-                                    <a href="{{ url('tickets/view') }}/${ticketId}" class="btn btn-sm btn-outline-info" target="_blank">
+                                    <a href="{{ url('admin/tickets') }}/${ticketId}" class="btn btn-sm btn-outline-info" target="_blank" title="View Ticket Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <button class="btn btn-sm btn-light disabled" disabled>

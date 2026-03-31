@@ -57,7 +57,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($salasData as $data)
+                        @forelse($salesData as $data)
                             <tr>
                                 <td><strong>{{ $data->period }}</strong></td>
                                 <td>{{ $data->total_orders }}</td>
@@ -78,9 +78,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script>
         const salesCtx = document.getElementById('salesChart').getContext('2d');
-        const periods = {!! json_encode($salasData->pluck('period')) !!};
-        const orders = {!! json_encode($salasData->pluck('total_orders')) !!};
-        const revenues = {!! json_encode($salasData->pluck('total_revenue')) !!};
+        const periods = {!! json_encode($salesData->pluck('period')) !!};
+        const orders = {!! json_encode($salesData->pluck('total_orders')) !!};
+        const revenues = {!! json_encode($salesData->pluck('total_revenue')) !!};
 
         new Chart(salesCtx, {
             type: 'line',

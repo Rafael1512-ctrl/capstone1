@@ -82,18 +82,28 @@ class AnalyticsController extends Controller
      */
     public function sales(Request $request)
     {
-        $period = $request->input('period', 'monthly'); // daily, weekly, monthly, yearly
+        $period = $request->input('period', 'monthly');
 
         $dateFormat = match ($period) {
             'daily' => '%Y-%m-%d',
-            'weekly' => '%Y-w%v',
-            'monthly' => '%Y-%m',
+            'weekly' => 'Week %v (%Y)',
+            'monthly' => '%M %Y',
             'yearly' => '%Y',
             default => '%Y-%m',
         };
 
-        $salasData = Order::where('payment_status', 'Verified')
-            ->select(
+        $query = Order::where('payment_status', 'Verified');
+
+        // Apply date range filters based on period label
+        if ($period === 'daily') {
+            $query->where('payment_date', '>=', now()->subDays(7));
+        } elseif ($period === 'weekly') {
+            $query->where('payment_date', '>=', now()->subDays(30));
+        } elseif ($period === 'monthly') {
+            $query->where('payment_date', '>=', now()->subDays(90));
+        }
+
+        $salesData = $query->select(
                 DB::raw("DATE_FORMAT(payment_date, '$dateFormat') as period"),
                 DB::raw('COUNT(*) as total_orders'),
                 DB::raw('SUM(total_amount) as total_revenue')
@@ -102,7 +112,7 @@ class AnalyticsController extends Controller
             ->orderBy('period')
             ->get();
 
-        return view('admin.analytics.sales', compact('salasData', 'period'));
+        return view('admin.analytics.sales', compact('salesData', 'period'));
     }
 
     /**
