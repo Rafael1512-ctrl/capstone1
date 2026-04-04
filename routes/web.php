@@ -295,7 +295,11 @@ Route::middleware('auth')->group(function () {
             Route::get('/events', [App\Http\Controllers\Admin\ExportController::class, 'exportEvents'])->name('events');
             Route::get('/orders', [App\Http\Controllers\Admin\ExportController::class, 'exportOrders'])->name('orders');
             Route::get('/sales', [App\Http\Controllers\Admin\ExportController::class, 'exportSalesReport'])->name('sales');
+            Route::get('/sales-pdf', [App\Http\Controllers\Admin\ExportController::class, 'exportSalesPdf'])->name('sales-pdf');
             Route::get('/event-performance', [App\Http\Controllers\Admin\ExportController::class, 'exportEventPerformance'])->name('event-performance');
+            Route::get('/event-performance-pdf', [App\Http\Controllers\Admin\ExportController::class, 'exportEventPerformancePdf'])->name('event-performance-pdf');
+            Route::get('/transactions-pdf', [App\Http\Controllers\Admin\ExportController::class, 'exportTransactionsPdf'])->name('transactions-pdf');
+            Route::get('/user-stats-pdf', [App\Http\Controllers\Admin\ExportController::class, 'exportUserStatsPdf'])->name('user-stats-pdf');
         });
 
         // Event Categories

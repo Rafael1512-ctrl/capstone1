@@ -6,7 +6,10 @@
             <h1 class="h3 mb-0">Event Performance Analytics</h1>
             <div>
                 <a href="{{ route('admin.export.event-performance') }}" class="btn btn-outline-success">
-                    <i class="fas fa-download"></i> Export CSV
+                    <i class="fas fa-file-csv"></i> Export CSV
+                </a>
+                <a href="{{ route('admin.export.event-performance-pdf') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-pdf"></i> Export PDF
                 </a>
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
                     <i class="fas fa-arrow-left"></i> Kembali

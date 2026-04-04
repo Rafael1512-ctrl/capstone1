@@ -4,9 +4,14 @@
     <div class="container-fluid px-4">
         <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
             <h1 class="h3 mb-0">User Statistics</h1>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
+            <div>
+                <a href="{{ route('admin.export.user-stats-pdf') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Kembali
+                </a>
+            </div>
         </div>
 
         <!-- User Stats -->

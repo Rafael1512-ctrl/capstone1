@@ -22,6 +22,11 @@
                             <option value="365" {{ request('days') == 365 ? 'selected' : '' }}>1 Tahun Terakhir</option>
                         </select>
                     </div>
+                    <div class="col-md-4">
+                        <a href="{{ route('admin.export.transactions-pdf', ['days' => request('days', 30)]) }}" class="btn btn-outline-primary w-100">
+                             <i class="fas fa-file-pdf"></i> Export PDF
+                        </a>
+                    </div>
                 </form>
             </div>
         </div>

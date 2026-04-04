@@ -24,10 +24,14 @@
                             <option value="yearly" {{ request('period') === 'yearly' ? 'selected' : '' }}>Tahunan</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-5 d-flex gap-2">
                         <a href="{{ route('admin.export.sales', ['period' => $period]) }}"
-                            class="btn btn-outline-success w-100">
-                            <i class="fas fa-download"></i> Export CSV
+                            class="btn btn-outline-success flex-fill">
+                            <i class="fas fa-file-csv"></i> Export CSV
+                        </a>
+                        <a href="{{ route('admin.export.sales-pdf', ['period' => $period]) }}"
+                            class="btn btn-outline-primary flex-fill">
+                            <i class="fas fa-file-pdf"></i> Export PDF
                         </a>
                     </div>
                 </form>
