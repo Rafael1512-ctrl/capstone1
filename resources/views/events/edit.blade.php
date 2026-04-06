@@ -182,19 +182,22 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="location">Lokasi Event <span class="text-danger">*</span></label>
                                             <input type="text"
                                                 class="form-control @error('location') is-invalid @enderror"
                                                 id="location" name="location"
                                                 placeholder="Contoh: Jakarta International Expo, Jakarta" required
-                                                maxlength="255" value="{{ old('location', $event->location) }}">
+                                                maxlength="500" value="{{ old('location', $event->location) }}">
                                             @error('location')
                                                 <small class="text-danger d-block mt-2">{{ $message }}</small>
                                             @enderror
                                         </div>
                                     </div>
+                                </div>
 
+                                <div class="row">
                                     <div class="col-md-12">
                                         <!-- Google Maps URL -->
                                         <div class="form-group">
@@ -206,9 +209,138 @@
                                             @error('maps_url')
                                                 <small class="text-danger d-block mt-2">{{ $message }}</small>
                                             @enderror
-                                            <small class="form-text text-muted">
-                                                Dapatkan di Google Maps: Bagikan > Sematkan peta > Salin URL di dalam src="..."
-                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+                                <h4 class="fw-bold mb-3">Pengaturan Batch Tiket (Maksimal 2 Batch)</h4>
+                                <p class="text-muted mb-4 small">Tentukan kuota dan harga untuk kategori Regular, VIP, dan VVIP di setiap batch.</p>
+                                
+                                <div class="row">
+                                    <!-- Batch 1 -->
+                                    <div class="col-md-12 mb-4">
+                                        <div class="card bg-dark text-white border-primary">
+                                            <div class="card-header border-primary d-flex justify-content-between align-items-center">
+                                                <div class="card-title text-primary">Batch 1 - Pengaturan Waktu</div>
+                                                <div class="form-group mb-0">
+                                                    <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                    <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
+                                                        required value="{{ old('batch1_start_at', $event->batch1_start_at ? $event->batch1_start_at->format('Y-m-d\TH:i') : '') }}">
+                                                    @error('batch1_start_at') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-dark table-sm table-borderless align-middle">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Kategori Tiket</th>
+                                                                <th>Kuota <span class="text-danger">*</span></th>
+                                                                <th>Harga (IDR) <span class="text-danger">*</span></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Regular</strong> @if($event->batch1_regular_sold > 0) <span class="badge bg-success">Terjual: {{ $event->batch1_regular_sold }}</span> @endif</td>
+                                                                <td>
+                                                                    <input type="number" name="batch1_regular_quota" class="form-control form-control-sm @error('batch1_regular_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_quota', $event->batch1_regular_quota) }}">
+                                                                    @error('batch1_regular_quota') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" name="batch1_regular_price" class="form-control form-control-sm @error('batch1_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_price', floor($event->batch1_regular_price)) }}">
+                                                                    @error('batch1_regular_price') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VIP</strong> @if($event->batch1_vip_sold > 0) <span class="badge bg-success">Terjual: {{ $event->batch1_vip_sold }}</span> @endif</td>
+                                                                <td>
+                                                                    <input type="number" name="batch1_vip_quota" class="form-control form-control-sm @error('batch1_vip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_quota', $event->batch1_vip_quota) }}">
+                                                                    @error('batch1_vip_quota') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" name="batch1_vip_price" class="form-control form-control-sm @error('batch1_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_price', floor($event->batch1_vip_price)) }}">
+                                                                    @error('batch1_vip_price') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VVIP</strong> @if($event->batch1_vvip_sold > 0) <span class="badge bg-success">Terjual: {{ $event->batch1_vvip_sold }}</span> @endif</td>
+                                                                <td>
+                                                                    <input type="number" name="batch1_vvip_quota" class="form-control form-control-sm @error('batch1_vvip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_quota', $event->batch1_vvip_quota) }}">
+                                                                    @error('batch1_vvip_quota') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" name="batch1_vvip_price" class="form-control form-control-sm @error('batch1_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_price', floor($event->batch1_vvip_price)) }}">
+                                                                    @error('batch1_vvip_price') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Batch 2 -->
+                                    <div class="col-md-12 mb-4">
+                                        <div class="card bg-dark text-white border-info">
+                                            <div class="card-header border-info d-flex justify-content-between align-items-center">
+                                                <div class="card-title text-info">Batch 2 - Pengaturan Waktu</div>
+                                                <div class="form-group mb-0">
+                                                    <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                    <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
+                                                        required value="{{ old('batch2_start_at', $event->batch2_start_at ? $event->batch2_start_at->format('Y-m-d\TH:i') : '') }}">
+                                                    @error('batch2_start_at') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-dark table-sm table-borderless align-middle">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Kategori Tiket</th>
+                                                                <th>Kuota <span class="text-danger">*</span></th>
+                                                                <th>Harga (IDR) <span class="text-danger">*</span></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Regular</strong> @if($event->batch2_regular_sold > 0) <span class="badge bg-success">Terjual: {{ $event->batch2_regular_sold }}</span> @endif</td>
+                                                                <td>
+                                                                    <input type="number" name="batch2_regular_quota" class="form-control form-control-sm @error('batch2_regular_quota') is-invalid @enderror" required min="0" value="{{ old('batch2_regular_quota', $event->batch2_regular_quota) }}">
+                                                                    @error('batch2_regular_quota') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" name="batch2_regular_price" class="form-control form-control-sm @error('batch2_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch2_regular_price', floor($event->batch2_regular_price)) }}">
+                                                                    @error('batch2_regular_price') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VIP</strong> @if($event->batch2_vip_sold > 0) <span class="badge bg-success">Terjual: {{ $event->batch2_vip_sold }}</span> @endif</td>
+                                                                <td>
+                                                                    <input type="number" name="batch2_vip_quota" class="form-control form-control-sm @error('batch2_vip_quota') is-invalid @enderror" required min="0" value="{{ old('batch2_vip_quota', $event->batch2_vip_quota) }}">
+                                                                    @error('batch2_vip_quota') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" name="batch2_vip_price" class="form-control form-control-sm @error('batch2_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vip_price', floor($event->batch2_vip_price)) }}">
+                                                                    @error('batch2_vip_price') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VVIP</strong> @if($event->batch2_vvip_sold > 0) <span class="badge bg-success">Terjual: {{ $event->batch2_vvip_sold }}</span> @endif</td>
+                                                                <td>
+                                                                    <input type="number" name="batch2_vvip_quota" class="form-control form-control-sm @error('batch2_vvip_quota') is-invalid @enderror" required min="0" value="{{ old('batch2_vvip_quota', $event->batch2_vvip_quota) }}">
+                                                                    @error('batch2_vvip_quota') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" name="batch2_vvip_price" class="form-control form-control-sm @error('batch2_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vvip_price', floor($event->batch2_vvip_price)) }}">
+                                                                    @error('batch2_vvip_price') <small class="text-danger">{{ $message }}</small> @enderror
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -220,17 +352,25 @@
                                             <label for="status">Status Event <span class="text-danger">*</span></label>
                                             <select class="form-control @error('status') is-invalid @enderror"
                                                 id="status" name="status" required>
+                                                <option value="Non-Active"
+                                                    {{ old('status', $event->status) === 'Non-Active' ? 'selected' : '' }}>
+                                                    Non-Active
+                                                </option>
+                                                <option value="Active"
+                                                    {{ old('status', $event->status) === 'Active' ? 'selected' : '' }}>
+                                                    Active
+                                                </option>
                                                 <option value="draft"
                                                     {{ old('status', $event->status) === 'draft' ? 'selected' : '' }}>
-                                                    <i class="fa fa-file-o"></i> Draft
+                                                    Draft
                                                 </option>
                                                 <option value="published"
                                                     {{ old('status', $event->status) === 'published' ? 'selected' : '' }}>
-                                                    <i class="fa fa-check"></i> Dipublikasikan
+                                                    Published
                                                 </option>
                                                 <option value="cancelled"
                                                     {{ old('status', $event->status) === 'cancelled' ? 'selected' : '' }}>
-                                                    <i class="fa fa-ban"></i> Dibatalkan
+                                                    Cancelled
                                                 </option>
                                             </select>
                                             @error('status')

@@ -31,7 +31,8 @@
                     <div class="col-md-4">
                         <select class="form-select" name="status">
                             <option value="">Semua Status</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>🟢 Active (Published)</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>🟢 Active (Started)</option>
+                            <option value="scheduled" {{ request('status') == 'scheduled' ? 'selected' : '' }}>🔵 Scheduled (Upcoming)</option>
                             <option value="overdue" {{ request('status') == 'overdue' ? 'selected' : '' }}>🟠 Overdue (Passed)</option>
                             <option value="non-active" {{ request('status') == 'non-active' ? 'selected' : '' }}>🔴 Non-Active (Draft/Cancel)</option>
                         </select>
@@ -65,9 +66,14 @@
                         @forelse($events as $event)
                             <tr>
                                 <td class="ps-4">
-                                    @if ($event->status === 'published')
-                                        <i class="fas fa-circle text-success" title="Active"></i>
-                                        <span class="ms-1 small text-muted">Active</span>
+                                    @if ($event->status === 'published' || $event->status === 'Active')
+                                        @if($event->batch1_start_at && now()->isBefore($event->batch1_start_at))
+                                            <i class="fas fa-calendar-alt text-info" title="Scheduled"></i>
+                                            <span class="ms-1 small text-muted">Scheduled</span>
+                                        @else
+                                            <i class="fas fa-circle text-success" title="Active"></i>
+                                            <span class="ms-1 small text-muted">Active</span>
+                                        @endif
                                     @elseif ($event->status === 'overdue')
                                         <i class="fas fa-circle text-warning" title="Overdue"></i>
                                         <span class="ms-1 small text-muted">Overdue</span>

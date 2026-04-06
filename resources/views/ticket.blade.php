@@ -147,41 +147,112 @@
                 </div>
             </div>
             <div class="row justify-content-center flex-wrap">
-                @forelse($event->ticketTypes as $type)
-                <!-- Dynamic Ticket Category -->
-                <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch">
-                    <div class="ticket-card text-center wow fadeInUp w-100" data-wow-duration="1s" data-wow-delay="{{ 0.4 + ($loop->index * 0.1) }}s" 
-                        @if(strtolower($type->name) == 'vip') style="border-color: #dc143c; box-shadow: 0 10px 40px rgba(220,20,60,0.25);" @endif>
-                        
-                        @if(strtolower($type->name) == 'vip')
-                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); color: white; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; box-shadow: 0 4px 15px rgba(220,20,60,0.35);">Most Popular</div>
-                        @endif
+                @php
+                    $activeBatch = $event->active_batch;
+                    $now = now();
+                @endphp
 
-                        <div class="ticket-title" @if(strtolower($type->name) == 'vip') style="color: #dc143c;" @endif>{{ $type->name }}</div>
-                        <div class="ticket-price">RP {{ number_format($type->price, 0, ',', '.') }}</div>
-                        @php $available = $type->availableStock(); @endphp
-                        <p>Available Seats: {{ max(0, $available) }} / {{ $type->quantity_total }}</p>
-                        
-                        <ul class="ticket-features text-left mt-4">
-                            <li><i class="fa fa-check"></i> Standard entry for event</li>
-                            <li><i class="fa fa-check"></i> Food & Beverage access</li>
-                            @if(str_contains(strtolower($type->name), 'vip'))
-                            <li><i class="fa fa-check"></i> Priority entry gate</li>
-                            <li><i class="fa fa-check"></i> Free Welcome Drink</li>
+                @if(!$activeBatch)
+                    {{-- Penjualan belum dimulai atau sudah berakhir --}}
+                    <div class="col-12 text-center text-white py-5">
+                        <div class="important-info-box wow fadeInUp" data-wow-duration="1s">
+                            @if($event->batch2_ended_at && $event->batch2_ended_at->isPast())
+                                <h4 class="text-danger mb-3">Penjualan Telah Berakhir</h4>
+                                <p>Terima kasih atas antusiasme Anda. Semua batch penjualan tiket event ini telah ditutup.</p>
+                            @elseif($event->batch1_ended_at && $event->batch1_ended_at->isPast() && $event->batch2_start_at && $now->isBefore($event->batch2_start_at))
+                                <h4 class="text-warning mb-3">Batch 1 Telah Diakhiri</h4>
+                                <p>Silakan tunggu <strong>Batch 2</strong> yang akan dibuka pada:</p>
+                                <h2 class="text-white mt-3">{{ $event->batch2_start_at->format('d M Y, H:i') }} WIB</h2>
+                            @elseif($event->batch1_start_at && $now->isBefore($event->batch1_start_at))
+                                <h4 class="text-primary mb-3">Penjualan Belum Dimulai</h4>
+                                <p>Penjualan tiket <strong>Batch 1</strong> akan dibuka pada:</p>
+                                <h2 class="text-white mt-3">{{ $event->batch1_start_at->format('d M Y, H:i') }} WIB</h2>
+                            @else
+                                <h4 class="text-danger mb-3">Tiket Tidak Tersedia</h4>
+                                <p>Penjualan tiket saat ini tidak aktif atau telah ditutup oleh penyelenggara.</p>
                             @endif
-                        </ul>
-                        @if($available > 0)
-                            <a href="{{ route('public.checkout.show', [$event->event_id, $type->id]) }}" class="buy-btn mt-3">Select {{ $type->name }}</a>
-                        @else
-                            <button class="buy-btn mt-3" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
-                        @endif
+                        </div>
                     </div>
-                </div>
-                @empty
-                <div class="col-12 text-center text-white py-5">
-                    <h4>No ticket categories found for this event.</h4>
-                </div>
-                @endforelse
+                @else
+                    {{-- Tampilkan Tiket untuk Batch yang sedang aktif --}}
+                    @php
+                        $batchNum = $activeBatch;
+                        $categories = ['Regular', 'VIP', 'VVIP'];
+                        $isBatch1SoldOut = true;
+                        
+                        // Check if Batch 1 is completely sold out to decide if we should mention Batch 2
+                        if ($batchNum == 1) {
+                            $isBatch1SoldOut = ($event->batch1_regular_sold >= $event->batch1_regular_quota) && 
+                                               ($event->batch1_vip_sold >= $event->batch1_vip_quota) && 
+                                               ($event->batch1_vvip_sold >= $event->batch1_vvip_quota);
+                        }
+                    @endphp
+
+                    @if($batchNum == 1 && $isBatch1SoldOut && $event->batch2_start_at && $now->isBefore($event->batch2_start_at))
+                        <div class="col-12 text-center text-white py-5">
+                            <div class="important-info-box wow fadeInUp" data-wow-duration="1s">
+                                <h4 class="text-danger mb-3">Tiket Batch 1 Sudah Habis</h4>
+                                <p>Silakan tunggu <strong>Batch 2</strong> yang akan dibuka pada:</p>
+                                <h2 class="text-white mt-3">{{ $event->batch2_start_at->format('d M Y, H:i') }} WIB</h2>
+                            </div>
+                        </div>
+                    @else
+                        @foreach($categories as $cat)
+                            @php
+                                $catLower = strtolower($cat);
+                                $quotaLabel = "batch{$batchNum}_{$catLower}_quota";
+                                $priceLabel = "batch{$batchNum}_{$catLower}_price";
+                                $soldLabel = "batch{$batchNum}_{$catLower}_sold";
+                                
+                                $quota = $event->$quotaLabel;
+                                $price = $event->$priceLabel;
+                                $sold = $event->$soldLabel;
+                                $remaining = max(0, $quota - $sold);
+                                
+                                $ticketType = $event->ticketTypes()
+                                    ->where('batch_number', $batchNum)
+                                    ->where('name', $cat)
+                                    ->first();
+                            @endphp
+
+                            @if($quota > 0 && $ticketType)
+                                <div class="col-12 col-md-6 col-lg-4 mb-4 px-3">
+                                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay="{{ $loop->index * 0.2 }}s">
+                                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); 
+                                            background: {{ $batchNum == 1 ? 'linear-gradient(135deg, #007bff 0%, #004085 100%)' : 'linear-gradient(135deg, #17a2b8 0%, #0b515d 100%)' }}; 
+                                            color: white; padding: 5px 20px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 2;">
+                                            Batch {{ $batchNum }}
+                                        </div>
+                                        
+                                        <div class="ticket-title @if($cat == 'Regular') text-primary @elseif($cat == 'VIP') text-warning @else text-danger @endif">
+                                            @if($cat == 'VVIP') <i class="fa fa-crown mr-2"></i> @endif {{ $cat }}
+                                        </div>
+                                        <div class="ticket-price">RP {{ number_format($price, 0, ',', '.') }}</div>
+                                        
+                                        @if($remaining <= 0)
+                                            <div class="alert alert-danger bg-transparent border-danger text-danger mt-4 py-2 small">
+                                                <i class="fa fa-exclamation-circle"></i> Tiket Kategori {{ $cat }} Habis.
+                                            </div>
+                                            <button class="buy-btn mt-3" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
+                                        @else
+                                            <p class="text-light mb-0">Tersedia: <strong>{{ $remaining }}</strong> tiket</p>
+                                            <ul class="ticket-features text-left mt-4">
+                                                <li><i class="fa fa-check"></i> Entry for {{ $event->title }}</li>
+                                                <li><i class="fa fa-check"></i> {{ $cat }} Experience</li>
+                                                @if($cat == 'VIP')
+                                                    <li><i class="fa fa-check"></i> Standard Benefits</li>
+                                                @elseif($cat == 'VVIP')
+                                                    <li><i class="fa fa-check"></i> Front Row & Lounge Access</li>
+                                                @endif
+                                            </ul>
+                                            <a href="{{ route('public.checkout.show', [$event->event_id, $ticketType->id]) }}" class="buy-btn mt-3 text-white">Beli Sekarang</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    @endif
+                @endif
             </div>
         </div>
     </div>

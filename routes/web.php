@@ -279,6 +279,9 @@ Route::middleware('auth')->group(function () {
             Route::post('/{event}/tickets', [App\Http\Controllers\Admin\EventManagementController::class, 'storeTicket'])->name('store-ticket');
             Route::put('/{event}/tickets', [App\Http\Controllers\Admin\EventManagementController::class, 'updateTicket'])->name('update-ticket');
             Route::delete('/{event}/tickets/{ticketId}', [App\Http\Controllers\Admin\EventManagementController::class, 'deleteTicket'])->name('delete-ticket');
+            
+            // Manual Batch Closure
+            Route::post('/{event}/end-batch/{batch}', [App\Http\Controllers\Admin\EventManagementController::class, 'endBatch'])->name('end-batch');
         });
 
         // Analytics

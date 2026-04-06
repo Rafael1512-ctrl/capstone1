@@ -21,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // Jika ingin menambahkan middleware global, bisa di sini
         // $middleware->append(SomeMiddleware::class);
     })
+    ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
+        $schedule->call(function () {
+            \App\Models\Event::updateOverdueEvents();
+        })->everyMinute();
+    })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })->create();

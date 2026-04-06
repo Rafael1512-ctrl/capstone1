@@ -88,7 +88,26 @@ class OrganizerController extends Controller
             $chartDates = $dailySalesData->keys()->toArray();
             $chartData = $dailySalesData->values()->toArray();
 
-            $statusClass = $event->status === 'published' ? 'active' : ($event->status === 'overdue' ? 'overdue' : 'upcoming');
+            // Dynamic status based on batch timing
+            $isStarted = $event->batch1_start_at && now()->isAfter($event->batch1_start_at);
+            $statusLabel = ucfirst($event->status);
+            $statusClass = 'upcoming';
+
+            if ($event->status === 'published' || $event->status === 'Active') {
+                if ($isStarted) {
+                    $statusLabel = 'Active';
+                    $statusClass = 'active';
+                } else {
+                    $statusLabel = 'Scheduled';
+                    $statusClass = 'upcoming';
+                }
+            } elseif ($event->status === 'overdue') {
+                $statusLabel = 'Overdue';
+                $statusClass = 'overdue';
+            } elseif ($event->status === 'cancelled') {
+                $statusLabel = 'Cancelled';
+                $statusClass = 'overdue';
+            }
 
             $pct = $event->ticket_quota > 0 ? round(($sold / $event->ticket_quota) * 100) : 0;
             $performance = 'Needs Marketing Boost';
@@ -103,7 +122,7 @@ class OrganizerController extends Controller
                 'banner_url'   => $event->banner_url,
                 'venue'        => $event->location,
                 'date'         => $event->schedule_time->format('d M Y'),
-                'status_label' => ucfirst($event->status),
+                'status_label' => $statusLabel,
                 'status_class' => $statusClass,
                 'total'        => $event->ticket_quota,
                 'sold'         => $sold,
@@ -188,7 +207,26 @@ class OrganizerController extends Controller
         $chartDates = $dailySalesData->keys()->toArray();
         $chartData = $dailySalesData->values()->toArray();
 
-        $statusClass = $event->status === 'published' ? 'active' : ($event->status === 'overdue' ? 'overdue' : 'upcoming');
+        // Dynamic status based on batch timing
+        $isStarted = $event->batch1_start_at && now()->isAfter($event->batch1_start_at);
+        $statusLabel = ucfirst($event->status);
+        $statusClass = 'upcoming';
+
+        if ($event->status === 'published' || $event->status === 'Active') {
+            if ($isStarted) {
+                $statusLabel = 'Active';
+                $statusClass = 'active';
+            } else {
+                $statusLabel = 'Scheduled';
+                $statusClass = 'upcoming';
+            }
+        } elseif ($event->status === 'overdue') {
+            $statusLabel = 'Overdue';
+            $statusClass = 'overdue';
+        } elseif ($event->status === 'cancelled') {
+            $statusLabel = 'Cancelled';
+            $statusClass = 'overdue';
+        }
         $pct = $event->ticket_quota > 0 ? round(($sold / $event->ticket_quota) * 100) : 0;
         $performance = 'Needs Marketing Boost';
         if ($pct >= 90) $performance = 'Excellent (Almost Sold Out!)';
@@ -214,7 +252,7 @@ class OrganizerController extends Controller
             'banner_url'   => $event->banner_url,
             'venue'        => $event->location,
             'date'         => $event->schedule_time->format('d M Y'),
-            'status_label' => ucfirst($event->status),
+            'status_label' => $statusLabel,
             'status_class' => $statusClass,
             'total'        => $event->ticket_quota,
             'sold'         => $sold,

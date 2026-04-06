@@ -334,15 +334,34 @@ class TicketController extends Controller
             $query->where('user_id', $userId);
         });
 
-        $totalCount = (clone $baseQuery)->count();
+        $totalCount  = (clone $baseQuery)->count();
         $activeCount = (clone $baseQuery)->where('ticket_status', 'Active')->count();
-        $usedCount = (clone $baseQuery)->where('ticket_status', 'Used')->count();
+        $usedCount   = (clone $baseQuery)->where('ticket_status', 'Used')->count();
 
-        // Paginated list
-        $tickets = $baseQuery->with(['ticketType.event', 'order'])
-            ->orderBy('ticket_id', 'desc')
-            ->paginate(12);
+        // Group by order/transaction — one card per purchase
+        $allTickets = $baseQuery->with(['ticketType.event', 'order.user'])->get();
 
-        return view('tickets.my-tickets', compact('tickets', 'totalCount', 'activeCount', 'usedCount'));
+        // Group tickets by transaction_id, picking one representative ticket per order
+        $orders = $allTickets->groupBy('transaction_id')->map(function($ticketsInOrder) {
+            $first = $ticketsInOrder->first();
+            $event = $first->ticketType->event ?? null;
+            $order = $first->order ?? null;
+            $types = $ticketsInOrder->groupBy(fn($t) => $t->ticketType->name ?? 'Standard');
+
+            return [
+                'transaction_id'     => $first->transaction_id,
+                'representative_id'  => $first->ticket_id, // for the details link
+                'event'              => $event,
+                'order'              => $order,
+                'ticket_count'       => $ticketsInOrder->count(),
+                'ticket_types'       => $types->map(fn($t, $name) => ['name' => $name, 'count' => $t->count()]),
+                'has_active'         => $ticketsInOrder->contains('ticket_status', 'Active'),
+                'all_used'           => $ticketsInOrder->every(fn($t) => $t->ticket_status === 'Used'),
+                'purchased_at'       => $order?->payment_date,
+                'total_amount'       => $order?->total_amount,
+            ];
+        })->sortByDesc(fn($o) => $o['purchased_at'])->values();
+
+        return view('tickets.my-tickets', compact('orders', 'totalCount', 'activeCount', 'usedCount'));
     }
 }

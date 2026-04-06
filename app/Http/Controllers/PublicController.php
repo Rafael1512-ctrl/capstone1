@@ -60,6 +60,19 @@ class PublicController extends Controller
             abort(404);
         }
 
+        // --- BATCH ACTIVITY CHECK ON PAGE LOAD ---
+        $activeBatch = $event->active_batch;
+        if (!$activeBatch) {
+            return redirect()->route('public.ticket.show', $event->event_id)
+                             ->with('error', 'Penjualan tiket belum dimulai.');
+        }
+
+        if ($ticketType->batch_number != $activeBatch) {
+            return redirect()->route('public.ticket.show', $event->event_id)
+                             ->with('error', 'Batch ini tidak lagi tersedia.');
+        }
+        // ----------------------------------------
+
         return view('checkout', compact('event', 'ticketType'));
     }
 
@@ -77,6 +90,19 @@ class PublicController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid ticket type'], 400);
         }
 
+        // --- BATCH ACTIVITY CHECK ---
+        $activeBatch = $event->active_batch;
+        if (!$activeBatch) {
+            return response()->json(['success' => false, 'message' => 'Penjualan tiket belum dimulai.'], 403);
+        }
+
+        // Ensure user is buying the TICKET FROM THE ACTIVE BATCH
+        if ($ticketType->batch_number != $activeBatch) {
+            $msg = $activeBatch == 1 ? "Saat ini hanya Batch 1 yang tersedia." : "Penjualan Batch 1 sudah berakhir, silakan beli tiket Batch 2.";
+            return response()->json(['success' => false, 'message' => $msg], 403);
+        }
+        // ----------------------------
+
         try {
             $user = Auth::user();
             DB::beginTransaction();
@@ -93,6 +119,18 @@ class PublicController extends Controller
             ]);
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            // Update batch-category specific sold count in acara table
+            $catKey = strtolower($ticketType->name); // regular, vip, vvip
+            $batchNum = $ticketType->batch_number ?? 1;
+            $column = "batch{$batchNum}_{$catKey}_sold";
+            
+            // Check if column exists before incrementing to avoid errors with unmapped types
+            if (in_array($column, ['batch1_regular_sold', 'batch1_vip_sold', 'batch1_vvip_sold', 'batch2_regular_sold', 'batch2_vip_sold', 'batch2_vvip_sold'])) {
+                DB::table('acara')
+                    ->where('event_id', $event->event_id)
+                    ->increment($column, (int) $request->quantity);
+            }
             
             // Check if multiple tickets need to be created (if stored procedure didn't)
             $order = Order::where('user_id', $user->user_id)

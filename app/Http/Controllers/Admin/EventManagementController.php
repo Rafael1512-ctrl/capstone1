@@ -32,11 +32,19 @@ class EventManagementController extends Controller
         // Filter by status
         if ($request->has('status') && $request->status) {
             if ($request->status == 'active') {
-                $query->where('status', 'published');
+                $query->whereIn('status', ['published', 'Active'])
+                      ->where(function($q) {
+                          $q->where('batch1_start_at', '<=', now())
+                            ->orWhereNull('batch1_start_at');
+                      });
+            } elseif ($request->status == 'scheduled') {
+                $query->whereIn('status', ['published', 'Active'])
+                      ->whereNotNull('batch1_start_at')
+                      ->where('batch1_start_at', '>', now());
             } elseif ($request->status == 'overdue') {
                 $query->where('status', 'overdue');
             } elseif ($request->status == 'non-active') {
-                $query->whereIn('status', ['draft', 'cancelled', 'overdue']);
+                $query->whereIn('status', ['draft', 'cancelled', 'Non-Active']);
             }
         }
 
@@ -77,17 +85,27 @@ class EventManagementController extends Controller
             'title' => 'required|string|max:100',
             'description' => 'required|string',
             'schedule_time' => 'required|date|after:today',
-            'location' => 'required|string|max:150',
+            'location' => 'required|string|max:500',
             'maps_url' => 'nullable|string|max:1000',
             'ticket_quota' => 'nullable|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
-            'regular_quota' => 'required|integer|min:0',
-            'regular_price' => 'required|integer|min:0',
-            'vip_quota' => 'required|integer|min:0',
-            'vip_price' => 'required|integer|min:0',
-            'vvip_quota' => 'required|integer|min:0',
-            'vvip_price' => 'required|integer|min:0',
+            
+            'batch1_start_at'   => ['required', 'date'],
+            'batch1_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch1_regular_price' => ['required', 'integer', 'min:0'],
+            'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vip_price'    => ['required', 'integer', 'min:0'],
+            'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch1_vvip_price'   => ['required', 'integer', 'min:0'],
+
+            'batch2_start_at'   => ['required', 'date', 'after:batch1_start_at'],
+            'batch2_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch2_regular_price' => ['required', 'integer', 'min:0'],
+            'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch2_vip_price'    => ['required', 'integer', 'min:0'],
+            'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch2_vvip_price'   => ['required', 'integer', 'min:0'],
         ]);
 
         // Handle banner upload or external URL
@@ -148,8 +166,9 @@ class EventManagementController extends Controller
             $validated['maps_url'] = "https://maps.google.com/maps?q=" . urlencode($validated['location']) . "&output=embed";
         }
 
-        // Calculate total ticket quota
-        $totalQuota = $validated['regular_quota'] + $validated['vip_quota'] + $validated['vvip_quota'];
+        // Calculate total ticket quota across all batches and categories
+        $totalQuota = $validated['batch1_regular_quota'] + $validated['batch1_vip_quota'] + $validated['batch1_vvip_quota'] +
+                      $validated['batch2_regular_quota'] + $validated['batch2_vip_quota'] + $validated['batch2_vvip_quota'];
         $validated['ticket_quota'] = $totalQuota;
 
         // Use a transaction for reliability and to ensure all-or-nothing completion
@@ -177,35 +196,20 @@ class EventManagementController extends Controller
             // Create the event
             $event = Event::create($validated);
 
-            // Create ticket types
-            if ($validated['regular_quota'] > 0) {
-                TicketType::create([
-                    'event_id' => $event->event_id,
-                    'name' => 'Regular',
-                    'price' => $validated['regular_price'],
-                    'quantity_total' => $validated['regular_quota'],
-                    'quantity_sold' => 0,
-                ]);
-            }
-
-            if ($validated['vip_quota'] > 0) {
-                TicketType::create([
-                    'event_id' => $event->event_id,
-                    'name' => 'VIP',
-                    'price' => $validated['vip_price'],
-                    'quantity_total' => $validated['vip_quota'],
-                    'quantity_sold' => 0,
-                ]);
-            }
-
-            if ($validated['vvip_quota'] > 0) {
-                TicketType::create([
-                    'event_id' => $event->event_id,
-                    'name' => 'VVIP',
-                    'price' => $validated['vvip_price'],
-                    'quantity_total' => $validated['vvip_quota'],
-                    'quantity_sold' => 0,
-                ]);
+            // Create ticket types for both batches
+            $categories = ['Regular', 'VIP', 'VVIP'];
+            foreach ([1, 2] as $batch) {
+                foreach ($categories as $cat) {
+                    $keyBase = "batch{$batch}_" . strtolower($cat);
+                    TicketType::create([
+                        'event_id' => $event->event_id,
+                        'name' => $cat,
+                        'price' => $validated[$keyBase . '_price'],
+                        'quantity_total' => $validated[$keyBase . '_quota'],
+                        'quantity_sold' => 0,
+                        'batch_number' => $batch
+                    ]);
+                }
             }
 
             DB::commit();
@@ -241,17 +245,27 @@ class EventManagementController extends Controller
             'title' => 'required|string|max:100',
             'description' => 'required|string',
             'schedule_time' => 'required|date',
-            'location' => 'required|string|max:150',
+            'location' => 'required|string|max:500',
             'maps_url' => 'nullable|string|max:1000',
             'ticket_quota' => 'nullable|integer|min:1',
             'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:draft,published,cancelled',
-            'regular_quota' => 'required|integer|min:0',
-            'regular_price' => 'required|integer|min:0',
-            'vip_quota' => 'required|integer|min:0',
-            'vip_price' => 'required|integer|min:0',
-            'vvip_quota' => 'required|integer|min:0',
-            'vvip_price' => 'required|integer|min:0',
+            
+            'batch1_start_at'   => ['required', 'date'],
+            'batch1_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch1_regular_price' => ['required', 'integer', 'min:0'],
+            'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vip_price'    => ['required', 'integer', 'min:0'],
+            'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch1_vvip_price'   => ['required', 'integer', 'min:0'],
+
+            'batch2_start_at'   => ['required', 'date', 'after:batch1_start_at'],
+            'batch2_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch2_regular_price' => ['required', 'integer', 'min:0'],
+            'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch2_vip_price'    => ['required', 'integer', 'min:0'],
+            'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch2_vvip_price'   => ['required', 'integer', 'min:0'],
         ]);
 
         // Handle banner upload or external URL
@@ -321,73 +335,25 @@ class EventManagementController extends Controller
         }
 
         // Calculate total ticket quota
-        $totalQuota = $validated['regular_quota'] + $validated['vip_quota'] + $validated['vvip_quota'];
+        $totalQuota = $validated['batch1_regular_quota'] + $validated['batch1_vip_quota'] + $validated['batch1_vvip_quota'] +
+                      $validated['batch2_regular_quota'] + $validated['batch2_vip_quota'] + $validated['batch2_vvip_quota'];
         $validated['ticket_quota'] = $totalQuota;
 
         $event->update($validated);
 
         // Update or create ticket types
-        // Regular Ticket
-        $regularTicket = $event->ticketTypes->where('name', 'Regular')->first();
-        if ($validated['regular_quota'] > 0) {
-            if ($regularTicket) {
-                $regularTicket->update([
-                    'price' => $validated['regular_price'],
-                    'quantity_total' => $validated['regular_quota'],
-                ]);
-            } else {
-                TicketType::create([
-                    'event_id' => $event->event_id,
-                    'name' => 'Regular',
-                    'price' => $validated['regular_price'],
-                    'quantity_total' => $validated['regular_quota'],
-                    'quantity_sold' => 0,
-                ]);
+        $categories = ['Regular', 'VIP', 'VVIP'];
+        foreach ([1, 2] as $batch) {
+            foreach ($categories as $cat) {
+                $keyBase = "batch{$batch}_" . strtolower($cat);
+                TicketType::updateOrCreate(
+                    ['event_id' => $event->event_id, 'batch_number' => $batch, 'name' => $cat],
+                    [
+                        'price' => $validated[$keyBase . '_price'],
+                        'quantity_total' => $validated[$keyBase . '_quota'],
+                    ]
+                );
             }
-        } elseif ($regularTicket) {
-            $regularTicket->delete();
-        }
-
-        // VIP Ticket
-        $vipTicket = $event->ticketTypes->where('name', 'VIP')->first();
-        if ($validated['vip_quota'] > 0) {
-            if ($vipTicket) {
-                $vipTicket->update([
-                    'price' => $validated['vip_price'],
-                    'quantity_total' => $validated['vip_quota'],
-                ]);
-            } else {
-                TicketType::create([
-                    'event_id' => $event->event_id,
-                    'name' => 'VIP',
-                    'price' => $validated['vip_price'],
-                    'quantity_total' => $validated['vip_quota'],
-                    'quantity_sold' => 0,
-                ]);
-            }
-        } elseif ($vipTicket) {
-            $vipTicket->delete();
-        }
-
-        // VVIP Ticket
-        $vvipTicket = $event->ticketTypes->where('name', 'VVIP')->first();
-        if ($validated['vvip_quota'] > 0) {
-            if ($vvipTicket) {
-                $vvipTicket->update([
-                    'price' => $validated['vvip_price'],
-                    'quantity_total' => $validated['vvip_quota'],
-                ]);
-            } else {
-                TicketType::create([
-                    'event_id' => $event->event_id,
-                    'name' => 'VVIP',
-                    'price' => $validated['vvip_price'],
-                    'quantity_total' => $validated['vvip_quota'],
-                    'quantity_sold' => 0,
-                ]);
-            }
-        } elseif ($vvipTicket) {
-            $vvipTicket->delete();
         }
 
         return redirect()->route('admin.events.index')->with('success', 'Event berhasil diupdate');
@@ -555,5 +521,24 @@ class EventManagementController extends Controller
         }
 
         return $url;
+    }
+
+    /**
+     * Terminate a ticket batch manually
+     */
+    public function endBatch(Request $request, $event_id, $batch)
+    {
+        $event = Event::findOrFail($event_id);
+        $column = "batch{$batch}_ended_at";
+        
+        if (!in_array($batch, [1, 2])) {
+            return back()->with('error', 'Batch tidak valid.');
+        }
+
+        $event->update([
+            $column => now()
+        ]);
+
+        return back()->with('success', "Batch {$batch} berhasil diakhiri.");
     }
 }

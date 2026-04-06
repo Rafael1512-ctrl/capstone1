@@ -125,9 +125,25 @@ class OrderController extends Controller
         // Update Stock via TicketType
         $ticket = DB::table('ticket')->where('transaction_id', $transaction_id)->first();
         if ($ticket) {
-            DB::table('ticket_type')
-                ->where('id', $ticket->ticket_type_id)
-                ->increment('quantity_sold', $order->total_ticket);
+            $ticketType = DB::table('ticket_type')->where('id', $ticket->ticket_type_id)->first();
+            
+            if ($ticketType) {
+                // Update universal quantity_sold
+                DB::table('ticket_type')
+                    ->where('id', $ticket->ticket_type_id)
+                    ->increment('quantity_sold', $order->total_ticket);
+                
+                // Update batch-specific sold count in acara table
+                if ($ticketType->batch_number == 1) {
+                    DB::table('acara')
+                        ->where('event_id', $order->event_id)
+                        ->increment('batch1_sold', $order->total_ticket);
+                } elseif ($ticketType->batch_number == 2) {
+                    DB::table('acara')
+                        ->where('event_id', $order->event_id)
+                        ->increment('batch2_sold', $order->total_ticket);
+                }
+            }
         }
 
         // Send Email

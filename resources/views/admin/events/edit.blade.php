@@ -242,113 +242,172 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Batch Configuration Section -->
                     <hr class="my-4">
-                    <h5 class="mb-3">Jenis Tiket & Kuota</h5>
-                    <p class="text-muted small mb-4">Atur kuota dan harga untuk setiap jenis tiket</p>
+                    <h5 class="mb-3 text-primary"><i class="fas fa-layer-group me-2"></i>Pengaturan Batch Tiket (Maksimal 2 Batch)</h5>
+                    <p class="text-muted small mb-4">Edit kuota dan harga untuk kategori Regular, VIP, dan VVIP di setiap batch.</p>
 
-                    @php
-                        // Get existing ticket types by name
-                        $regularTicket = $event->ticketTypes->where('name', 'Regular')->first();
-                        $vipTicket = $event->ticketTypes->where('name', 'VIP')->first();
-                        $vvipTicket = $event->ticketTypes->where('name', 'VVIP')->first();
-                    @endphp
-
-                    <!-- Regular Ticket Type -->
-                    <div class="card mb-3 border-start border-4" style="border-color: #6c757d !important;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="fas fa-tag"></i> Tiket Regular
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="regular_quota" class="form-label">Kuota Tiket *</label>
-                                    <input type="number"
-                                        class="form-control @error('regular_quota') is-invalid @enderror"
-                                        name="regular_quota" id="regular_quota" placeholder="Jumlah tiket"
-                                        value="{{ old('regular_quota', $regularTicket?->quantity_total ?? 0) }}"
-                                        min="0" required>
-                                    @error('regular_quota')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                    <div class="row g-4">
+                        <!-- Batch 1 -->
+                        <div class="col-md-12">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <h6 class="mb-0">Batch 1 - Waktu & Kategori</h6>
+                                        @if($event->batch1_ended_at)
+                                            <span class="badge bg-danger">Manual Ended: {{ $event->batch1_ended_at->format('d M, H:i') }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="small mb-0 text-white">Mulai:</label>
+                                        <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
+                                            required style="width: auto;" value="{{ old('batch1_start_at', $event->batch1_start_at ? $event->batch1_start_at->format('Y-m-d\TH:i') : '') }}">
+                                        @error('batch1_start_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
+                                        
+                                        @if(!$event->batch1_ended_at && $event->batch1_start_at && $event->batch1_start_at->isPast())
+                                            <button type="button" class="btn btn-danger btn-sm" 
+                                                onclick="if(confirm('Akhiri Batch 1 secara manual?')){ document.getElementById('end-batch-1-form').submit(); }">
+                                                <i class="fas fa-stop-circle"></i> End Batch 1
+                                            </button>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="regular_price" class="form-label">Harga (Rp) *</label>
-                                    <input type="number"
-                                        class="form-control @error('regular_price') is-invalid @enderror"
-                                        name="regular_price" id="regular_price" placeholder="0"
-                                        value="{{ old('regular_price', $regularTicket?->price ?? 0) }}" min="0"
-                                        step="1000" required>
-                                    @error('regular_price')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Kategori Tiket</th>
+                                                    <th>Kuota *</th>
+                                                    <th>Harga (Rp) *</th>
+                                                    <th>Terjual</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Regular</strong></td>
+                                                    <td>
+                                                        <input type="number" name="batch1_regular_quota" class="form-control form-control-sm @error('batch1_regular_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_quota', $event->batch1_regular_quota) }}">
+                                                        @error('batch1_regular_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="batch1_regular_price" class="form-control form-control-sm @error('batch1_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_price', number_format($event->batch1_regular_price, 0, '', '')) }}">
+                                                        @error('batch1_regular_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td class="text-center">{{ $event->batch1_regular_sold }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VIP</strong></td>
+                                                    <td>
+                                                        <input type="number" name="batch1_vip_quota" class="form-control form-control-sm @error('batch1_vip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_quota', $event->batch1_vip_quota) }}">
+                                                        @error('batch1_vip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="batch1_vip_price" class="form-control form-control-sm @error('batch1_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_price', number_format($event->batch1_vip_price, 0, '', '')) }}">
+                                                        @error('batch1_vip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td class="text-center">{{ $event->batch1_vip_sold }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VVIP</strong></td>
+                                                    <td>
+                                                        <input type="number" name="batch1_vvip_quota" class="form-control form-control-sm @error('batch1_vvip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_quota', $event->batch1_vvip_quota) }}">
+                                                        @error('batch1_vvip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="batch1_vvip_price" class="form-control form-control-sm @error('batch1_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_price', number_format($event->batch1_vvip_price, 0, '', '')) }}">
+                                                        @error('batch1_vvip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td class="text-center">{{ $event->batch1_vvip_sold }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Batch 2 -->
+                        <div class="col-md-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <h6 class="mb-0">Batch 2 - Waktu & Kategori</h6>
+                                        @if($event->batch2_ended_at)
+                                            <span class="badge bg-danger">Manual Ended: {{ $event->batch2_ended_at->format('d M, H:i') }}</span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="small mb-0 text-white">Mulai:</label>
+                                        <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
+                                            required style="width: auto;" value="{{ old('batch2_start_at', $event->batch2_start_at ? $event->batch2_start_at->format('Y-m-d\TH:i') : '') }}">
+                                        @error('batch2_start_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
+
+                                        @if(!$event->batch2_ended_at && $event->batch2_start_at && $event->batch2_start_at->isPast())
+                                            <button type="button" class="btn btn-dark btn-sm" 
+                                                onclick="if(confirm('Akhiri Batch 2 secara manual?')){ document.getElementById('end-batch-2-form').submit(); }">
+                                                <i class="fas fa-stop-circle"></i> End Batch 2
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Kategori Tiket</th>
+                                                    <th>Kuota *</th>
+                                                    <th>Harga (Rp) *</th>
+                                                    <th>Terjual</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Regular</strong></td>
+                                                    <td>
+                                                        <input type="number" name="batch2_regular_quota" class="form-control form-control-sm @error('batch2_regular_quota') is-invalid @enderror" required min="0" value="{{ old('batch2_regular_quota', $event->batch2_regular_quota) }}">
+                                                        @error('batch2_regular_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="batch2_regular_price" class="form-control form-control-sm @error('batch2_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch2_regular_price', number_format($event->batch2_regular_price, 0, '', '')) }}">
+                                                        @error('batch2_regular_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td class="text-center">{{ $event->batch2_regular_sold }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VIP</strong></td>
+                                                    <td>
+                                                        <input type="number" name="batch2_vip_quota" class="form-control form-control-sm @error('batch2_vip_quota') is-invalid @enderror" required min="0" value="{{ old('batch2_vip_quota', $event->batch2_vip_quota) }}">
+                                                        @error('batch2_vip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="batch2_vip_price" class="form-control form-control-sm @error('batch2_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vip_price', number_format($event->batch2_vip_price, 0, '', '')) }}">
+                                                        @error('batch2_vip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td class="text-center">{{ $event->batch2_vip_sold }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VVIP</strong></td>
+                                                    <td>
+                                                        <input type="number" name="batch2_vvip_quota" class="form-control form-control-sm @error('batch2_vvip_quota') is-invalid @enderror" required min="0" value="{{ old('batch2_vvip_quota', $event->batch2_vvip_quota) }}">
+                                                        @error('batch2_vvip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="batch2_vvip_price" class="form-control form-control-sm @error('batch2_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vvip_price', number_format($event->batch2_vvip_price, 0, '', '')) }}">
+                                                        @error('batch2_vvip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
+                                                    </td>
+                                                    <td class="text-center">{{ $event->batch2_vvip_sold }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- VIP Ticket Type -->
-                    <div class="card mb-3 border-start border-4" style="border-color: #ffc107 !important;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="fas fa-crown"></i> Tiket VIP
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="vip_quota" class="form-label">Kuota Tiket *</label>
-                                    <input type="number" class="form-control @error('vip_quota') is-invalid @enderror"
-                                        name="vip_quota" id="vip_quota" placeholder="Jumlah tiket"
-                                        value="{{ old('vip_quota', $vipTicket?->quantity_total ?? 0) }}" min="0"
-                                        required>
-                                    @error('vip_quota')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="vip_price" class="form-label">Harga (Rp) *</label>
-                                    <input type="number" class="form-control @error('vip_price') is-invalid @enderror"
-                                        name="vip_price" id="vip_price" placeholder="0"
-                                        value="{{ old('vip_price', $vipTicket?->price ?? 0) }}" min="0"
-                                        step="1000" required>
-                                    @error('vip_price')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- VVIP Ticket Type -->
-                    <div class="card mb-3 border-start border-4" style="border-color: #dc3545 !important;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="fas fa-gem"></i> Tiket VVIP
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="vvip_quota" class="form-label">Kuota Tiket *</label>
-                                    <input type="number" class="form-control @error('vvip_quota') is-invalid @enderror"
-                                        name="vvip_quota" id="vvip_quota" placeholder="Jumlah tiket"
-                                        value="{{ old('vvip_quota', $vvipTicket?->quantity_total ?? 0) }}" min="0"
-                                        required>
-                                    @error('vvip_quota')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="vvip_price" class="form-label">Harga (Rp) *</label>
-                                    <input type="number" class="form-control @error('vvip_price') is-invalid @enderror"
-                                        name="vvip_price" id="vvip_price" placeholder="0"
-                                        value="{{ old('vvip_price', $vvipTicket?->price ?? 0) }}" min="0"
-                                        step="1000" required>
-                                    @error('vvip_price')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2">
+                    <div class="mt-4 d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Update Event
                         </button>
@@ -357,6 +416,10 @@
                         </a>
                     </div>
                 </form>
+
+                {{-- Hidden Forms for Ending Batches --}}
+                <form id="end-batch-1-form" action="{{ route('admin.events.end-batch', [$event->event_id, 1]) }}" method="POST" style="display: none;">@csrf</form>
+                <form id="end-batch-2-form" action="{{ route('admin.events.end-batch', [$event->event_id, 2]) }}" method="POST" style="display: none;">@csrf</form>
             </div>
         </div>
     </div>

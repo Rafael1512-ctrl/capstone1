@@ -64,11 +64,27 @@ class EventController extends Controller
             'description'       => ['required', 'string', 'max:1000'],
             'category_id'       => ['nullable', 'exists:kategori_acara,category_id'],
             'schedule_time'     => ['required', 'date_format:Y-m-d\TH:i', 'after:now'],
-            'location'          => ['required', 'string', 'max:255'],
+            'location'          => ['required', 'string', 'max:500'],
             'maps_url'          => ['nullable', 'string', 'max:1000'],
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
-            'organizer_id'      => ['nullable', 'exists:users,user_id'], // Optional choice for admin
+            'organizer_id'      => ['nullable', 'exists:users,user_id'],
+            
+            'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i'],
+            'batch1_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch1_regular_price' => ['required', 'numeric', 'min:0'],
+            'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vip_price'    => ['required', 'numeric', 'min:0'],
+            'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch1_vvip_price'   => ['required', 'numeric', 'min:0'],
+
+            'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
+            'batch2_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch2_regular_price' => ['required', 'numeric', 'min:0'],
+            'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch2_vip_price'    => ['required', 'numeric', 'min:0'],
+            'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch2_vvip_price'   => ['required', 'numeric', 'min:0'],
         ]);
 
         $data = $validated;
@@ -80,7 +96,7 @@ class EventController extends Controller
             $data['organizer_id'] = Auth::user()->user_id;
         }
         
-        $data['status'] = 'draft';
+        $data['status'] = 'Non-Active';
 
         // Handle banner upload
         if ($request->hasFile('banner_url')) {
@@ -110,6 +126,30 @@ class EventController extends Controller
             }
 
             $event = Event::create($data);
+
+            // Sync Ticket Types for these batches
+            $categories = ['Regular', 'VIP', 'VVIP'];
+            
+            foreach ($categories as $cat) {
+                // Batch 1
+                $event->ticketTypes()->create([
+                    'name' => $cat,
+                    'price' => $data['batch1_'.strtolower($cat).'_price'],
+                    'quantity_total' => $data['batch1_'.strtolower($cat).'_quota'],
+                    'quantity_sold' => 0,
+                    'batch_number' => 1
+                ]);
+
+                // Batch 2
+                $event->ticketTypes()->create([
+                    'name' => $cat,
+                    'price' => $data['batch2_'.strtolower($cat).'_price'],
+                    'quantity_total' => $data['batch2_'.strtolower($cat).'_quota'],
+                    'quantity_sold' => 0,
+                    'batch_number' => 2
+                ]);
+            }
+
             DB::commit();
             
             return redirect()->route('events.show', $event->event_id)
@@ -160,12 +200,28 @@ class EventController extends Controller
             'description'       => ['required', 'string', 'max:1000'],
             'category_id'       => ['nullable', 'exists:kategori_acara,category_id'],
             'schedule_time'     => ['required', 'date_format:Y-m-d\TH:i'],
-            'location'          => ['required', 'string', 'max:255'],
+            'location'          => ['required', 'string', 'max:500'],
             'maps_url'          => ['nullable', 'string', 'max:1000'],
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
-            'status'            => ['required', 'in:draft,published,cancelled'],
+            'status'            => ['required', 'in:draft,published,cancelled,Non-Active,Active'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
-            'organizer_id'      => ['nullable', 'exists:users,user_id'], // For admin
+            'organizer_id'      => ['nullable', 'exists:users,user_id'],
+            
+            'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i'],
+            'batch1_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch1_regular_price' => ['required', 'numeric', 'min:0'],
+            'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vip_price'    => ['required', 'numeric', 'min:0'],
+            'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch1_vvip_price'   => ['required', 'numeric', 'min:0'],
+
+            'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
+            'batch2_regular_quota' => ['required', 'integer', 'min:0'],
+            'batch2_regular_price' => ['required', 'numeric', 'min:0'],
+            'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
+            'batch2_vip_price'    => ['required', 'numeric', 'min:0'],
+            'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
+            'batch2_vvip_price'   => ['required', 'numeric', 'min:0'],
         ]);
 
         $data = $validated;
@@ -190,10 +246,37 @@ class EventController extends Controller
             $data['banner_url'] = $event->banner_url;
         }
 
+        // Auto-calculate total ticket quota from batches
+        $data['ticket_quota'] = $data['batch1_regular_quota'] + $data['batch1_vip_quota'] + $data['batch1_vvip_quota'] +
+                               $data['batch2_regular_quota'] + $data['batch2_vip_quota'] + $data['batch2_vvip_quota'];
+
         $event->update($data);
 
+        // Sync Ticket Types for these batches
+        $categories = ['Regular', 'VIP', 'VVIP'];
+        
+        foreach ($categories as $cat) {
+            // Batch 1
+            $event->ticketTypes()->updateOrCreate(
+                ['batch_number' => 1, 'name' => $cat],
+                [
+                    'price' => $data['batch1_'.strtolower($cat).'_price'],
+                    'quantity_total' => $data['batch1_'.strtolower($cat).'_quota'],
+                ]
+            );
+
+            // Batch 2
+            $event->ticketTypes()->updateOrCreate(
+                ['batch_number' => 2, 'name' => $cat],
+                [
+                    'price' => $data['batch2_'.strtolower($cat).'_price'],
+                    'quantity_total' => $data['batch2_'.strtolower($cat).'_quota'],
+                ]
+            );
+        }
+
         return redirect()->route('events.show', $event->event_id)
-            ->with('success', 'Event berhasil diperbarui.');
+            ->with('success', 'Event berhasil diperbarui (Batch synced).');
     }
 
     /**

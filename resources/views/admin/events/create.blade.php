@@ -221,101 +221,102 @@
                         </div>
                     </div>
 
-                    <!-- Ticket Types Section -->
+                    <!-- Batch Configuration Section -->
                     <hr class="my-4">
-                    <h5 class="mb-3">Jenis Tiket & Kuota</h5>
-                    <p class="text-muted small mb-4">Atur kuota dan harga untuk setiap jenis tiket</p>
+                    <h5 class="mb-3 text-primary"><i class="fas fa-layer-group me-2"></i>Pengaturan Batch Tiket (Maksimal 2 Batch)</h5>
+                    <p class="text-muted small mb-4">Wajib mengisi semua kategori di kedua batch.</p>
 
-                    <!-- Regular Ticket Type -->
-                    <div class="card mb-3 border-start border-4" style="border-color: #6c757d !important;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="fas fa-tag"></i> Tiket Regular
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="regular_quota" class="form-label">Kuota Tiket *</label>
-                                    <input type="number"
-                                        class="form-control @error('regular_quota') is-invalid @enderror"
-                                        name="regular_quota" id="regular_quota" placeholder="Jumlah tiket"
-                                        value="{{ old('regular_quota', 0) }}" min="0" required>
-                                    @error('regular_quota')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                    <div class="row g-4">
+                        <!-- Batch 1 -->
+                        <div class="col-md-12">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Batch 1 - Waktu & Kategori</h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="small mb-0">Mulai:</label>
+                                        <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm" 
+                                            required style="width: auto;">
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="regular_price" class="form-label">Harga (Rp) *</label>
-                                    <input type="number"
-                                        class="form-control @error('regular_price') is-invalid @enderror"
-                                        name="regular_price" id="regular_price" placeholder="0"
-                                        value="{{ old('regular_price', 0) }}" min="0" step="1000" required>
-                                    @error('regular_price')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Kategori Tiket</th>
+                                                    <th>Kuota *</th>
+                                                    <th>Harga (Rp) *</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Regular</strong></td>
+                                                    <td><input type="number" name="batch1_regular_quota" class="form-control" required min="0" value="0"></td>
+                                                    <td><input type="number" name="batch1_regular_price" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VIP</strong></td>
+                                                    <td><input type="number" name="batch1_vip_quota" class="form-control" required min="0" value="0"></td>
+                                                    <td><input type="number" name="batch1_vip_price" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VVIP</strong></td>
+                                                    <td><input type="number" name="batch1_vvip_quota" class="form-control" required min="0" value="0"></td>
+                                                    <td><input type="number" name="batch1_vvip_price" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Batch 2 -->
+                        <div class="col-md-12">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Batch 2 - Waktu & Kategori</h6>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label class="small mb-0">Mulai:</label>
+                                        <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm" 
+                                            required style="width: auto;">
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Kategori Tiket</th>
+                                                    <th>Kuota *</th>
+                                                    <th>Harga (Rp) *</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Regular</strong></td>
+                                                    <td><input type="number" name="batch2_regular_quota" class="form-control" required min="0" value="0"></td>
+                                                    <td><input type="number" name="batch2_regular_price" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VIP</strong></td>
+                                                    <td><input type="number" name="batch2_vip_quota" class="form-control" required min="0" value="0"></td>
+                                                    <td><input type="number" name="batch2_vip_price" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VVIP</strong></td>
+                                                    <td><input type="number" name="batch2_vvip_quota" class="form-control" required min="0" value="0"></td>
+                                                    <td><input type="number" name="batch2_vvip_price" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- VIP Ticket Type -->
-                    <div class="card mb-3 border-start border-4" style="border-color: #ffc107 !important;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="fas fa-crown"></i> Tiket VIP
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="vip_quota" class="form-label">Kuota Tiket *</label>
-                                    <input type="number" class="form-control @error('vip_quota') is-invalid @enderror"
-                                        name="vip_quota" id="vip_quota" placeholder="Jumlah tiket"
-                                        value="{{ old('vip_quota', 0) }}" min="0" required>
-                                    @error('vip_quota')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="vip_price" class="form-label">Harga (Rp) *</label>
-                                    <input type="number" class="form-control @error('vip_price') is-invalid @enderror"
-                                        name="vip_price" id="vip_price" placeholder="0"
-                                        value="{{ old('vip_price', 0) }}" min="0" step="1000" required>
-                                    @error('vip_price')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- VVIP Ticket Type -->
-                    <div class="card mb-3 border-start border-4" style="border-color: #dc3545 !important;">
-                        <div class="card-body">
-                            <h6 class="card-title mb-3">
-                                <i class="fas fa-gem"></i> Tiket VVIP
-                            </h6>
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="vvip_quota" class="form-label">Kuota Tiket *</label>
-                                    <input type="number" class="form-control @error('vvip_quota') is-invalid @enderror"
-                                        name="vvip_quota" id="vvip_quota" placeholder="Jumlah tiket"
-                                        value="{{ old('vvip_quota', 0) }}" min="0" required>
-                                    @error('vvip_quota')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="vvip_price" class="form-label">Harga (Rp) *</label>
-                                    <input type="number" class="form-control @error('vvip_price') is-invalid @enderror"
-                                        name="vvip_price" id="vvip_price" placeholder="0"
-                                        value="{{ old('vvip_price', 0) }}" min="0" step="1000" required>
-                                    @error('vvip_price')
-                                        <span class="invalid-feedback d-block">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2">
+                    <div class="mt-4 d-flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i> Simpan Event
                         </button>

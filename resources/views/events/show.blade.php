@@ -88,9 +88,15 @@
                                         <label class="text-muted small">Status</label>
                                         <p class="mb-0">
                                             @if ($event->status === 'published')
-                                                <span class="badge badge-success">
-                                                    <i class="fa fa-check"></i> Dipublikasikan
-                                                </span>
+                                                @if($event->batch1_start_at && now()->isBefore($event->batch1_start_at))
+                                                    <span class="badge badge-info">
+                                                        <i class="fa fa-calendar"></i> Terjadwal
+                                                    </span>
+                                                @else
+                                                    <span class="badge badge-success">
+                                                        <i class="fa fa-check"></i> Dipublikasikan
+                                                    </span>
+                                                @endif
                                             @elseif($event->status === 'draft')
                                                 <span class="badge badge-warning">
                                                     <i class="fa fa-file"></i> Draft

@@ -29,11 +29,24 @@ class Event extends Model
         'status',
         'performers',
         'maps_url',
+        'batch1_start_at',
+        'batch1_regular_quota', 'batch1_regular_price', 'batch1_regular_sold',
+        'batch1_vip_quota', 'batch1_vip_price', 'batch1_vip_sold',
+        'batch1_vvip_quota', 'batch1_vvip_price', 'batch1_vvip_sold',
+        'batch2_start_at',
+        'batch2_regular_quota', 'batch2_regular_price', 'batch2_regular_sold',
+        'batch2_vip_quota', 'batch2_vip_price', 'batch2_vip_sold',
+        'batch2_vvip_quota', 'batch2_vvip_price', 'batch2_vvip_sold',
+        'batch1_ended_at', 'batch2_ended_at',
     ];
 
     protected $casts = [
         'schedule_time' => 'datetime',
         'performers' => 'array',
+        'batch1_start_at' => 'datetime',
+        'batch2_start_at' => 'datetime',
+        'batch1_ended_at' => 'datetime',
+        'batch2_ended_at' => 'datetime',
     ];
 
     /**
@@ -41,8 +54,46 @@ class Event extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('status', 'published')
+        return $query->whereIn('status', ['published', 'Active'])
                      ->where('schedule_time', '>=', now());
+    }
+
+    /**
+     * Check if the event is "Active" based on timing.
+     */
+    public function getIsActiveAttribute()
+    {
+        if (!$this->batch1_start_at) return false;
+        return now()->isAfter($this->batch1_start_at);
+    }
+
+    /**
+     * Determine which batch is currently active.
+     */
+    public function getActiveBatchAttribute()
+    {
+        if (!$this->batch1_start_at) return null;
+
+        $now = now();
+
+        // Batch 2 active if started AND not ended
+        if ($this->batch2_start_at && $now->isAfter($this->batch2_start_at)) {
+            if (!$this->batch2_ended_at || $this->batch2_ended_at->isFuture()) {
+                return 2;
+            }
+            return null; // Batch 2 is already ended
+        }
+
+        // Batch 1 active if started AND not ended
+        if ($now->isAfter($this->batch1_start_at)) {
+            if (!$this->batch1_ended_at || $this->batch1_ended_at->isFuture()) {
+                return 1;
+            }
+            // If Batch 1 is ended, but Batch 2 hasn't started yet, return null (waiting period)
+            return null; 
+        }
+
+        return null;
     }
 
     /**
@@ -50,9 +101,17 @@ class Event extends Model
      */
     public static function updateOverdueEvents()
     {
-        return self::where('status', 'published')
+        // Set to overdue if event time passed
+        self::where('status', '!=', 'overdue')
+            ->whereNotNull('schedule_time')
             ->where('schedule_time', '<', now())
             ->update(['status' => 'overdue']);
+
+        // Set to Active if Batch 1 time reached
+        self::where('status', 'Non-Active')
+            ->whereNotNull('batch1_start_at')
+            ->where('batch1_start_at', '<=', now())
+            ->update(['status' => 'Active']);
     }
 
     public function organizer()

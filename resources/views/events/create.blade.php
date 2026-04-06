@@ -167,8 +167,7 @@
                                             @enderror
                                             <small class="form-text text-muted">Harus waktu yang akan datang</small>
                                         </div>
-                                    </div>
-
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="location">Lokasi Event <span class="text-danger">*</span></label>
                                             <input type="text"
@@ -181,7 +180,9 @@
                                             @enderror
                                         </div>
                                     </div>
+                                </div>
 
+                                <div class="row">
                                     <div class="col-md-12">
                                         <!-- Google Maps URL -->
                                         <div class="form-group">
@@ -196,6 +197,100 @@
                                             <small class="form-text text-muted">
                                                 Dapatkan di Google Maps: Bagikan > Sematkan peta > Salin URL di dalam src="..."
                                             </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4">
+                                <h4 class="fw-bold mb-3">Pengaturan Batch Tiket (Maksimal 2 Batch)</h4>
+                                <p class="text-muted mb-4">Tentukan kuota dan harga untuk kategori Regular, VIP, dan VVIP di setiap batch.</p>
+                                
+                                <div class="row">
+                                    <!-- Batch 1 -->
+                                    <div class="col-md-12 mb-4">
+                                        <div class="card bg-dark text-white border-primary">
+                                            <div class="card-header border-primary d-flex justify-content-between align-items-center">
+                                                <div class="card-title text-primary">Batch 1 - Pengaturan Waktu</div>
+                                                <div class="form-group mb-0">
+                                                    <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                    <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
+                                                        required value="{{ old('batch1_start_at') }}">
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-dark">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Kategori Tiket</th>
+                                                                <th>Kuota <span class="text-danger">*</span></th>
+                                                                <th>Harga (IDR) <span class="text-danger">*</span></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Regular</strong></td>
+                                                                <td><input type="number" name="batch1_regular_quota" class="form-control" required min="0" value="{{ old('batch1_regular_quota', 0) }}"></td>
+                                                                <td><input type="number" name="batch1_regular_price" class="form-control" required min="0" value="{{ old('batch1_regular_price', 0) }}"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VIP</strong></td>
+                                                                <td><input type="number" name="batch1_vip_quota" class="form-control" required min="0" value="{{ old('batch1_vip_quota', 0) }}"></td>
+                                                                <td><input type="number" name="batch1_vip_price" class="form-control" required min="0" value="{{ old('batch1_vip_price', 0) }}"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VVIP</strong></td>
+                                                                <td><input type="number" name="batch1_vvip_quota" class="form-control" required min="0" value="{{ old('batch1_vvip_quota', 0) }}"></td>
+                                                                <td><input type="number" name="batch1_vvip_price" class="form-control" required min="0" value="{{ old('batch1_vvip_price', 0) }}"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Batch 2 -->
+                                    <div class="col-md-12 mb-4">
+                                        <div class="card bg-dark text-white border-info">
+                                            <div class="card-header border-info d-flex justify-content-between align-items-center">
+                                                <div class="card-title text-info">Batch 2 - Pengaturan Waktu</div>
+                                                <div class="form-group mb-0">
+                                                    <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                    <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
+                                                        required value="{{ old('batch2_start_at') }}">
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-dark">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Kategori Tiket</th>
+                                                                <th>Kuota <span class="text-danger">*</span></th>
+                                                                <th>Harga (IDR) <span class="text-danger">*</span></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Regular</strong></td>
+                                                                <td><input type="number" name="batch2_regular_quota" class="form-control" required min="0" value="{{ old('batch2_regular_quota', 0) }}"></td>
+                                                                <td><input type="number" name="batch2_regular_price" class="form-control" required min="0" value="{{ old('batch2_regular_price', 0) }}"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VIP</strong></td>
+                                                                <td><input type="number" name="batch2_vip_quota" class="form-control" required min="0" value="{{ old('batch2_vip_quota', 0) }}"></td>
+                                                                <td><input type="number" name="batch2_vip_price" class="form-control" required min="0" value="{{ old('batch2_vip_price', 0) }}"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VVIP</strong></td>
+                                                                <td><input type="number" name="batch2_vvip_quota" class="form-control" required min="0" value="{{ old('batch2_vvip_quota', 0) }}"></td>
+                                                                <td><input type="number" name="batch2_vvip_price" class="form-control" required min="0" value="{{ old('batch2_vvip_price', 0) }}"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

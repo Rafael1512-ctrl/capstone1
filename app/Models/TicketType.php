@@ -18,6 +18,7 @@ class TicketType extends Model
         'price',
         'quantity_total',
         'quantity_sold',
+        'batch_number',
     ];
 
     public function event()
