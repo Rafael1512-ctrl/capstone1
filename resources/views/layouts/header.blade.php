@@ -112,8 +112,8 @@
                     reverseButtons: true,
                     customClass: {
                         popup:         'tixly-swal-popup',
-                        confirmButton: 'btn btn-danger px-4 py-2 mx-1',
-                        cancelButton:  'btn btn-secondary px-4 py-2 mx-1',
+                        confirmButton: 'tixly-swal-confirm',
+                        cancelButton:  'tixly-swal-cancel',
                         actions:       'tixly-swal-actions',
                     },
                     buttonsStyling: false,

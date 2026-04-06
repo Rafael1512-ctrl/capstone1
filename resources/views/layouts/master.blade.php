@@ -121,7 +121,28 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 28px 28px;
-            background: var(--tix-bg);
+            background: var(--tix-bg) !important;
+        }
+
+        /* DataTable Dark Theme Override */
+        .dataTables_wrapper {
+            color: var(--tix-text) !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--tix-text2) !important;
+        }
+
+        .dataTables_wrapper .dataTables_filter input,
+        .dataTables_wrapper .dataTables_length select {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: var(--tix-text) !important;
+        }
+
+        /* Table Responsive Container */
+        .table-responsive {
+            background: var(--tix-card) !important;
         }
 
         /* ── Scrollbar ── */
@@ -164,6 +185,7 @@
         .card-body {
             padding: 20px !important;
             color: var(--tix-text) !important;
+            background: var(--tix-card) !important;
         }
 
         .card-title {
@@ -182,6 +204,12 @@
         table {
             color: var(--tix-text2) !important;
             border-color: var(--tix-border2) !important;
+            background: transparent !important;
+        }
+
+        .table tbody,
+        table tbody {
+            background: var(--tix-card) !important;
         }
 
         .table thead th,
@@ -198,13 +226,14 @@
 
         .table tbody tr,
         table tbody tr {
+            background: var(--tix-card) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
             transition: background 0.15s;
         }
 
         .table tbody tr:hover,
         table tbody tr:hover {
-            background: rgba(220, 20, 60, 0.04) !important;
+            background: rgba(220, 20, 60, 0.08) !important;
         }
 
         .table tbody td,
@@ -216,7 +245,11 @@
         }
 
         .table-striped>tbody>tr:nth-of-type(odd)>* {
-            background: rgba(255, 255, 255, 0.02) !important;
+            background: rgba(255, 255, 255, 0.03) !important;
+        }
+
+        .table-striped>tbody>tr:nth-of-type(even)>* {
+            background: transparent !important;
         }
 
         .table-bordered {
@@ -228,8 +261,8 @@
            ══════════════ */
         .form-control,
         .form-select {
-            background: rgba(255, 255, 255, 0.04) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
             color: var(--tix-text) !important;
             border-radius: 10px !important;
             padding: 10px 14px !important;
@@ -239,8 +272,8 @@
         .form-control:focus,
         .form-select:focus {
             border-color: var(--tix-red) !important;
-            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.12) !important;
-            background: rgba(255, 255, 255, 0.06) !important;
+            box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.2) !important;
+            background: rgba(255, 255, 255, 0.15) !important;
             color: var(--tix-text) !important;
             outline: none !important;
         }
@@ -252,6 +285,17 @@
         .form-select option {
             background: #1a0a0f;
             color: #fff;
+        }
+
+        textarea.form-control {
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            min-height: 100px;
+        }
+
+        textarea.form-control:focus {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: var(--tix-red) !important;
         }
 
         .form-label,
@@ -500,9 +544,9 @@
 
         /* Pagination */
         .pagination .page-link {
-            background: rgba(255, 255, 255, 0.04) !important;
+            background: rgba(255, 255, 255, 0.12) !important;
             border: 1px solid var(--tix-border2) !important;
-            color: rgba(255, 255, 255, 0.6) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
             border-radius: 8px !important;
         }
 
@@ -519,8 +563,8 @@
 
         /* Select2 / Bootstrap Select overrides */
         .select2-container--default .select2-selection--single {
-            background: rgba(255, 255, 255, 0.04) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
             color: #fff !important;
         }
 
@@ -565,9 +609,9 @@
 
         /* Input Group */
         .input-group-text {
-            background: rgba(255, 255, 255, 0.06) !important;
-            border: 1px solid rgba(255, 255, 255, 0.1) !important;
-            color: rgba(255, 255, 255, 0.5) !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: rgba(255, 255, 255, 0.7) !important;
         }
 
         /* Nav Tabs */
@@ -626,39 +670,68 @@
         }
 
         /* ── Unified Dark Overrides for Legacy Bootstrap Classes ── */
-        .wrapper .bg-white, .wrapper .bg-light, .wrapper .table-light, .wrapper .thead-light { background: var(--tix-card) !important; color: var(--tix-text) !important; }
+        .bg-white, 
+        .bg-light, 
+        .table-light, 
+        .thead-light,
+        [class*="bg-light"] {
+            background: var(--tix-card) !important;
+            color: var(--tix-text) !important; 
+        }
+
+        .wrapper .bg-white, 
+        .wrapper .bg-light, 
+        .wrapper .table-light, 
+        .wrapper .thead-light {
+            background: var(--tix-card) !important;
+            color: var(--tix-text) !important; 
+        }
         .wrapper .text-dark, .wrapper .text-black { color: var(--tix-text) !important; }
         .wrapper .text-primary { color: var(--tix-red) !important; }
         .wrapper .text-muted { color: var(--tix-text3) !important; }
         .wrapper .border, .wrapper .border-bottom, .wrapper .border-top, .wrapper .border-start, .wrapper .border-end { border-color: var(--tix-border2) !important; }
         .wrapper .card-header.bg-white { border-bottom: 1px solid var(--tix-border2) !important; }
-        .wrapper .table { color: var(--tix-text) !important; background: transparent !important; }
-        .wrapper .table-hover tbody tr:hover { background: rgba(255,255,255,0.02) !important; }
+        .wrapper .table { 
+            color: var(--tix-text) !important; 
+            background: transparent !important; 
+        }
+        .wrapper .table tbody {
+            background: var(--tix-card) !important;
+        }
+        .wrapper .table tbody tr {
+            background: var(--tix-card) !important;
+        }
+        .wrapper .table-hover tbody tr:hover { 
+            background: rgba(220,20,60,0.08) !important; 
+        }
         .wrapper .table thead.bg-light th, .wrapper .table thead th { 
-            background: rgba(220,20,60,0.05) !important; 
+            background: rgba(220,20,60,0.08) !important; 
             color: var(--tix-text2) !important; 
             border: none !important;
             font-size: 11px !important;
             text-transform: uppercase !important;
             letter-spacing: 1px !important;
         }
-        .wrapper .table td { border-color: var(--tix-border2) !important; }
+        .wrapper .table td { 
+            border-color: var(--tix-border2) !important; 
+            background: transparent !important;
+        }
         
         /* Form Premium Styling */
         .wrapper label { color: var(--tix-text2) !important; font-weight: 600 !important; margin-bottom: 8px !important; }
         .wrapper .form-control, .wrapper .form-select, .wrapper .input-group-text {
-            background: rgba(255,255,255,0.04) !important;
-            border: 1px solid var(--tix-border) !important;
+            background: rgba(255,255,255,0.12) !important;
+            border: 1px solid rgba(255,255,255,0.2) !important;
             color: var(--tix-text) !important;
             border-radius: 10px !important;
             padding: 10px 15px !important;
         }
         .wrapper .form-control:focus, .wrapper .form-select:focus {
-            background: rgba(255,255,255,0.08) !important;
+            background: rgba(255,255,255,0.15) !important;
             border-color: var(--tix-red) !important;
-            box-shadow: 0 0 0 0.25rem rgba(220,20,60,0.15) !important;
+            box-shadow: 0 0 0 0.25rem rgba(220,20,60,0.2) !important;
         }
-        .wrapper .form-control::placeholder { color: var(--tix-text3) !important; opacity: 0.6; }
+        .wrapper .form-control::placeholder { color: var(--tix-text3) !important; opacity: 0.7; }
         
         /* Fix Breadcrumb/Title colors */
         .wrapper h1, .wrapper h2, .wrapper h3, .wrapper h4, .wrapper h5, .wrapper h6 { color: var(--tix-text) !important; font-weight: 700 !important; }
@@ -683,32 +756,34 @@
            ══════════════ */
         .tixly-swal-popup { 
             border-radius: 20px !important; 
-            border: 1px solid rgba(220, 20, 60, 0.25) !important; 
-            padding: 24px !important; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.85) !important;
+            border: 1px solid rgba(220, 20, 60, 0.35) !important; 
+            padding: 32px 28px !important; 
+            box-shadow: 0 60px 120px rgba(0,0,0,0.9) !important;
             background: linear-gradient(135deg, #1a0a0f 0%, #110710 100%) !important;
         }
         .tixly-swal-actions { 
             gap: 12px !important; 
             width: 100% !important; 
             border-top: 1px solid rgba(255,255,255,0.06) !important; 
-            padding-top: 20px !important; 
-            margin-top: 24px !important; 
+            padding-top: 24px !important; 
+            margin-top: 28px !important; 
             display: flex !important;
-            justify-content: flex-end !important;
+            justify-content: center !important;
+            flex-wrap: wrap !important;
         }
         .tixly-swal-confirm { 
             background: linear-gradient(135deg, #dc143c, #8b0000) !important; 
             color: #fff !important; 
             border: none !important; 
             border-radius: 12px !important; 
-            padding: 12px 28px !important; 
+            padding: 14px 40px !important; 
             font-weight: 800 !important; 
-            font-size: 14px !important; 
+            font-size: 15px !important; 
             cursor: pointer !important; 
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
             font-family: 'Inter', sans-serif !important;
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.25) !important;
+            min-width: 140px !important;
         }
         .tixly-swal-confirm:hover { 
             transform: translateY(-2px) !important; 
@@ -716,21 +791,23 @@
             opacity: 0.9 !important;
         }
         .tixly-swal-cancel { 
-            background: rgba(255, 255, 255, 0.05) !important; 
-            color: rgba(255, 255, 255, 0.6) !important; 
-            border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+            background: rgba(255, 255, 255, 0.1) !important; 
+            color: rgba(255, 255, 255, 0.8) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.15) !important; 
             border-radius: 12px !important; 
-            padding: 12px 28px !important; 
+            padding: 14px 40px !important; 
             font-weight: 700 !important; 
-            font-size: 14px !important; 
+            font-size: 15px !important; 
             cursor: pointer !important; 
             transition: all 0.2s !important;
             font-family: 'Inter', sans-serif !important;
+            min-width: 140px !important;
         }
         .tixly-swal-cancel:hover { 
-            background: rgba(255, 255, 255, 0.1) !important; 
+            background: rgba(255, 255, 255, 0.15) !important; 
             color: #fff !important; 
-            border-color: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-1px) !important;
         }
     </style>
 
