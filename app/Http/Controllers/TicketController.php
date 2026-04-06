@@ -84,18 +84,14 @@ class TicketController extends Controller
             abort(403);
         }
 
-        // Generate QR jika belum ada
-        if (!$ticket->qr_code || !Storage::disk('public')->exists($ticket->qr_code)) {
-            $this->generateQrCode($ticket);
-            $ticket->refresh();
-        }
+        $ticket->load('ticketType.event', 'order.user');
+        
+        // Explicitly get ALL tickets in this transaction to ensure none are missed
+        $ticketsInOrder = Ticket::where('transaction_id', $ticket->transaction_id)
+            ->with(['ticketType.event'])
+            ->get();
 
-        $ticket->load('ticketType.event', 'order');
-
-        // Gunakan asset() dengan path relatif ke public disk
-        $qrCodeUrl = asset('storage/' . $ticket->qr_code);
-
-        return view('tickets.view', compact('ticket', 'qrCodeUrl'));
+        return view('tickets.view', compact('ticket', 'ticketsInOrder'));
     }
 
     /**
@@ -248,8 +244,14 @@ class TicketController extends Controller
             abort(403);
         }
 
-        $ticket->load(['ticketType.event', 'order.user']);
-        return view('admin.tickets.show', compact('ticket'));
+        $ticket->load(['ticketType.event', 'order.user', 'order.tickets.ticketType']);
+        
+        $transactionId = $ticket->transaction_id;
+        $orderTickets = $ticket->order->tickets;
+        $totalTicketsInOrder = $orderTickets->count();
+        $usedTicketsInOrder = $orderTickets->where('ticket_status', 'Used')->count();
+
+        return view('admin.tickets.show', compact('ticket', 'totalTicketsInOrder', 'usedTicketsInOrder', 'orderTickets'));
     }
 
     /**
@@ -286,17 +288,31 @@ class TicketController extends Controller
 
         try {
             $ticketId = $ticket->ticket_id;
+            $order = $ticket->order;
+            $priceToSubtract = $ticket->ticketType->price ?? 0;
             
-            // Optional: delete associated QR code file if it exists
+            // Delete associated QR code file if it exists
             if ($ticket->qr_code && Storage::disk('public')->exists($ticket->qr_code)) {
                 Storage::disk('public')->delete($ticket->qr_code);
             }
 
+            // Perform deletion
             $ticket->delete();
+
+            // IF ORDER EXISTS, SYNC THE TOTALS
+            if ($order) {
+                // Update total ticket count
+                $order->total_ticket = max(0, $order->total_ticket - 1);
+                
+                // Update total amount
+                $order->total_amount = max(0, $order->total_amount - $priceToSubtract);
+                
+                $order->save();
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => "Ticket #{$ticketId} has been deleted successfully."
+                'message' => "Ticket #{$ticketId} has been deleted successfully and order totals updated."
             ]);
         } catch (\Exception $e) {
             return response()->json([

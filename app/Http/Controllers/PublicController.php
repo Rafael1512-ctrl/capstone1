@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketMail;
 use App\Models\Order;
+use Illuminate\Support\Str;
 
 class PublicController extends Controller
 {
@@ -77,6 +78,7 @@ class PublicController extends Controller
         }
 
         try {
+            $user = Auth::user();
             DB::beginTransaction();
             // Disable foreign key checks to handle circular dependency created by the stored procedure
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -91,10 +93,31 @@ class PublicController extends Controller
             ]);
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            // Check if multiple tickets need to be created (if stored procedure didn't)
+            $order = Order::where('user_id', $user->user_id)
+                ->orderBy('payment_date', 'desc')
+                ->first();
+            
+            if ($order) {
+                $currentTicketCount = DB::table('ticket')->where('transaction_id', $order->transaction_id)->count();
+                if ($currentTicketCount < $request->quantity) {
+                    for ($i = $currentTicketCount; $i < $request->quantity; $i++) {
+                        DB::table('ticket')->insert([
+                            'ticket_id' => 'TIX-' . strtoupper(Str::random(10)),
+                            'event_id' => $event->event_id,
+                            'ticket_type_id' => $ticketType->id,
+                            'ticket_status' => 'Active', // Public checkout sets status to Verified immediately
+                            'transaction_id' => $order->transaction_id,
+                            'qr_code' => ''
+                        ]);
+                    }
+                }
+            }
+
             DB::commit();
 
-            // Send Ticket to Email
-            $user = Auth::user();
+            // Refresh order with all tickets for email
             $latestOrder = Order::where('user_id', $user->user_id)
                 ->with(['tickets.ticketType', 'tickets.event', 'event'])
                 ->orderBy('payment_date', 'desc')

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketMail;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -32,6 +33,9 @@ class OrderController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
+            
+            // Create the initial transaction and first ticket
             DB::statement("CALL AddTransaction(?, ?, ?, ?, ?, ?)", [
                 Auth::user()->user_id,
                 $event->event_id,
@@ -45,28 +49,50 @@ class OrderController extends Controller
                 ->orderBy('payment_date', 'desc')
                 ->first();
 
+            // Check how many tickets were created by the procedure
+            $currentTicketCount = DB::table('ticket')->where('transaction_id', $order->transaction_id)->count();
+            
+            // If the procedure only created 1 ticket but quantity is more, create the rest
+            if ($currentTicketCount < $validated['quantity'] && $order) {
+                $firstTicket = DB::table('ticket')->where('transaction_id', $order->transaction_id)->first();
+                for ($i = $currentTicketCount; $i < $validated['quantity']; $i++) {
+                    DB::table('ticket')->insert([
+                        'ticket_id' => 'TIX-' . strtoupper(Str::random(10)),
+                        'event_id' => $event->event_id,
+                        'ticket_type_id' => $validated['ticket_type_id'],
+                        'ticket_status' => 'Pending',
+                        'transaction_id' => $order->transaction_id,
+                        'qr_code' => ''
+                    ]);
+                }
+            }
+
+            DB::commit();
             return redirect()->route('orders.show', $order->transaction_id)->with('success', 'Order created successfully!');
         } catch (\Exception $e) {
+            DB::rollBack();
             return back()->with('error', 'Failed to create order. ' . $e->getMessage());
         }
     }
 
     public function show($transaction_id)
     {
-        $order = Order::with(['user'])->findOrFail($transaction_id);
+        $order = Order::with(['user', 'event'])->findOrFail($transaction_id);
 
         if ($order->user_id !== Auth::user()->user_id && !Auth::user()->isAdmin()) {
             abort(403);
         }
         
-        $ticket = DB::table('ticket')
+        $tickets = DB::table('ticket')
             ->join('ticket_type', 'ticket.ticket_type_id', '=', 'ticket_type.id')
             ->join('acara', 'ticket.event_id', '=', 'acara.event_id')
             ->where('ticket.transaction_id', $transaction_id)
-            ->select('ticket.*', 'ticket_type.name as ticket_type_name', 'acara.title as event_title')
-            ->first();
+            ->select('ticket.*', 'ticket_type.name as ticket_type_name', 'acara.title as event_title', 'ticket_type.price as ticket_price')
+            ->get();
 
-        return view('orders.show', compact('order', 'ticket'));
+        $ticket = $tickets->first(); // For backward compatibility in some view parts
+
+        return view('orders.show', compact('order', 'tickets', 'ticket'));
     }
 
     public function index()

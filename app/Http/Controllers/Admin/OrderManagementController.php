@@ -10,7 +10,7 @@ class OrderManagementController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['user', 'event'])->orderBy('transaction_date', 'desc')->paginate(20);
+        $orders = Order::with(['user', 'event'])->orderBy('payment_date', 'desc')->paginate(20);
         return view('admin.orders.index', compact('orders'));
     }
 

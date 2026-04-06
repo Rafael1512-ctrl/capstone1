@@ -1,71 +1,91 @@
 @extends('layouts.master')
 
 @section('content')
-<div class="container">
-    <div class="page-inner">
-        <div class="page-header">
-            <h4 class="page-title">Manage Orders</h4>
+<div class="container-fluid px-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1 text-dark">Order Management</h1>
+            <p class="text-muted small">Monitor and manage all customer transactions.</p>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">Order List</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Order Number</th>
-                                        <th>Customer</th>
-                                        <th>Event</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($orders as $order)
-                                        <tr>
-                                            <td>{{ $order->order_number }}</td>
-                                            <td>{{ $order->user->name }}</td>
-                                            <td>{{ $order->event->title }}</td>
-                                            <td>Rp{{ number_format($order->total_amount, 0, ',', '.') }}</td>
-                                            <td>
-                                                @php
-                                                    $badgeClass = match($order->status) {
-                                                        'paid' => 'badge-success',
-                                                        'pending' => 'badge-warning',
-                                                        'failed' => 'badge-danger',
-                                                        'expired', 'cancelled' => 'badge-secondary',
-                                                        default => 'badge-info'
-                                                    };
-                                                @endphp
-                                                <span class="badge {{ $badgeClass }}">{{ ucfirst($order->status) }}</span>
-                                            </td>
-                                            <td>{{ $order->created_at->format('d M Y H:i') }}</td>
-                                            <td>
-                                                <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-info">View</a>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="7" class="text-center">No orders found</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="mt-3">
-                            {{ $orders->links() }}
-                        </div>
-                    </div>
-                </div>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">All Transactions ({{ $orders->total() }})</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light text-muted small text-uppercase font-weight-bold">
+                        <tr>
+                            <th class="py-3 px-4">Transaction Details</th>
+                            <th class="py-3">Customer</th>
+                            <th class="py-3 text-center">Tickets</th>
+                            <th class="py-3">Amount</th>
+                            <th class="py-3 text-center">Status</th>
+                            <th class="py-3">Purchase Date & Time</th>
+                            <th class="py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($orders as $order)
+                            <tr>
+                                <td class="px-4 py-3 align-middle">
+                                    <div class="font-weight-bold text-dark">{{ substr($order->event->title ?? 'N/A', 0, 30) }}...</div>
+                                    <code class="text-primary small">#{{ $order->transaction_id }}</code>
+                                </td>
+                                <td class="py-3 align-middle">
+                                    <div class="font-weight-bold">{{ $order->user->name ?? 'Unknown User' }}</div>
+                                    <div class="small text-muted">{{ $order->user->email ?? 'N/A' }}</div>
+                                </td>
+                                <td class="py-3 align-middle text-center">
+                                    <div class="h5 mb-0 font-weight-bold text-primary">{{ $order->total_ticket }}</div>
+                                    <div class="text-muted small text-uppercase">Tickets</div>
+                                </td>
+                                <td class="py-3 align-middle">
+                                    <div class="font-weight-bold">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
+                                </td>
+                                <td class="py-3 align-middle text-center">
+                                    @php
+                                        $badgeClass = match($order->payment_status) {
+                                            'Verified' => 'bg-success',
+                                            'Pending' => 'bg-warning text-dark',
+                                            'Failed' => 'bg-danger',
+                                            default => 'bg-secondary'
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }} px-3 py-2" style="font-size: 10px;">{{ strtoupper($order->payment_status) }}</span>
+                                </td>
+                                <td class="py-3 align-middle">
+                                    <div class="font-weight-bold">{{ $order->payment_date ? $order->payment_date->format('d M Y') : '-' }}</div>
+                                    <div class="text-muted small">Time: {{ $order->payment_date ? $order->payment_date->format('H:i') : '-' }} WIB</div>
+                                </td>
+                                <td class="py-3 align-middle text-center">
+                                    <a href="{{ route('admin.orders.show', $order->transaction_id) }}" class="btn btn-outline-info btn-lg rounded-circle" title="View Detail (Lihat Tiket)" style="width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">No orders found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
+            
+            @if($orders->fields ?? false && $orders->hasPages())
+                <div class="p-4 border-top">
+                    {{ $orders->links('pagination::bootstrap-4') }}
+                </div>
+            @endif
         </div>
     </div>
 </div>
+
+<style>
+    .table td { vertical-align: middle; }
+    .btn-outline-info:hover { color: #fff !important; }
+</style>
 @endsection
