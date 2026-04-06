@@ -236,6 +236,9 @@
                                         <label class="small mb-0">Mulai:</label>
                                         <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm" 
                                             required style="width: auto;">
+                                        <label class="small mb-0 ms-2">Selesai:</label>
+                                        <input type="datetime-local" name="batch1_ended_at" class="form-control form-control-sm" 
+                                            style="width: auto;">
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -280,6 +283,9 @@
                                         <label class="small mb-0">Mulai:</label>
                                         <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm" 
                                             required style="width: auto;">
+                                        <label class="small mb-0 ms-2">Selesai:</label>
+                                        <input type="datetime-local" name="batch2_ended_at" class="form-control form-control-sm" 
+                                            style="width: auto;">
                                     </div>
                                 </div>
                                 <div class="card-body">

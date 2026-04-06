@@ -1,6 +1,6 @@
 @extends('layouts.headerconcert.masterconcert')
 
-@section('title', (isset($event) ? $event->title : 'Concert Details') . ' | LuxTix')
+@section('title', (isset($event) ? $event->title : 'Concert Details') . ' | Tixly')
 @section('meta_description', isset($event) ? $event->description : 'Join us for an unforgettable concert experience.')
 
 @section('ExtraCSS')
@@ -155,5 +155,5 @@
     $footerButtonLink = (!$isOverdue && isset($event)) ? route('public.ticket.show', $event->event_id) : '#';
     $footerButtonText = $isOverdue ? 'Event Passed' : 'Get Your Ticket';
     $footerSlogan = $isOverdue ? 'SALES CLOSED' : 'GET YOUR TICKETS NOW';
-    $footerCopyright = 'LuxTix';
+    $footerCopyright = 'Tixly';
 @endphp

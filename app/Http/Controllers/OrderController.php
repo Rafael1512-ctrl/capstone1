@@ -17,8 +17,11 @@ class OrderController extends Controller
 {
     public function create(Event $event)
     {
+        $activeBatch = $event->active_batch;
+        
         $ticketTypes = DB::table('ticket_type')
             ->where('event_id', $event->event_id)
+            ->where('batch_number', $activeBatch)
             ->get();
 
         return view('orders.create', compact('event', 'ticketTypes'));

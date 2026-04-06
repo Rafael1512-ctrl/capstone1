@@ -1,4 +1,4 @@
-# LuxTix Event Management & Ticketing Platform
+# Tixly Event Management & Ticketing Platform
 
 ## Project Overview
 
@@ -667,7 +667,7 @@ User:
 
 ```env
 MAIL_MAILER=log          # Use log driver for testing
-MAIL_FROM_ADDRESS=noreply@luxtix.com
+MAIL_FROM_ADDRESS=noreply@tixly.com
 ```
 
 **Testing Emails:**

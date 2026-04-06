@@ -328,7 +328,7 @@
                                     $amountStr = str_pad($ticketType->price, 10, '0', STR_PAD_LEFT);
                                     $randomSalt = strtoupper(Str::random(12));
                                     // Simulated dynamic QRIS payload including amount and a unique salt
-                                    $qrisPayload = "00020101021226590014ID.LINKAJA.WWW01189360050" . $amountStr . "2202" . $randomSalt . "5204541153033605802ID5914LUXTIX%20OFFICIAL6007JAKARTA6105123456304CA5A";
+                                    $qrisPayload = "00020101021226590014ID.LINKAJA.WWW01189360050" . $amountStr . "2202" . $randomSalt . "5204541153033605802ID5914TIXLY%20OFFICIAL6007JAKARTA6105123456304CA5A";
                                 @endphp
                                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data={{ urlencode($qrisPayload) }}" alt="QRIS" style="width: 220px; height: 220px;">
                             </div>
@@ -430,13 +430,13 @@
 
     @include('layouts.headerconcert.footer', [
         'footerDate' => 'Secure Transaction',
-        'footerLocation' => 'LuxTix Official',
+        'footerLocation' => 'Tixly Official',
         'footerLocationClass' => 'text-warning',
         'footerSlogan' => 'Easy and Secure Payment',
         'footerSloganClass' => '',
         'footerButtonText' => 'Cancel Order',
         'footerButtonLink' => route('public.ticket.show', $event->event_id),
-        'footerCopyright' => 'LuxTix © 2026. All rights reserved.'
+        'footerCopyright' => 'Tixly © 2026. All rights reserved.'
     ])
 
     <script src="{{ asset('concert-assets/js/vendor/jquery-1.12.4.min.js') }}"></script>

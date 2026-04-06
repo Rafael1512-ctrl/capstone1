@@ -15,7 +15,7 @@
     @else
         {{-- User belum login, tampilkan landing page --}}
         <div class="text-center py-5">
-            <h1 class="display-4 mb-4">🎫 Welcome to LuxTix</h1>
+            <h1 class="display-4 mb-4">🎫 Welcome to Tixly</h1>
             <p class="lead mb-5">Platform Penjualan Tiket Konser & Event Terbaik</p>
             
             <div class="row g-4 mb-5 justify-content-center">

@@ -1,4 +1,4 @@
-# LuxTix Platform - Quick Start Guide
+# Tixly Platform - Quick Start Guide
 
 ## ⚡ 5-Minute Setup
 

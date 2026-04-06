@@ -211,10 +211,17 @@
                                         <div class="card bg-dark text-white border-primary">
                                             <div class="card-header border-primary d-flex justify-content-between align-items-center">
                                                 <div class="card-title text-primary">Batch 1 - Pengaturan Waktu</div>
-                                                <div class="form-group mb-0">
-                                                    <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
-                                                    <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
-                                                        required value="{{ old('batch1_start_at') }}">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="form-group mb-0">
+                                                        <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                        <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
+                                                            required value="{{ old('batch1_start_at') }}">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label class="mb-0">Selesai Penjualan</label>
+                                                        <input type="datetime-local" name="batch1_ended_at" class="form-control form-control-sm @error('batch1_ended_at') is-invalid @enderror" 
+                                                            value="{{ old('batch1_ended_at') }}">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="card-body">
@@ -255,10 +262,17 @@
                                         <div class="card bg-dark text-white border-info">
                                             <div class="card-header border-info d-flex justify-content-between align-items-center">
                                                 <div class="card-title text-info">Batch 2 - Pengaturan Waktu</div>
-                                                <div class="form-group mb-0">
-                                                    <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
-                                                    <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
-                                                        required value="{{ old('batch2_start_at') }}">
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="form-group mb-0">
+                                                        <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                        <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
+                                                            required value="{{ old('batch2_start_at') }}">
+                                                    </div>
+                                                    <div class="form-group mb-0">
+                                                        <label class="mb-0">Selesai Penjualan</label>
+                                                        <input type="datetime-local" name="batch2_ended_at" class="form-control form-control-sm @error('batch2_ended_at') is-invalid @enderror" 
+                                                            value="{{ old('batch2_ended_at') }}">
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="card-body">

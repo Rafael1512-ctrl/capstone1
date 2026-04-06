@@ -32,14 +32,27 @@
         .ticket-card {
             background-color: #1a1a1a;
             border-radius: 10px;
-            padding: 25px 20px;
+            padding: 40px 20px 30px 20px;
             margin-bottom: 30px;
             border: 1px solid #333;
             transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
         }
         .ticket-card:hover {
             border-color: rgba(220,20,60,0.6);
             transform: translateY(-5px);
+        }
+        .ticket-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .ticket-footer {
+            margin-top: auto;
+            padding-top: 20px;
         }
         .ticket-price {
             font-size: 36px;
@@ -143,6 +156,83 @@
                         <span class="d-block text-primary text-uppercase mb-2" style="letter-spacing: 2px;">Premium Packages</span>
                         <h3 class="wow fadeInRight" data-wow-duration="1s" data-wow-delay=".3s" style="color:#fff; font-size: 45px;">Choose Your Experience</h3>
                         <div class="line mx-auto" style="width: 80px; height: 3px; background: #dc143c; margin-top: 20px;"></div>
+                        
+                        @php
+                            $activeBatch = $event->active_batch;
+                            $targetTime = null;
+                            $countdownLabel = "";
+
+                            if ($activeBatch == 1) {
+                                $targetTime = $event->batch1_ended_at;
+                                $countdownLabel = "Batch 1 Ends In";
+                            } elseif ($activeBatch == 2) {
+                                $targetTime = $event->batch2_ended_at;
+                                $countdownLabel = "Batch 2 Ends In";
+                            } elseif ($event->batch1_ended_at && $event->batch1_ended_at->isPast() && $event->batch2_start_at && now()->isBefore($event->batch2_start_at)) {
+                                $targetTime = $event->batch2_start_at;
+                                $countdownLabel = "Batch 2 Starts In";
+                            }
+                        @endphp
+
+                        @if($targetTime)
+                            <div class="countdown_wrapper text-center mt-5 mb-5 wow fadeInUp" data-wow-duration="1s" data-wow-delay=".4s">
+                                <span class="d-block text-white-50 text-uppercase mb-3" style="letter-spacing: 3px; font-weight: 600; font-size: 14px;">{{ $countdownLabel }}</span>
+                                <div id="main-countdown" class="d-flex justify-content-center align-items-baseline" style="gap: 20px;">
+                                    <div class="timer-unit">
+                                        <span id="days" class="d-block font-weight-bold" style="font-size: 45px; color: #dc143c; line-height: 1;">00</span>
+                                        <small class="text-white-50 text-uppercase" style="font-size: 10px; letter-spacing: 1px;">Days</small>
+                                    </div>
+                                    <span class="timer-separator" style="font-size: 30px; color: #333; line-height: 1;">:</span>
+                                    <div class="timer-unit">
+                                        <span id="hours" class="d-block font-weight-bold" style="font-size: 45px; color: #dc143c; line-height: 1;">00</span>
+                                        <small class="text-white-50 text-uppercase" style="font-size: 10px; letter-spacing: 1px;">Hours</small>
+                                    </div>
+                                    <span class="timer-separator" style="font-size: 30px; color: #333; line-height: 1;">:</span>
+                                    <div class="timer-unit">
+                                        <span id="minutes" class="d-block font-weight-bold" style="font-size: 45px; color: #dc143c; line-height: 1;">00</span>
+                                        <small class="text-white-50 text-uppercase" style="font-size: 10px; letter-spacing: 1px;">Mins</small>
+                                    </div>
+                                    <span class="timer-separator" style="font-size: 30px; color: #333; line-height: 1;">:</span>
+                                    <div class="timer-unit">
+                                        <span id="seconds" class="d-block font-weight-bold" style="font-size: 45px; color: #dc143c; line-height: 1;">00</span>
+                                        <small class="text-white-50 text-uppercase" style="font-size: 10px; letter-spacing: 1px;">Secs</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    const targetDate = new Date("{{ $targetTime->format('Y-m-d H:i:s') }}").getTime();
+                                    
+                                    function updateTimer() {
+                                        const now = new Date().getTime();
+                                        const distance = targetDate - now;
+
+                                        if (distance < 0) {
+                                            document.getElementById('days').innerHTML = "00";
+                                            document.getElementById('hours').innerHTML = "00";
+                                            document.getElementById('minutes').innerHTML = "00";
+                                            document.getElementById('seconds').innerHTML = "00";
+                                            setTimeout(() => window.location.reload(), 2000);
+                                            return;
+                                        }
+
+                                        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                        const s = Math.floor((distance % (1000 * 60)) / 1000);
+
+                                        if(document.getElementById('days')) document.getElementById('days').innerHTML = d < 10 ? '0' + d : d;
+                                        if(document.getElementById('hours')) document.getElementById('hours').innerHTML = h < 10 ? '0' + h : h;
+                                        if(document.getElementById('minutes')) document.getElementById('minutes').innerHTML = m < 10 ? '0' + m : m;
+                                        if(document.getElementById('seconds')) document.getElementById('seconds').innerHTML = s < 10 ? '0' + s : s;
+                                    }
+
+                                    updateTimer();
+                                    setInterval(updateTimer, 1000);
+                                });
+                            </script>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -224,29 +314,37 @@
                                             Batch {{ $batchNum }}
                                         </div>
                                         
-                                        <div class="ticket-title @if($cat == 'Regular') text-primary @elseif($cat == 'VIP') text-warning @else text-danger @endif">
-                                            @if($cat == 'VVIP') <i class="fa fa-crown mr-2"></i> @endif {{ $cat }}
-                                        </div>
-                                        <div class="ticket-price">RP {{ number_format($price, 0, ',', '.') }}</div>
-                                        
-                                        @if($remaining <= 0)
-                                            <div class="alert alert-danger bg-transparent border-danger text-danger mt-4 py-2 small">
-                                                <i class="fa fa-exclamation-circle"></i> Tiket Kategori {{ $cat }} Habis.
+                                        <div class="ticket-content">
+                                            <div class="ticket-title @if($cat == 'Regular') text-primary @elseif($cat == 'VIP') text-warning @else text-danger @endif">
+                                                @if($cat == 'VVIP') <i class="fa fa-crown mr-2"></i> @endif {{ $cat }}
                                             </div>
-                                            <button class="buy-btn mt-3" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
-                                        @else
-                                            <p class="text-light mb-0">Tersedia: <strong>{{ $remaining }}</strong> tiket</p>
-                                            <ul class="ticket-features text-left mt-4">
-                                                <li><i class="fa fa-check"></i> Entry for {{ $event->title }}</li>
-                                                <li><i class="fa fa-check"></i> {{ $cat }} Experience</li>
-                                                @if($cat == 'VIP')
-                                                    <li><i class="fa fa-check"></i> Standard Benefits</li>
-                                                @elseif($cat == 'VVIP')
-                                                    <li><i class="fa fa-check"></i> Front Row & Lounge Access</li>
-                                                @endif
-                                            </ul>
-                                            <a href="{{ route('public.checkout.show', [$event->event_id, $ticketType->id]) }}" class="buy-btn mt-3 text-white">Beli Sekarang</a>
-                                        @endif
+                                            <div class="ticket-price">RP {{ number_format($price, 0, ',', '.') }}</div>
+                                            
+                                            @if($remaining <= 0)
+                                                <div class="alert alert-danger bg-transparent border-danger text-danger mt-4 py-2 small">
+                                                    <i class="fa fa-exclamation-circle"></i> Tiket Kategori {{ $cat }} Habis.
+                                                </div>
+                                            @else
+                                                <p class="text-light mb-0">Tersedia: <strong>{{ $remaining }}</strong> tiket</p>
+                                                <ul class="ticket-features text-left mt-4">
+                                                    <li><i class="fa fa-check"></i> Entry for {{ $event->title }}</li>
+                                                    <li><i class="fa fa-check"></i> {{ $cat }} Experience</li>
+                                                    @if($cat == 'VIP')
+                                                        <li><i class="fa fa-check"></i> Standard Benefits</li>
+                                                    @elseif($cat == 'VVIP')
+                                                        <li><i class="fa fa-check"></i> Front Row & Lounge Access</li>
+                                                    @endif
+                                                </ul>
+                                            @endif
+                                        </div>
+
+                                        <div class="ticket-footer">
+                                            @if($remaining <= 0)
+                                                <button class="buy-btn" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
+                                            @else
+                                                <a href="{{ route('public.checkout.show', [$event->event_id, $ticketType->id]) }}" class="buy-btn text-white">Beli Sekarang</a>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             @endif
@@ -285,7 +383,7 @@
         'footerSloganClass' => '',
         'footerButtonText' => 'Back to Home',
         'footerButtonLink' => route('home'),
-        'footerCopyright' => 'Official Concert Tours. All rights reserved.'
+        'footerCopyright' => 'Tixly © 2026. All rights reserved.'
     ])
     <!-- footer_end  -->
 

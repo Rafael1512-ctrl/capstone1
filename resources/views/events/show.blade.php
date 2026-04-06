@@ -213,6 +213,52 @@
                             <h5 class="card-title">Tipe & Harga Tiket</h5>
                         </div>
                         <div class="card-body">
+                            @php
+                                $activeBatch = $event->active_batch;
+                                $targetTime = null;
+                                $countdownLabel = "";
+
+                                if ($activeBatch == 1) {
+                                    $targetTime = $event->batch1_ended_at;
+                                    $countdownLabel = "Batch 1 Berakhir:";
+                                } elseif ($activeBatch == 2) {
+                                    $targetTime = $event->batch2_ended_at;
+                                    $countdownLabel = "Batch 2 Berakhir:";
+                                } elseif ($event->batch1_ended_at && $event->batch1_ended_at->isPast() && $event->batch2_start_at && $event->batch2_start_at->isFuture()) {
+                                    $targetTime = $event->batch2_start_at;
+                                    $countdownLabel = "Batch 2 Dimulai:";
+                                }
+                            @endphp
+
+                            @if($targetTime)
+                                <div class="batch-countdown mb-4 p-3 rounded" style="background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-white-50 small text-uppercase font-weight-bold">{{ $countdownLabel }}</span>
+                                        <span id="batch-timer" class="h4 mb-0 text-danger font-weight-bold">00:00:00</span>
+                                    </div>
+                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        const targetDate = new Date("{{ $targetTime->format('Y-m-d H:i:s') }}").getTime();
+                                        const timerElement = document.getElementById('batch-timer');
+                                        
+                                        function updateTimer() {
+                                            const now = new Date().getTime();
+                                            const distance = targetDate - now;
+                                            if (distance < 0) {
+                                                timerElement.innerHTML = "SELESAI";
+                                                return;
+                                            }
+                                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                            timerElement.innerHTML = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+                                        }
+                                        updateTimer(); setInterval(updateTimer, 1000);
+                                    });
+                                </script>
+                            @endif
+
                             @if ($event->ticketTypes->count() > 0)
                                 @foreach ($event->ticketTypes as $type)
                                     <div class="ticket-type-item mb-3">

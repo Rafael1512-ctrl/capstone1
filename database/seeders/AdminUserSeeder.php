@@ -49,7 +49,7 @@ class AdminUserSeeder extends Seeder
         } else {
             User::create([
                 'user_id' => 'ORG-' . Str::random(5),
-                'name' => 'Organizer LuxTix',
+                'name' => 'Organizer Tixly',
                 'email' => $organizerEmail,
                 'pass' => Hash::make('organizer123'),
                 'role_id' => 2,

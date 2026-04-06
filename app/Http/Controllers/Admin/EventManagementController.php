@@ -92,6 +92,7 @@ class EventManagementController extends Controller
             'status' => 'required|in:draft,published,cancelled',
             
             'batch1_start_at'   => ['required', 'date'],
+            'batch1_ended_at'   => ['nullable', 'date', 'after:batch1_start_at'],
             'batch1_regular_quota' => ['required', 'integer', 'min:0'],
             'batch1_regular_price' => ['required', 'integer', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -100,6 +101,7 @@ class EventManagementController extends Controller
             'batch1_vvip_price'   => ['required', 'integer', 'min:0'],
 
             'batch2_start_at'   => ['required', 'date', 'after:batch1_start_at'],
+            'batch2_ended_at'   => ['nullable', 'date', 'after:batch2_start_at'],
             'batch2_regular_quota' => ['required', 'integer', 'min:0'],
             'batch2_regular_price' => ['required', 'integer', 'min:0'],
             'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -252,6 +254,7 @@ class EventManagementController extends Controller
             'status' => 'required|in:draft,published,cancelled',
             
             'batch1_start_at'   => ['required', 'date'],
+            'batch1_ended_at'   => ['nullable', 'date', 'after:batch1_start_at'],
             'batch1_regular_quota' => ['required', 'integer', 'min:0'],
             'batch1_regular_price' => ['required', 'integer', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -260,6 +263,7 @@ class EventManagementController extends Controller
             'batch1_vvip_price'   => ['required', 'integer', 'min:0'],
 
             'batch2_start_at'   => ['required', 'date', 'after:batch1_start_at'],
+            'batch2_ended_at'   => ['nullable', 'date', 'after:batch2_start_at'],
             'batch2_regular_quota' => ['required', 'integer', 'min:0'],
             'batch2_regular_price' => ['required', 'integer', 'min:0'],
             'batch2_vip_quota'    => ['required', 'integer', 'min:0'],

@@ -71,14 +71,16 @@ class EventController extends Controller
             'organizer_id'      => ['nullable', 'exists:users,user_id'],
             
             'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i'],
+            'batch1_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
             'batch1_regular_quota' => ['required', 'integer', 'min:0'],
             'batch1_regular_price' => ['required', 'numeric', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
             'batch1_vip_price'    => ['required', 'numeric', 'min:0'],
             'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch1_vvip_price'   => ['required', 'numeric', 'min:0'],
-
+ 
             'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
+            'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at'],
             'batch2_regular_quota' => ['required', 'integer', 'min:0'],
             'batch2_regular_price' => ['required', 'numeric', 'min:0'],
             'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -208,6 +210,7 @@ class EventController extends Controller
             'organizer_id'      => ['nullable', 'exists:users,user_id'],
             
             'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i'],
+            'batch1_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
             'batch1_regular_quota' => ['required', 'integer', 'min:0'],
             'batch1_regular_price' => ['required', 'numeric', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -216,6 +219,7 @@ class EventController extends Controller
             'batch1_vvip_price'   => ['required', 'numeric', 'min:0'],
 
             'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
+            'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at'],
             'batch2_regular_quota' => ['required', 'integer', 'min:0'],
             'batch2_regular_price' => ['required', 'numeric', 'min:0'],
             'batch2_vip_quota'    => ['required', 'integer', 'min:0'],

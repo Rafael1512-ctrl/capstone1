@@ -262,7 +262,13 @@
                                         <label class="small mb-0 text-white">Mulai:</label>
                                         <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
                                             required style="width: auto;" value="{{ old('batch1_start_at', $event->batch1_start_at ? $event->batch1_start_at->format('Y-m-d\TH:i') : '') }}">
+                                        
+                                        <label class="small mb-0 text-white ms-2">Selesai:</label>
+                                        <input type="datetime-local" name="batch1_ended_at" class="form-control form-control-sm @error('batch1_ended_at') is-invalid @enderror" 
+                                            style="width: auto;" value="{{ old('batch1_ended_at', $event->batch1_ended_at ? $event->batch1_ended_at->format('Y-m-d\TH:i') : '') }}">
+                                        
                                         @error('batch1_start_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
+                                        @error('batch1_ended_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
                                         
                                         @if(!$event->batch1_ended_at && $event->batch1_start_at && $event->batch1_start_at->isPast())
                                             <button type="button" class="btn btn-danger btn-sm" 
@@ -341,7 +347,13 @@
                                         <label class="small mb-0 text-white">Mulai:</label>
                                         <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
                                             required style="width: auto;" value="{{ old('batch2_start_at', $event->batch2_start_at ? $event->batch2_start_at->format('Y-m-d\TH:i') : '') }}">
+                                        
+                                        <label class="small mb-0 text-white ms-2">Selesai:</label>
+                                        <input type="datetime-local" name="batch2_ended_at" class="form-control form-control-sm @error('batch2_ended_at') is-invalid @enderror" 
+                                            style="width: auto;" value="{{ old('batch2_ended_at', $event->batch2_ended_at ? $event->batch2_ended_at->format('Y-m-d\TH:i') : '') }}">
+
                                         @error('batch2_start_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
+                                        @error('batch2_ended_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
 
                                         @if(!$event->batch2_ended_at && $event->batch2_start_at && $event->batch2_start_at->isPast())
                                             <button type="button" class="btn btn-dark btn-sm" 
