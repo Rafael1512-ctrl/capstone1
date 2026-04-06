@@ -1,305 +1,223 @@
 @extends('layouts.master')
+@section('page_title', 'Dashboard')
 
 @section('content')
-    <div class="container-fluid px-4">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-            <div>
-                <h1 class="h3 mb-0 text-dark">Admin Dashboard</h1>
-                <p class="text-muted small">Selamat datang, {{ Auth::user()->name }}</p>
-            </div>
-            <div class="btn-group" role="group">
-                <a href="{{ route('tickets.scanner') }}" class="btn btn-dark">
-                    <i class="fas fa-clipboard-check"></i> GUEST CHECK-IN LIST
-                </a>
-                <a href="{{ route('admin.events.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Event Baru
-                </a>
-                <a href="{{ route('admin.events.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-list"></i> Kelola Event
-                </a>
-            </div>
+<div class="container-fluid px-2">
+
+    {{-- ── HERO HEADER ── --}}
+    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap" style="gap:16px;">
+        <div>
+            <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#dc143c;text-transform:uppercase;margin-bottom:6px;">Overview</div>
+            <h2 style="font-family:'DM Serif Display',serif;font-size:28px;font-weight:800;color:#fff;margin-bottom:4px;">
+                Admin <span style="background:linear-gradient(90deg,#dc143c,#ff4d6d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Dashboard</span>
+            </h2>
+            <p style="color:rgba(255,255,255,0.35);font-size:13px;margin:0;">Selamat datang kembali, <strong style="color:rgba(255,255,255,0.6);">{{ Auth::user()->name }}</strong></p>
         </div>
+        <div class="d-flex gap-2 flex-wrap" style="gap:10px;">
+            <a href="{{ route('admin.events.create') }}" class="btn btn-primary px-4 py-2" style="border-radius:10px;font-weight:700;">
+                <i class="fas fa-plus me-2"></i>Event Baru
+            </a>
+            <a href="{{ route('admin.events.index') }}" class="btn btn-secondary px-4 py-2" style="border-radius:10px;font-weight:700;">
+                <i class="fas fa-list me-2"></i>Kelola Event
+            </a>
+        </div>
+    </div>
 
-        <!-- Statistics Cards -->
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-primary">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted small mb-2">Total Revenue</p>
-                                <h2 class="h4 mb-0">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h2>
-                            </div>
-                            <div class="text-primary" style="font-size: 2rem;">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
+    {{-- ── STAT CARDS ── --}}
+    <div class="row g-3 mb-4">
+        @php
+        $stats = [
+            ['icon'=>'💰','label'=>'Total Revenue','val'=>'Rp '.number_format($totalRevenue/1000,0).'K','sub'=>'Hari ini: Rp '.number_format($todayRevenue,0,',','.'),'color'=>'rgba(220,20,60,0.12)','accent'=>'#dc143c'],
+            ['icon'=>'🎤','label'=>'Total Events','val'=>$totalEvents,'sub'=>'Dari '.$totalOrganizers.' organizer','color'=>'rgba(59,130,246,0.1)','accent'=>'#60a5fa'],
+            ['icon'=>'📦','label'=>'Total Orders','val'=>$totalOrders,'sub'=>'Paid: '.$paidOrders.' · Pending: '.$pendingOrders,'color'=>'rgba(34,197,94,0.1)','accent'=>'#22c55e'],
+            ['icon'=>'👥','label'=>'Total Users','val'=>$totalUsers,'sub'=>'Organizer: '.$totalOrganizers,'color'=>'rgba(251,191,36,0.1)','accent'=>'#fbbf24'],
+        ];
+        @endphp
+        @foreach($stats as $s)
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100" style="border-radius:18px;padding:4px;background:linear-gradient(135deg,rgba(220,20,60,0.05),rgba(0,0,0,0));border:1px solid rgba(255,255,255,0.06);">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div style="width:52px;height:52px;border-radius:14px;background:{{ $s['color'] }};display:flex;align-items:center;justify-content:center;font-size:22px;">{{ $s['icon'] }}</div>
+                        <div>
+                            <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);">{{ $s['label'] }}</div>
+                            <div style="font-size:26px;font-weight:800;color:#fff;line-height:1.1;">{{ $s['val'] }}</div>
                         </div>
-                        <small class="text-success">Hari ini: Rp {{ number_format($todayRevenue, 0, ',', '.') }}</small>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-success">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted small mb-2">Total Events</p>
-                                <h2 class="h4 mb-0">{{ $totalEvents }}</h2>
-                            </div>
-                            <div class="text-success" style="font-size: 2rem;">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                        </div>
-                        <small class="text-muted">Dari {{ $totalOrganizers }} organizer</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-info">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted small mb-2">Total Orders</p>
-                                <h2 class="h4 mb-0">{{ $totalOrders }}</h2>
-                            </div>
-                            <div class="text-info" style="font-size: 2rem;">
-                                <i class="fas fa-shopping-cart"></i>
-                            </div>
-                        </div>
-                        <small class="text-success">Dibayar: {{ $paidOrders }}</small>
-                        <small class="d-block text-warning">Pending: {{ $pendingOrders }}</small>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card border-left-warning">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted small mb-2">Total Users</p>
-                                <h2 class="h4 mb-0">{{ $totalUsers }}</h2>
-                            </div>
-                            <div class="text-warning" style="font-size: 2rem;">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        </div>
-                        <small class="text-muted">Organizer: {{ $totalOrganizers }}</small>
-                    </div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.3);padding-top:10px;border-top:1px solid rgba(255,255,255,0.05);">{{ $s['sub'] }}</div>
                 </div>
             </div>
         </div>
+        @endforeach
+    </div>
 
-        <!-- Month Revenue -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <p class="text-muted small mb-2">Revenue Bulan Ini</p>
-                        <h2 class="h3 text-success mb-0">Rp {{ number_format($monthRevenue, 0, ',', '.') }}</h2>
+    {{-- ── REVENUE MONTH + CHART ── --}}
+    <div class="row g-3 mb-4">
+        <div class="col-lg-3">
+            <div class="card h-100" style="border-radius:18px;">
+                <div class="card-body p-4 d-flex flex-column justify-content-center text-center">
+                    <div style="font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:12px;">Revenue Bulan Ini</div>
+                    <div style="font-size:30px;font-weight:800;color:#22c55e;line-height:1;">Rp {{ number_format($monthRevenue/1000000,1) }}M</div>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:8px;">Rp {{ number_format($monthRevenue,0,',','.') }}</div>
+                    <div style="height:4px;background:rgba(34,197,94,0.1);border-radius:4px;margin-top:16px;overflow:hidden;">
+                        <div style="height:100%;width:{{ min(100, round($monthRevenue/max(1,$totalRevenue)*100)) }}%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:4px;"></div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-8 mb-3">
-                <div class="card">
-                    <div class="card-header border-bottom d-flex justify-content-between">
-                        <h5 class="card-title mb-0">Penjualan 7 Hari Terakhir</h5>
-                        <a href="{{ route('admin.analytics.sales') }}" class="small">Lihat detail</a>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="salesChart"></canvas>
-                    </div>
+                    <div style="font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px;">{{ round($monthRevenue/max(1,$totalRevenue)*100) }}% dari total</div>
                 </div>
             </div>
         </div>
-
-        <!-- Events & Organizers -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-header border-bottom">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-trending-up text-success"></i> Top 5 Events
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @forelse($topEvents as $event)
-                                <a href="{{ route('admin.events.show', $event) }}"
-                                    class="list-group-item list-group-item-action d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-1">{{ $event->title }}</h6>
-                                        <small class="text-muted">
-                                            {{ $event->category?->name ?? 'Uncategorized' }}
-                                        </small>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="badge bg-success">{{ $event->orders_count }}</div>
-                                        <small class="d-block text-muted">orders</small>
-                                    </div>
-                                </a>
-                            @empty
-                                <p class="text-muted text-center py-3">Belum ada event</p>
-                            @endforelse
-                        </div>
-                    </div>
+        <div class="col-lg-9">
+            <div class="card" style="border-radius:18px;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div style="font-weight:800;font-size:15px;color:#fff;">📈 Penjualan 7 Hari Terakhir</div>
+                    <a href="{{ route('admin.analytics.sales') }}" style="font-size:12px;color:#dc143c;font-weight:700;text-decoration:none;">Lihat detail →</a>
                 </div>
-            </div>
-
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-header border-bottom">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-user-tie text-info"></i> Top 5 Organizers
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @forelse($topOrganizers as $organizer)
-                                <div class="list-group-item d-flex justify-content-between">
-                                    <div>
-                                        <h6 class="mb-1">{{ $organizer->name }}</h6>
-                                        <small class="text-muted">{{ $organizer->email }}</small>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="badge bg-primary">{{ $organizer->events_count }}</div>
-                                        <small class="d-block text-muted">events</small>
-                                    </div>
-                                </div>
-                            @empty
-                                <p class="text-muted text-center py-3">Belum ada organizer</p>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Analytics Links -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title mb-3">Analytics & Reports</h5>
-                        <div class="row">
-                            <div class="col-md-3 mb-2">
-                                <a href="{{ route('admin.analytics.sales') }}"
-                                    class="btn btn-outline-primary btn-block w-100">
-                                    <i class="fas fa-chart-bar"></i> Sales Analytics
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <a href="{{ route('admin.analytics.transactions') }}"
-                                    class="btn btn-outline-info btn-block w-100">
-                                    <i class="fas fa-exchange-alt"></i> Transactions
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <a href="{{ route('admin.analytics.event-performance') }}"
-                                    class="btn btn-outline-success btn-block w-100">
-                                    <i class="fas fa-star"></i> Event Performance
-                                </a>
-                            </div>
-                            <div class="col-md-3 mb-2">
-                                <a href="{{ route('admin.analytics.user-stats') }}"
-                                    class="btn btn-outline-warning btn-block w-100">
-                                    <i class="fas fa-user-chart"></i> User Stats
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                <div class="card-body">
+                    <canvas id="salesChart" style="height: 280px;"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <style>
-        .border-left-primary {
-            border-left: 4px solid #007bff !important;
-        }
+    {{-- ── TOP EVENTS + ORGANIZERS ── --}}
+    <div class="row g-3 mb-4">
+        <div class="col-lg-6">
+            <div class="card" style="border-radius:18px;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div style="font-weight:800;font-size:15px;color:#fff;">🔥 Top 5 Events</div>
+                    <a href="{{ route('admin.events.index') }}" style="font-size:12px;color:#dc143c;font-weight:700;text-decoration:none;">Lihat semua →</a>
+                </div>
+                <div class="card-body p-0">
+                    @forelse($topEvents as $i => $event)
+                    <a href="{{ route('admin.events.show', $event) }}" class="d-flex align-items-center gap-3 px-4 py-3 text-decoration-none"
+                       style="border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;" onmouseover="this.style.background='rgba(220,20,60,0.04)'" onmouseout="this.style.background='transparent'">
+                        <div style="width:28px;height:28px;border-radius:8px;background:rgba(220,20,60,0.1);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#dc143c;flex-shrink:0;">
+                            {{ $i+1 }}
+                        </div>
+                        <div class="flex-grow-1" style="overflow:hidden;">
+                            <div style="color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $event->title }}</div>
+                            <div style="color:rgba(255,255,255,0.3);font-size:11px;">{{ $event->category?->name ?? 'Uncategorized' }}</div>
+                        </div>
+                        <span style="background:rgba(34,197,94,0.12);color:#22c55e;border:1px solid rgba(34,197,94,0.25);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;flex-shrink:0;">
+                            {{ $event->orders_count }} orders
+                        </span>
+                    </a>
+                    @empty
+                    <div class="text-center py-4" style="color:rgba(255,255,255,0.2);font-size:13px;">Belum ada event</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
 
-        .border-left-success {
-            border-left: 4px solid #28a745 !important;
-        }
+        <div class="col-lg-6">
+            <div class="card" style="border-radius:18px;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div style="font-weight:800;font-size:15px;color:#fff;">🎭 Top 5 Organizers</div>
+                    <a href="{{ route('admin.users.organizers') }}" style="font-size:12px;color:#dc143c;font-weight:700;text-decoration:none;">Lihat semua →</a>
+                </div>
+                <div class="card-body p-0">
+                    @forelse($topOrganizers as $i => $organizer)
+                    <div class="d-flex align-items-center gap-3 px-4 py-3" style="border-bottom:1px solid rgba(255,255,255,0.04);">
+                        <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#dc143c,#8b0000);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0;">
+                            {{ strtoupper(substr($organizer->name,0,1)) }}
+                        </div>
+                        <div class="flex-grow-1" style="overflow:hidden;">
+                            <div style="color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $organizer->name }}</div>
+                            <div style="color:rgba(255,255,255,0.3);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $organizer->email }}</div>
+                        </div>
+                        <span style="background:rgba(59,130,246,0.12);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;flex-shrink:0;">
+                            {{ $organizer->events_count }} events
+                        </span>
+                    </div>
+                    @empty
+                    <div class="text-center py-4" style="color:rgba(255,255,255,0.2);font-size:13px;">Belum ada organizer</div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+    </div>
 
-        .border-left-info {
-            border-left: 4px solid #17a2b8 !important;
-        }
+    {{-- ── QUICK ACTIONS ── --}}
+    <div class="card mb-4" style="border-radius:18px;">
+        <div class="card-header">
+            <div style="font-weight:800;font-size:15px;color:#fff;">⚡ Quick Actions</div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                @php
+                $actions = [
+                    ['href'=>route('admin.analytics.sales'),'icon'=>'fas fa-chart-bar','label'=>'Sales Analytics','color'=>'#dc143c'],
+                    ['href'=>route('admin.analytics.transactions'),'icon'=>'fas fa-exchange-alt','label'=>'Transactions','color'=>'#60a5fa'],
+                    ['href'=>route('admin.analytics.event-performance'),'icon'=>'fas fa-star','label'=>'Event Performance','color'=>'#22c55e'],
+                    ['href'=>route('admin.analytics.user-stats'),'icon'=>'fas fa-user-chart','label'=>'User Stats','color'=>'#fbbf24'],
+                ];
+                @endphp
+                @foreach($actions as $a)
+                <div class="col-6 col-md-3">
+                    <a href="{{ $a['href'] }}" class="d-flex align-items-center gap-3 p-3 text-decoration-none"
+                       style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;transition:all 0.2s;"
+                       onmouseover="this.style.background='rgba(220,20,60,0.07)';this.style.borderColor='rgba(220,20,60,0.3)';"
+                       onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.borderColor='rgba(255,255,255,0.07)';">
+                        <i class="{{ $a['icon'] }}" style="color:{{ $a['color'] }};font-size:18px;width:20px;"></i>
+                        <span style="color:rgba(255,255,255,0.7);font-size:13px;font-weight:600;">{{ $a['label'] }}</span>
+                    </a>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
 
-        .border-left-warning {
-            border-left: 4px solid #ffc107 !important;
-        }
+</div>
 
-        .btn-block {
-            display: block !important;
-        }
-    </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const salesCtx = document.getElementById('salesChart').getContext('2d');
+const dates    = {!! json_encode($dailySales->pluck('date')) !!};
+const revenues = {!! json_encode($dailySales->pluck('revenue')) !!};
+const orders   = {!! json_encode($dailySales->pluck('orders')) !!};
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-    <script>
-        // Sales Chart
-        const salesCtx = document.getElementById('salesChart').getContext('2d');
-        const dates = {!! json_encode($dailySales->pluck('date')) !!};
-        const revenues = {!! json_encode($dailySales->pluck('revenue')) !!};
-        const orders = {!! json_encode($dailySales->pluck('orders')) !!};
-
-        new Chart(salesCtx, {
-            type: 'line',
-            data: {
-                labels: dates,
-                datasets: [{
-                        label: 'Revenue (Rp)',
-                        data: revenues,
-                        borderColor: '#28a745',
-                        backgroundColor: 'rgba(40, 167, 69, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Orders',
-                        data: orders,
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        tension: 0.4,
-                        fill: true,
-                        yAxisID: 'y1'
-                    }
-                ]
+new Chart(salesCtx, {
+    type: 'line',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'Revenue (Rp)',
+            data: revenues,
+            borderColor: '#dc143c',
+            backgroundColor: 'rgba(220,20,60,0.08)',
+            tension: 0.4, fill: true, yAxisID: 'y',
+            pointBackgroundColor: '#dc143c', pointRadius: 4,
+        }, {
+            label: 'Orders',
+            data: orders,
+            borderColor: '#60a5fa',
+            backgroundColor: 'rgba(96,165,250,0.06)',
+            tension: 0.4, fill: true, yAxisID: 'y1',
+            pointBackgroundColor: '#60a5fa', pointRadius: 4,
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { labels: { color: 'rgba(255,255,255,0.5)', font: { size: 12, weight: '700' } } },
+        },
+        scales: {
+            x: { ticks: { color: 'rgba(255,255,255,0.3)' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+            y: {
+                type: 'linear', position: 'left',
+                ticks: { color: 'rgba(255,255,255,0.3)' },
+                grid: { color: 'rgba(255,255,255,0.04)' },
+                title: { display: true, text: 'Revenue (Rp)', color: 'rgba(255,255,255,0.3)' }
             },
-            options: {
-                responsive: true,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                scales: {
-                    y: {
-                        type: 'linear',
-                        display: true,
-                        position: 'left',
-                        title: {
-                            display: true,
-                            text: 'Revenue (Rp)'
-                        }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'Orders'
-                        },
-                        grid: {
-                            drawOnChartArea: false,
-                        }
-                    }
-                }
+            y1: {
+                type: 'linear', position: 'right',
+                ticks: { color: 'rgba(255,255,255,0.3)' },
+                grid: { drawOnChartArea: false },
+                title: { display: true, text: 'Orders', color: 'rgba(255,255,255,0.3)' }
             }
-        });
-    </script>
+        }
+    }
+});
+</script>
 @endsection

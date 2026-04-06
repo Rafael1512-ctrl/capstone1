@@ -4,19 +4,19 @@
 <div class="container-fluid px-4 mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="h3 mb-1 text-dark">Order Management</h1>
+            <h1 class="h3 mb-1 text-white">Order Management</h1>
             <p class="text-muted small">Monitor and manage all customer transactions.</p>
         </div>
     </div>
 
     <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-primary">All Transactions ({{ $orders->total() }})</h6>
+        <div class="card-header py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-white">All Transactions ({{ $orders->total() }})</h6>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="bg-light text-muted small text-uppercase font-weight-bold">
+                    <thead>
                         <tr>
                             <th class="py-3 px-4">Transaction Details</th>
                             <th class="py-3">Customer</th>
@@ -31,15 +31,15 @@
                         @forelse($orders as $order)
                             <tr>
                                 <td class="px-4 py-3 align-middle">
-                                    <div class="font-weight-bold text-dark">{{ substr($order->event->title ?? 'N/A', 0, 30) }}...</div>
-                                    <code class="text-primary small">#{{ $order->transaction_id }}</code>
+                                    <div class="font-weight-bold text-white">{{ substr($order->event->title ?? 'N/A', 0, 30) }}...</div>
+                                    <code class="small" style="color: var(--tix-red);">#{{ $order->transaction_id }}</code>
                                 </td>
                                 <td class="py-3 align-middle">
                                     <div class="font-weight-bold">{{ $order->user->name ?? 'Unknown User' }}</div>
                                     <div class="small text-muted">{{ $order->user->email ?? 'N/A' }}</div>
                                 </td>
                                 <td class="py-3 align-middle text-center">
-                                    <div class="h5 mb-0 font-weight-bold text-primary">{{ $order->total_ticket }}</div>
+                                    <div class="h5 mb-0 font-weight-bold" style="color: var(--tix-red);">{{ $order->total_ticket }}</div>
                                     <div class="text-muted small text-uppercase">Tickets</div>
                                 </td>
                                 <td class="py-3 align-middle">

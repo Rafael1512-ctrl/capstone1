@@ -1,311 +1,131 @@
-<div class="main-header">
-    <div class="main-header-logo">
-        <!-- Logo Header -->
-        <div class="logo-header" data-background-color="dark">
-            <a href="/" class="logo">
-                <img src="{{ asset('assets/img/kaiadmin/logo_light.svg') }}" alt="navbar brand" class="navbar-brand"
-                    height="20" />
-            </a>
-        </div>
-        <!-- End Logo Header -->
-    </div>
-    <!-- Navbar Header -->
-    <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
-        <div class="container-fluid">
-            <nav class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <button type="submit" class="btn btn-search pe-1">
-                            <i class="fa fa-search search-icon"></i>
-                        </button>
-                    </div>
-                    <input type="text" placeholder="Search ..." class="form-control" />
-                </div>
-            </nav>
+<!-- Header — Dark Concert Theme -->
+<div class="main-header" id="tixly-header">
+    <nav class="navbar navbar-expand-lg px-4 d-flex align-items-center justify-content-between" style="height:64px;">
 
-            <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
-                <li class="nav-item topbar-icon dropdown hidden-caret d-flex d-lg-none">
-                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                        aria-expanded="false" aria-haspopup="true">
-                        <i class="fa fa-search"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-search animated fadeIn">
-                        <form class="navbar-left navbar-form nav-search">
-                            <div class="input-group">
-                                <input type="text" placeholder="Search ..." class="form-control" />
-                            </div>
+        <!-- Left: Page title breadcrumb -->
+        <div class="d-flex align-items-center gap-3">
+            <div style="font-size:11px; color:rgba(255,255,255,0.3); letter-spacing:1.5px; text-transform:uppercase;">
+                TIXLY <span style="color:rgba(220,20,60,0.6); margin: 0 6px;">›</span>
+                <span style="color:rgba(255,255,255,0.55);">Admin Panel</span>
+            </div>
+        </div>
+
+        <!-- Right: Actions -->
+        <ul class="navbar-nav ms-auto d-flex flex-row align-items-center" style="gap:8px; list-style:none; margin:0; padding:0;">
+
+            <!-- Live time -->
+            <li class="d-none d-lg-flex align-items-center" style="margin-right:8px;">
+                <span id="tixly-clock" style="font-size:12px; color:rgba(255,255,255,0.3); font-weight:600; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); border-radius:8px; padding:5px 12px;"></span>
+            </li>
+
+            <!-- User Dropdown -->
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle d-flex align-items-center gap-2 text-decoration-none"
+                   data-bs-toggle="dropdown" aria-expanded="false"
+                   style="padding:6px 14px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
+                    <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#dc143c,#8b0000);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0;">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    </div>
+                    <span style="color:#fff; font-weight:700; font-size:13px;">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                    <i class="fas fa-chevron-down" style="font-size:10px; color:rgba(255,255,255,0.4);"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" style="background:#1a0a0a; border:1px solid rgba(220,20,60,0.2); border-radius:14px; padding:8px; min-width:220px; margin-top:8px; box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+                    <li>
+                        <div class="px-3 py-2 mb-1" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+                            <div style="color:#fff; font-weight:700; font-size:14px;">{{ Auth::user()->name }}</div>
+                            <div style="color:rgba(255,255,255,0.4); font-size:11px;">{{ Auth::user()->email }}</div>
+                        </div>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('admin.profile.show') }}"
+                           style="color:rgba(255,255,255,0.7); border-radius:8px; padding:9px 12px; font-size:13px; font-weight:600; transition:all 0.2s;">
+                            <i class="fas fa-user-circle" style="color:#dc143c; width:16px;"></i> My Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('landing') }}" target="_blank"
+                           style="color:rgba(255,255,255,0.7); border-radius:8px; padding:9px 12px; font-size:13px; font-weight:600; transition:all 0.2s;">
+                            <i class="fas fa-external-link-alt" style="color:#dc143c; width:16px;"></i> View Website
+                        </a>
+                    </li>
+                    <li><hr style="border-color:rgba(255,255,255,0.07); margin:6px 0;"></li>
+                    <li>
+                        <form id="header-logout-form" method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="button" id="header-logout-btn"
+                                class="dropdown-item d-flex align-items-center gap-2 w-100 border-0"
+                                style="color:#ff6080; background:rgba(220,20,60,0.08); border-radius:8px; padding:9px 12px; font-size:13px; font-weight:700; cursor:pointer;">
+                                <i class="fas fa-sign-out-alt" style="width:16px;"></i> Logout
+                            </button>
                         </form>
-                    </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                    <a class="nav-link dropdown-toggle" href="#" id="messageDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-envelope"></i>
-                    </a>
-                    <ul class="dropdown-menu messages-notif-box animated fadeIn" aria-labelledby="messageDropdown">
-                        <li>
-                            <div class="dropdown-title d-flex justify-content-between align-items-center">
-                                Messages
-                                <a href="#" class="small">Mark all as read</a>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="message-notif-scroll scrollbar-outer">
-                                <div class="notif-center">
-                                    <a href="#">
-                                        <div class="notif-img">
-                                            <img src="{{ asset('assets/img/jm_denis.jpg') }}" alt="Img Profile" />
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="subject">Jimmy Denis</span>
-                                            <span class="block"> How are you ? </span>
-                                            <span class="time">5 minutes ago</span>
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notif-img">
-                                            <img src="{{ asset('assets/img/chadengle.jpg') }}" alt="Img Profile" />
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="subject">Chad</span>
-                                            <span class="block"> Ok, Thanks ! </span>
-                                            <span class="time">12 minutes ago</span>
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notif-img">
-                                            <img src="{{ asset('assets/img/mlane.jpg') }}" alt="Img Profile" />
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="subject">Jhon Doe</span>
-                                            <span class="block">
-                                                Ready for the meeting today...
-                                            </span>
-                                            <span class="time">12 minutes ago</span>
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notif-img">
-                                            <img src="{{ asset('assets/img/talha.jpg') }}" alt="Img Profile" />
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="subject">Talha</span>
-                                            <span class="block"> Hi, Apa Kabar ? </span>
-                                            <span class="time">17 minutes ago</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <a class="see-all" href="javascript:void(0);">See all messages<i
-                                    class="fa fa-angle-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                    <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button"
-                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-bell"></i>
-                        <span class="notification">4</span>
-                    </a>
-                    <ul class="dropdown-menu notif-box animated fadeIn" aria-labelledby="notifDropdown">
-                        <li>
-                            <div class="dropdown-title">
-                                You have 4 new notification
-                            </div>
-                        </li>
-                        <li>
-                            <div class="notif-scroll scrollbar-outer">
-                                <div class="notif-center">
-                                    <a href="#">
-                                        <div class="notif-icon notif-primary">
-                                            <i class="fa fa-user-plus"></i>
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="block"> New user registered </span>
-                                            <span class="time">5 minutes ago</span>
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notif-icon notif-success">
-                                            <i class="fa fa-comment"></i>
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="block">
-                                                Rahmad commented on Admin
-                                            </span>
-                                            <span class="time">12 minutes ago</span>
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notif-img">
-                                            <img src="{{ asset('assets/img/profile2.jpg') }}" alt="Img Profile" />
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="block">
-                                                Reza send messages to you
-                                            </span>
-                                            <span class="time">12 minutes ago</span>
-                                        </div>
-                                    </a>
-                                    <a href="#">
-                                        <div class="notif-icon notif-danger">
-                                            <i class="fa fa-heart"></i>
-                                        </div>
-                                        <div class="notif-content">
-                                            <span class="block"> Farrah liked Admin </span>
-                                            <span class="time">17 minutes ago</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <a class="see-all" href="javascript:void(0);">See all notifications<i
-                                    class="fa fa-angle-right"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item topbar-icon dropdown hidden-caret">
-                    <a class="nav-link" data-bs-toggle="dropdown" href="#" aria-expanded="false">
-                        <i class="fas fa-layer-group"></i>
-                    </a>
-                    <div class="dropdown-menu quick-actions animated fadeIn">
-                        <div class="quick-actions-header">
-                            <span class="title mb-1">Quick Actions</span>
-                            <span class="subtitle op-7">Shortcuts</span>
-                        </div>
-                        <div class="quick-actions-scroll scrollbar-outer">
-                            <div class="quick-actions-items">
-                                <div class="row m-0">
-                                    <a class="col-6 col-md-4 p-0" href="#">
-                                        <div class="quick-actions-item">
-                                            <div class="avatar-item bg-danger rounded-circle">
-                                                <i class="far fa-calendar-alt"></i>
-                                            </div>
-                                            <span class="text">Calendar</span>
-                                        </div>
-                                    </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
-                                        <div class="quick-actions-item">
-                                            <div class="avatar-item bg-warning rounded-circle">
-                                                <i class="fas fa-map"></i>
-                                            </div>
-                                            <span class="text">Maps</span>
-                                        </div>
-                                    </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
-                                        <div class="quick-actions-item">
-                                            <div class="avatar-item bg-info rounded-circle">
-                                                <i class="fas fa-file-excel"></i>
-                                            </div>
-                                            <span class="text">Reports</span>
-                                        </div>
-                                    </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
-                                        <div class="quick-actions-item">
-                                            <div class="avatar-item bg-success rounded-circle">
-                                                <i class="fas fa-envelope"></i>
-                                            </div>
-                                            <span class="text">Emails</span>
-                                        </div>
-                                    </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
-                                        <div class="quick-actions-item">
-                                            <div class="avatar-item bg-primary rounded-circle">
-                                                <i class="fas fa-file-invoice-dollar"></i>
-                                            </div>
-                                            <span class="text">Invoice</span>
-                                        </div>
-                                    </a>
-                                    <a class="col-6 col-md-4 p-0" href="#">
-                                        <div class="quick-actions-item">
-                                            <div class="avatar-item bg-secondary rounded-circle">
-                                                <i class="fas fa-credit-card"></i>
-                                            </div>
-                                            <span class="text">Payments</span>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <li class="nav-item topbar-user dropdown hidden-caret">
-                    <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#"
-                        aria-expanded="false">
-                        <div class="avatar-sm text-center">
-                            @if(Auth::user()->profile_photo)
-                                <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="..."
-                                    class="avatar-img rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" />
-                            @else
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1e293b&color=fff" alt="..."
-                                    class="avatar-img rounded-circle" />
-                            @endif
-                        </div>
-                        <span class="profile-username">
-                            <span class="op-7">Hi,</span>
-                            <span class="fw-bold">{{ Auth::user()->name }}</span>
-                        </span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user animated fadeIn">
-                        <div class="dropdown-user-scroll scrollbar-outer">
-                            <li>
-                                <div class="user-box">
-                                    <div class="avatar-lg">
-                                        @if(Auth::user()->profile_photo)
-                                            <img src="{{ asset('storage/' . Auth::user()->profile_photo) }}" alt="image profile"
-                                                class="avatar-img rounded" style="width: 80px; height: 80px; object-fit: cover;" />
-                                        @else
-                                            <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=1e293b&color=fff&size=80" alt="image profile"
-                                                class="avatar-img rounded" />
-                                        @endif
-                                    </div>
-                                    <div class="u-text">
-                                        <h4>{{ Auth::user()->name }}</h4>
-                                        <p class="text-muted">{{ Auth::user()->email }}</p>
-                                        <a href="{{ route('admin.profile.show') }}" class="btn btn-xs btn-secondary btn-sm">View Profile</a>
-                                        <form id="admin-logout-form" method="POST" action="{{ route('logout') }}" class="m-0 d-inline">
-                                            @csrf
-                                            <button type="button" class="btn btn-xs btn-danger btn-sm" id="admin-logout-btn">Logout</button>
-                                        </form>
-
-                                        <script>
-                                            document.addEventListener('DOMContentLoaded', function() {
-                                                const logoutBtn = document.getElementById('admin-logout-btn');
-                                                if (logoutBtn) {
-                                                    logoutBtn.addEventListener('click', function(e) {
-                                                        e.preventDefault();
-                                                        Swal.fire({
-                                                            title: 'End Session?',
-                                                            text: 'Are you sure you want to logout from the Admin Dashboard?',
-                                                            icon: 'warning',
-                                                            showCancelButton: true,
-                                                            confirmButtonColor: '#dc3545',
-                                                            cancelButtonColor: '#6c757d',
-                                                            confirmButtonText: 'Yes, Sign Out',
-                                                            cancelButtonText: 'Stay Logged In'
-                                                        }).then((result) => {
-                                                            if (result.isConfirmed) {
-                                                                document.getElementById('admin-logout-form').submit();
-                                                            }
-                                                        });
-                                                    });
-                                                }
-                                            });
-                                        </script>
-                                    </div>
-                                </div>
-                            </li>
-                        </div>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </nav>
-    <!-- End Navbar -->
 </div>
+
+<style>
+/* ════════════════════════════
+   TIXLY ADMIN HEADER
+   ════════════════════════════ */
+#tixly-header {
+    background: linear-gradient(90deg, #0d0d0d, #110508) !important;
+    border-bottom: 1px solid rgba(220,20,60,0.12) !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4) !important;
+}
+.dropdown-item:hover {
+    background: rgba(220,20,60,0.08) !important;
+    color: #fff !important;
+}
+</style>
+
+<script>
+// Live clock
+(function() {
+    function updateClock() {
+        const el = document.getElementById('tixly-clock');
+        if (!el) return;
+        const now = new Date();
+        el.textContent = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false }) + ' WIB';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Logout confirm
+        const logoutBtn = document.getElementById('header-logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                Swal.fire({
+                    html: `
+                        <div style="padding:10px 0;">
+                            <div style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,rgba(220,20,60,0.15),rgba(139,0,0,0.1));border:2px solid rgba(220,20,60,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;">🔐</div>
+                            <h3 style="color:#fff;font-weight:800;font-size:20px;margin-bottom:8px;font-family:'Inter',sans-serif;">End Session?</h3>
+                            <p style="color:rgba(255,255,255,0.4);font-size:14px;margin:0;line-height:1.6;">Yakin ingin logout dari<br><strong style="color:rgba(255,255,255,0.7);">Admin Dashboard TIXLY</strong>?</p>
+                        </div>
+                    `,
+                    background: 'linear-gradient(135deg, #1a0a0f 0%, #110710 100%)',
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-sign-out-alt" style="margin-right:6px;"></i>Ya, Logout',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        popup:         'tixly-swal-popup',
+                        confirmButton: 'btn btn-danger px-4 py-2 mx-1',
+                        cancelButton:  'btn btn-secondary px-4 py-2 mx-1',
+                        actions:       'tixly-swal-actions',
+                    },
+                    buttonsStyling: false,
+                    showClass:    { popup: 'animate__animated animate__fadeInDown animate__faster' },
+                    hideClass:    { popup: 'animate__animated animate__fadeOutUp animate__faster' },
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('header-logout-form').submit();
+                    }
+                });
+            });
+        }
+    });
+})();
+</script>
