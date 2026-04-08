@@ -31,7 +31,9 @@
                         <!-- Banner -->
                         @if ($event->banner_url)
                             @php
-                                if (str_starts_with($event->banner_url, '/storage/')) {
+                                if (filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
+                                    $bannerSrc = $event->banner_url;
+                                } elseif (str_starts_with($event->banner_url, '/storage/')) {
                                     $bannerSrc = $event->banner_url;
                                 } elseif (str_starts_with($event->banner_url, '/')) {
                                     $bannerSrc = asset($event->banner_url);
@@ -39,8 +41,8 @@
                                     $bannerSrc = Storage::url($event->banner_url);
                                 }
                             @endphp
-                            <img src="{{ $bannerSrc }}" class="card-img-top" alt="{{ $event->title }}"
-                                style="height: 400px; object-fit: cover;">
+                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($bannerSrc) }}" referrerpolicy="no-referrer" class="card-img-top" alt="{{ $event->title }}"
+                                style="height: 400px; object-fit: cover; ">
                         @else
                             <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
                                 style="height: 400px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">

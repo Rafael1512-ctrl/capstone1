@@ -56,7 +56,7 @@
                 <div class="card-body">
                     <p class="small text-muted">Gambar saat ini:</p>
                     <img src="{{ \App\Models\SiteSetting::getValue('about_us_image_url', asset('cardboard-assets/img/hero_1.jpg')) }}" 
-                         class="img-fluid rounded shadow-sm mb-3" alt="Preview" referrerpolicy="no-referrer">
+                         class="img-fluid rounded shadow-sm mb-3" alt="Preview" >
                     <div class="alert alert-info py-2 px-3 small border-0">
                         <i class="fas fa-info-circle me-1"></i> Perubahan akan langsung tampil di halaman depan website untuk pengunjung.
                     </div>

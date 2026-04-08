@@ -92,7 +92,7 @@
                                 <div class="performer-image mb-3" style="position: relative; overflow: hidden; border-radius: 10px; height: 300px;">
                                     @if (isset($performer['photo']) && $performer['photo'])
                                         <img src="{{ \App\Models\SiteSetting::forceDirectUrl(filter_var($performer['photo'], FILTER_VALIDATE_URL) ? $performer['photo'] : url($performer['photo'])) }}" alt="{{ $performer['name'] }}"
-                                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" referrerpolicy="no-referrer">
+                                            style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;" >
                                     @else
                                         <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #cc2b5e 0%, #753a88 100%); display: flex; align-items: center; justify-content: center; color: white;">
                                             <i class="fas fa-music fa-3x"></i>

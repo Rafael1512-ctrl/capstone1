@@ -28,7 +28,7 @@
                     @php
                         $bannerUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL) ? $event->banner_url : asset($event->banner_url);
                     @endphp
-                    <img src="{{ \App\Models\SiteSetting::forceDirectUrl($bannerUrl) }}" alt="Banner" class="img-fluid rounded shadow-sm" style="max-height: 400px; width: 100%; object-fit: cover;" referrerpolicy="no-referrer">
+                    <img src="{{ \App\Models\SiteSetting::forceDirectUrl($bannerUrl) }}" alt="Banner" class="img-fluid rounded shadow-sm" style="max-height: 400px; width: 100%; object-fit: cover;" >
                 @else
                     <div class="bg-light rounded p-4 text-center text-muted">
                         <i class="fas fa-image" style="font-size: 3rem;"></i>
@@ -140,7 +140,7 @@
                                         @endphp
                                         <img src="{{ \App\Models\SiteSetting::forceDirectUrl($photoUrl) }}" class="card-img-top"
                                             alt="{{ $performer['name'] }}"
-                                            style="height: 200px; object-fit: cover;" referrerpolicy="no-referrer">
+                                            style="height: 200px; object-fit: cover;" >
                                     @else
                                         <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
                                             style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">

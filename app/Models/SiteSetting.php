@@ -15,8 +15,28 @@ class SiteSetting extends Model
         
         // Auto-convert Google Drive links
         if (str_contains($value, 'drive.google.com')) {
-            if (preg_match('/[-\w]{25,}/', $value, $matches)) {
-                return "https://drive.google.com/thumbnail?id=" . $matches[0] . "&sz=w1000";
+            // If it's already a direct link or thumbnail, don't re-convert it
+            if (str_contains($value, 'drive.google.com/uc') || str_contains($value, 'drive.google.com/thumbnail')) {
+                return $value;
+            }
+
+            $id = null;
+            // Format: /d/FILE_ID/view
+            if (preg_match('/\/d\/([a-zA-Z0-9_-]{25,})/', $value, $matches)) {
+                $id = $matches[1];
+            } 
+            // Format: ?id=FILE_ID
+            elseif (preg_match('/[?&]id=([a-zA-Z0-9_-]{25,})/', $value, $matches)) {
+                $id = $matches[1];
+            }
+            // Fallback for raw ID strings mixed in
+            elseif (preg_match('/[-\w]{25,}/', $value, $matches)) {
+                $id = $matches[0];
+            }
+
+            if ($id) {
+                // thumbnail?id=... is often more reliable than uc?id=... for web display
+                return "https://drive.google.com/thumbnail?id=" . $id . "&sz=w1200";
             }
         }
         

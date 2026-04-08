@@ -290,6 +290,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/sales', [App\Http\Controllers\Admin\AnalyticsController::class, 'sales'])->name('sales');
             Route::get('/transactions', [App\Http\Controllers\Admin\AnalyticsController::class, 'transactions'])->name('transactions');
             Route::get('/event-performance', [App\Http\Controllers\Admin\AnalyticsController::class, 'eventPerformance'])->name('event-performance');
+            Route::get('/event-performance/{event}', [App\Http\Controllers\Admin\AnalyticsController::class, 'eventDetail'])->name('event-detail');
             Route::get('/revenue-category', [App\Http\Controllers\Admin\AnalyticsController::class, 'revenueByCategory'])->name('revenue-category');
             Route::get('/user-stats', [App\Http\Controllers\Admin\AnalyticsController::class, 'userStats'])->name('user-stats');
         });

@@ -121,7 +121,9 @@
     <!-- bradcam_area_start -->
     @php
         if ($event->banner_url) {
-            if (str_starts_with($event->banner_url, '/storage/')) {
+            if (filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
+                $bannerUrl = $event->banner_url;
+            } elseif (str_starts_with($event->banner_url, '/storage/')) {
                 $bannerUrl = $event->banner_url;
             } else {
                 $bannerUrl = Storage::url($event->banner_url);

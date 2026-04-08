@@ -34,51 +34,17 @@ class Banner extends Model
     ];
 
     /**
-     * Helper to convert GDrive sharing link to direct image link
-     */
-    private function convertToDirectGDrive($url)
-    {
-        if (!$url) return $url;
-        
-        // Check if it's already a direct download/thumbnail link
-        if (str_contains($url, 'drive.google.com/uc') || str_contains($url, 'drive.google.com/thumbnail')) {
-            return $url;
-        }
-
-        if (str_contains($url, 'drive.google.com')) {
-            $id = null;
-            
-            // Format: /d/FILE_ID/view
-            if (preg_match('/\/d\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
-                $id = $matches[1];
-            } 
-            // Format: ?id=FILE_ID
-            elseif (preg_match('/[?&]id=([a-zA-Z0-9_-]+)/', $url, $matches)) {
-                $id = $matches[1];
-            }
-
-            if ($id) {
-                // thumbnail?id=... is very reliable for public images
-                // h1200 for large background
-                return "https://drive.google.com/thumbnail?id=" . $id . "&sz=w1200";
-            }
-        }
-        return $url;
-    }
-
-    /**
      * Accessor for background_url to handle GDrive links.
      */
     public function getBackgroundUrlAttribute($value)
     {
-        return $this->convertToDirectGDrive($value);
+        return \App\Models\SiteSetting::forceDirectUrl($value);
     }
-
     /**
      * Accessor for image_url to handle GDrive links.
      */
     public function getImageUrlAttribute($value)
     {
-        return $this->convertToDirectGDrive($value);
+        return \App\Models\SiteSetting::forceDirectUrl($value);
     }
 }

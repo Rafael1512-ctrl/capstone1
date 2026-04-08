@@ -143,23 +143,65 @@
                                 <a href="{{ route('landing') }}" class="btn btn-primary px-4 rounded-pill">Cari Konser Lainnya</a>
                             </div>
                         </div>
-                    @else
+                    @elseif ($order->payment_status === 'Pending')
                         <div class="alert alert-warning border-0 shadow-sm d-flex align-items-center p-4">
-                            <i class="fas fa-exclamation-triangle fa-3x me-4 text-warning"></i>
+                            <i class="fas fa-clock fa-3x me-4 text-warning"></i>
                             <div>
                                 <h5 class="alert-heading mb-1">Menunggu Pembayaran</h5>
-                                <p class="mb-0">Pesanan telah dibuat. Silakan selesaikan pembayaran melalui <strong>{{ $order->payment_method }}</strong> Anda.</p>
+                                <p class="mb-0">Pesanan telah dibuat dan kuota tiket telah diamankan. Silakan selesaikan pembayaran melalui <strong>{{ $order->payment_method }}</strong> Anda.</p>
+                                <p class="mt-2 mb-0 fw-bold fs-5 text-danger" id="countdown-timer">Sisa Waktu: --:--</p>
                             </div>
                         </div>
                         <div class="row mt-5">
                             <div class="col-md-6">
-                                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100 rounded-pill py-3">Cek Status Pesanan</a>
+                                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100 rounded-pill py-3 font-weight-bold">Kembali ke Daftar Pesanan</a>
                             </div>
                             <div class="col-md-6">
                                 <form action="{{ route('orders.simulate-payment', $order->transaction_id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 font-weight-bold">Simulasi Bayar Sekarang</button>
+                                    <button type="submit" class="btn btn-primary w-100 rounded-pill py-3 font-weight-bold">Confirm & Pay Now (Simulasi)</button>
                                 </form>
+                            </div>
+                        </div>
+
+                        <script>
+                            @if(isset($order->expires_at))
+                                const escapesAt = new Date("{{ $order->expires_at->format('Y-m-d\TH:i:s') }}").getTime();
+                                const timer = setInterval(function() {
+                                    const now = new Date().getTime();
+                                    const distance = escapesAt - now;
+
+                                    if (distance < 0) {
+                                        clearInterval(timer);
+                                        document.getElementById('countdown-timer').innerHTML = "Waktu Habis!";
+                                        location.reload(); 
+                                        return;
+                                    }
+
+                                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                    
+                                    document.getElementById('countdown-timer').innerHTML = "Sisa Waktu: " + 
+                                        (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                                        (seconds < 10 ? "0" + seconds : seconds);
+                                }, 1000);
+                            @endif
+                        </script>
+                    @else
+                        {{-- Handle Cancelled / Expired status --}}
+                        <div class="alert alert-danger border-0 shadow-sm d-flex align-items-center p-4">
+                            <i class="fas fa-times-circle fa-3x me-4 text-danger"></i>
+                            <div>
+                                <h5 class="alert-heading mb-1">Pesanan Dibatalkan</h5>
+                                <p class="mb-0">Waktu pembayaran Anda telah habis atau pesanan dibatalkan. Kuota tiket ini telah dikembalikan ke sistem.</p>
+                            </div>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-md-6 text-md-end text-center mb-3 mb-md-0">
+                                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary w-100 rounded-pill py-3">Lihat Riwayat Pesanan</a>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <a href="{{ route('public.event.show', $order->event->event_id) }}" class="btn btn-primary w-100 rounded-pill py-3 font-weight-bold">Pesan Ulang Tiket</a>
                             </div>
                         </div>
                     @endif

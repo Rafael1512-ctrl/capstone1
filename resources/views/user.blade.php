@@ -268,13 +268,29 @@
                         <div class="banner-slider" id="bannerSlider">
                             @foreach($banners as $banner)
                                 @php
-                                    $bgUrl = $banner->background_url ?: asset('cardboard-assets/img/hero_1.jpg');
+                                    $rawBg = $banner->background_url;
+                                    if ($rawBg) {
+                                        if (filter_var($rawBg, FILTER_VALIDATE_URL)) {
+                                            $bgUrl = \App\Models\SiteSetting::forceDirectUrl($rawBg);
+                                        } else {
+                                            $bgUrl = str_starts_with($rawBg, '/') ? asset($rawBg) : Storage::url($rawBg);
+                                        }
+                                    } else {
+                                        $bgUrl = asset('cardboard-assets/img/hero_1.jpg');
+                                    }
+                                    
                                     $isFullImage = empty($banner->badge_text) && empty($banner->subtitle) && ($banner->title == ('Banner #' . $banner->id) || empty($banner->title));
                                 @endphp
                                 <div class="banner-slide" 
-                                     style="background-image: {{ $isFullImage ? '' : 'linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),' }} url('{{ $bgUrl }}'); cursor: {{ $banner->link_url ? 'pointer' : 'default' }};"
+                                     style="cursor: {{ $banner->link_url ? 'pointer' : 'default' }}; background-color: #1a0a0a;"
                                      @if($banner->link_url) onclick="window.location.href='{{ $banner->link_url }}'" @endif>
                                      
+                                     <img src="{{ $bgUrl }}" referrerpolicy="no-referrer" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; z-index: 0;" alt="Slide Background" >
+                                     
+                                     @if(!$isFullImage)
+                                        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)); z-index: 1;"></div>
+                                     @endif
+
                                      @if(!$isFullImage)
                                          <div class="banner-overlay"></div>
                                          <div class="banner-content">
@@ -292,9 +308,20 @@
                                                      </a>
                                                  </div>
                                                  <div class="col-md-5 d-none d-md-block text-right">
-                                                     @if($banner->image_url)
-                                                         <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);">
-                                                     @endif
+                                                         @php
+                                                             $rawImg = $banner->image_url;
+                                                             $bannerImgUrl = null;
+                                                             if ($rawImg) {
+                                                                 if (filter_var($rawImg, FILTER_VALIDATE_URL)) {
+                                                                     $bannerImgUrl = \App\Models\SiteSetting::forceDirectUrl($rawImg);
+                                                                 } else {
+                                                                     $bannerImgUrl = str_starts_with($rawImg, '/') ? asset($rawImg) : Storage::url($rawImg);
+                                                                 }
+                                                             }
+                                                         @endphp
+                                                         @if($bannerImgUrl)
+                                                             <img src="{{ $bannerImgUrl }}" alt="{{ $banner->title }}" style="width: 250px; height: 250px; object-fit: cover; border-radius: 20px; border: 5px solid rgba(255,255,255,0.3); transform: rotate(5deg);" referrerpolicy="no-referrer">
+                                                         @endif
                                                  </div>
                                              </div>
                                          </div>
@@ -362,19 +389,20 @@
                         <div class="col-12 col-sm-6 col-md-6 col-lg-3 mb-4 px-3 d-flex align-items-stretch concert-item" style="{{ $loopIndex >= 8 ? 'display: none !important;' : '' }}">
                             <div class="concert-card h-100 d-flex flex-column text-center shadow-sm rounded" style="width: 100%; min-width: 250px;">
                                 @php
-                                    // Handle both storage paths, external URLs, and fallback paths
-                                    if ($event->banner_url) {
-                                        if (filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
-                                            $imageUrl = $event->banner_url;
+                                    $rawBanner = $event->banner_url;
+                                    if ($rawBanner) {
+                                        if (filter_var($rawBanner, FILTER_VALIDATE_URL)) {
+                                            $imageUrl = \App\Models\SiteSetting::forceDirectUrl($rawBanner);
                                         } else {
-                                            $imageUrl = str_starts_with($event->banner_url, '/') ? asset($event->banner_url) : Storage::url($event->banner_url);
+                                            $path = str_starts_with($rawBanner, '/') ? asset($rawBanner) : Storage::url($rawBanner);
+                                            $imageUrl = $path;
                                         }
                                     } else {
                                         $imageUrl = asset('cardboard-assets/img/concert_' . (($loopIndex % 4) + 1) . '.jpg');
                                     }
                                 @endphp
-                                <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imageUrl) }}"
-                                    alt="{{ $event->title }}" class="img-fluid rounded-top" referrerpolicy="no-referrer">
+                                <img src="{{ $imageUrl }}" referrerpolicy="no-referrer"
+                                    alt="{{ $event->title }}" class="img-fluid rounded-top" >
 
                                 <div class="concert-card-body p-3 d-flex flex-column justify-content-between">
                                     <div>
@@ -478,9 +506,18 @@
             <div class="row">
                 <div class="col-lg-6 mb-4">
                     @php
-                        $aboutUsImage = \App\Models\SiteSetting::getValue('about_us_image_url', asset('cardboard-assets/img/hero_1.jpg'));
+                        $aboutUsRaw = \App\Models\SiteSetting::where('key', 'about_us_image_url')->first()?->value;
+                        if ($aboutUsRaw) {
+                            if (filter_var($aboutUsRaw, FILTER_VALIDATE_URL)) {
+                                $aboutUsImage = \App\Models\SiteSetting::forceDirectUrl($aboutUsRaw);
+                            } else {
+                                $aboutUsImage = str_starts_with($aboutUsRaw, '/') ? asset($aboutUsRaw) : Storage::url($aboutUsRaw);
+                            }
+                        } else {
+                            $aboutUsImage = asset('cardboard-assets/img/hero_1.jpg');
+                        }
                     @endphp
-                    <img src="{{ $aboutUsImage }}" alt="Concert Experience" class="img-fluid rounded shadow" referrerpolicy="no-referrer">
+                    <img src="{{ $aboutUsImage }}" alt="About Us" class="img-fluid rounded shadow" referrerpolicy="no-referrer">
                 </div>
 
                 <div class="col-lg-6 mb-4">

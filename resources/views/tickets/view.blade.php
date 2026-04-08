@@ -29,10 +29,10 @@
                         <div class="col-md-5 position-relative overflow-hidden" style="min-height: 400px;">
                             @php
                                 $event = $t->ticketType->event;
-                                $imgUrl = str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url);
+                                $imgUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL) ? $event->banner_url : (str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url));
                                 $transaction = $t->order;
                             @endphp
-                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="{{ $event->title }}" class="h-100 w-100" style="object-fit: cover; opacity: 0.8;" referrerpolicy="no-referrer">
+                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="{{ $event->title }}" class="h-100 w-100" style="object-fit: cover; opacity: 0.8;" >
                             <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(0,0,0,0.4), transparent, rgba(0,0,0,0.85));"></div>
                             
                             <div class="position-absolute p-4" style="bottom: 0; left: 0; width: 100%;">
@@ -86,11 +86,18 @@
                             <!-- Action Buttons -->
                             <div class="px-5 pb-4 mt-n2">
                                 <div class="row gutter-sm">
-                                    <div class="col-sm-5 mb-2">
+                                    <div class="col-sm-6 mb-2">
                                         <button class="btn btn-outline-light btn-block py-2 font-weight-bold" 
                                                 style="border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);"
                                                 onclick="printThisTicket('{{ $t->ticket_id }}')">
                                             <i class="fa fa-print mr-2"></i> PRINT TICKET
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 mb-2">
+                                        <button class="btn btn-outline-danger btn-block py-2 font-weight-bold" 
+                                                style="border-radius: 10px; border: 1px solid rgba(220,20,60,0.5); background: rgba(220,20,60,0.1); color: #ff6b6b;"
+                                                onclick="downloadTicketPDF('{{ $t->ticket_id }}')">
+                                            <i class="fa fa-file-pdf-o mr-2"></i> DOWNLOAD PDF
                                         </button>
                                     </div>
                                 </div>
@@ -109,11 +116,11 @@
                 <div class="print-stub">
                     @php
                         $event = $t->ticketType->event;
-                        $imgUrl = str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url);
+                        $imgUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL) ? $event->banner_url : (str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url));
                         $transaction = $t->order;
                     @endphp
                     <div class="print-stub-left">
-                        <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="Poster" referrerpolicy="no-referrer">
+                        <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="Poster" >
                         <div class="print-overlay"></div>
                         <div class="print-header">
                             <div class="print-badge">OFFICIAL ENTRY</div>
@@ -351,5 +358,43 @@
             };
         }
     }
+
+    // PDF Download using html2pdf
+    function downloadTicketPDF(ticketId) {
+        const targetPage = document.querySelector(`.print-ticket-${ticketId}`);
+        if (!targetPage) return;
+
+        // Clone the printable area to avoid breaking CSS visibility flow
+        const clone = targetPage.cloneNode(true);
+        clone.style.display = 'block';
+        clone.style.visibility = 'visible';
+        clone.style.margin = '0';
+        clone.style.padding = '0';
+        clone.style.width = '21cm';
+        clone.style.height = '9.5cm';
+
+        // Add a temporary container to render the clone exactly right
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.top = '-9999px';
+        tempContainer.style.left = '0';
+        tempContainer.style.width = '21cm';
+        tempContainer.appendChild(clone);
+        document.body.appendChild(tempContainer);
+
+        const opt = {
+            margin:       0,
+            filename:     `TIXLY_${ticketId}.pdf`,
+            image:        { type: 'jpeg', quality: 1 },
+            html2canvas:  { scale: 3, useCORS: true, letterRendering: true },
+            jsPDF:        { unit: 'in', format: [8.26, 3.74], orientation: 'landscape' } // Real ticket aspect
+        };
+
+        // Download and remove clone
+        html2pdf().set(opt).from(clone).save().then(() => {
+            document.body.removeChild(tempContainer);
+        });
+    }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 @endsection

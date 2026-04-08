@@ -181,12 +181,51 @@ class AnalyticsController extends Controller
             });
 
         $categories = DB::table('kategori_acara')->get();
-
-        return view('admin.analytics.event-performance', compact('events', 'categories'));
-    }
-
-    /**
-     * Revenue by category
+ 
+         return view('admin.analytics.event-performance', compact('events', 'categories'));
+     }
+ 
+     /**
+      * Get detailed analytics for a single event
+      */
+     public function eventDetail(Event $event)
+     {
+         $event->load(['ticketTypes', 'category', 'organizer']);
+ 
+         // Ticket Status Distribution
+         $ticketStats = [
+             'active' => $event->tickets()->where('ticket_status', 'Active')->count(),
+             'used' => $event->tickets()->where('ticket_status', 'Used')->count(),
+             'expired' => $event->tickets()->where('ticket_status', 'Expired')->count(),
+         ];
+ 
+         // Sales per Ticket Type
+         $ticketTypeSales = $event->ticketTypes->map(function ($type) {
+             return [
+                 'id' => $type->id,
+                 'name' => $type->name,
+                 'price' => $type->price,
+                 'total' => $type->quantity_total,
+                 'sold' => $type->quantity_sold,
+                 'revenue' => $type->quantity_sold * $type->price,
+             ];
+         });
+ 
+         // Daily Sales Trend for this specific event
+         $salesTrend = Order::whereHas('tickets', function ($q) use ($event) {
+                 $q->where('event_id', $event->event_id);
+             })
+             ->where('payment_status', 'Verified')
+             ->select(DB::raw('DATE(payment_date) as date'), DB::raw('SUM(total_ticket) as tickets'), DB::raw('SUM(total_amount) as revenue'))
+             ->groupBy('date')
+             ->orderBy('date')
+             ->get();
+ 
+         return view('admin.analytics.event-detail', compact('event', 'ticketStats', 'ticketTypeSales', 'salesTrend'));
+     }
+ 
+     /**
+      * Revenue by category
      */
     public function revenueByCategory()
     {

@@ -51,7 +51,8 @@
                             <th>Tiket Terjual</th>
                             <th>Fill Rate</th>
                             <th>Revenue</th>
-                            <th class="pe-4">Orders</th>
+                            <th>Orders</th>
+                            <th class="pe-4">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,14 +66,14 @@
                                 <td>{{ $event['category'] ?? '-' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($event['date'])->format('d M Y') }}</td>
                                 <td>
-                                    @if ($event['status'] === 'Tersedia')
-                                        <span class="badge bg-success">Tersedia</span>
-                                    @elseif($event['status'] === 'Draft')
-                                        <span class="badge bg-warning">Draft</span>
-                                    @elseif($event['status'] === 'Selesai')
-                                        <span class="badge bg-info">Selesai</span>
+                                    @if (in_array(strtolower($event['status']), ['active', 'published', 'tersedia']))
+                                        <span class="badge bg-success">Active</span>
+                                    @elseif(in_array(strtolower($event['status']), ['draft', 'non-active']))
+                                        <span class="badge bg-warning text-dark">Draft / Scheduled</span>
+                                    @elseif(strtolower($event['status']) === 'overdue' || strtolower($event['status']) === 'selesai')
+                                        <span class="badge bg-info">Selesai (Overdue)</span>
                                     @else
-                                        <span class="badge bg-danger">Batal</span>
+                                        <span class="badge bg-danger">{{ ucfirst($event['status']) }}</span>
                                     @endif
                                 </td>
                                 <td>{{ $event['total_available'] }}</td>
@@ -88,10 +89,15 @@
                                 <td>
                                     <span class="badge bg-primary">{{ $event['orders_count'] }}</span>
                                 </td>
+                                <td class="pe-4">
+                                    <a href="{{ route('admin.analytics.event-detail', $event['event_id']) }}" class="btn btn-sm btn-info text-white">
+                                        <i class="fas fa-eye"></i> Detail
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">Tidak ada event</td>
+                                <td colspan="10" class="text-center text-muted py-4">Tidak ada event</td>
                             </tr>
                         @endforelse
                     </tbody>
