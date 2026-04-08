@@ -33,6 +33,9 @@ class Event extends Model
         'batch1_regular_quota', 'batch1_regular_price', 'batch1_regular_sold',
         'batch1_vip_quota', 'batch1_vip_price', 'batch1_vip_sold',
         'batch1_vvip_quota', 'batch1_vvip_price', 'batch1_vvip_sold',
+        'batch1_regular_waiting_quota', 'batch1_vip_waiting_quota', 'batch1_vvip_waiting_quota',
+        'batch1_regular_waiting_sold', 'batch1_vip_waiting_sold', 'batch1_vvip_waiting_sold',
+        'batch1_waiting_start_at', 'batch1_waiting_ended_at',
         'batch2_start_at',
         'batch2_regular_quota', 'batch2_regular_price', 'batch2_regular_sold',
         'batch2_vip_quota', 'batch2_vip_price', 'batch2_vip_sold',
@@ -46,6 +49,8 @@ class Event extends Model
         'batch1_start_at' => 'datetime',
         'batch2_start_at' => 'datetime',
         'batch1_ended_at' => 'datetime',
+        'batch1_waiting_start_at' => 'datetime',
+        'batch1_waiting_ended_at' => 'datetime',
         'batch2_ended_at' => 'datetime',
     ];
 
@@ -84,9 +89,9 @@ class Event extends Model
             return null; // Batch 2 is already ended
         }
 
-        // Batch 1 active if started AND not ended
+        // Batch 1 active if started AND not ended (or waiting list is active)
         if ($now->isAfter($this->batch1_start_at)) {
-            if (!$this->batch1_ended_at || $this->batch1_ended_at->isFuture()) {
+            if (!$this->batch1_ended_at || $this->batch1_ended_at->isFuture() || ($this->batch1_waiting_ended_at && $this->batch1_waiting_ended_at->isFuture())) {
                 return 1;
             }
             // If Batch 1 is ended, but Batch 2 hasn't started yet, return null (waiting period)

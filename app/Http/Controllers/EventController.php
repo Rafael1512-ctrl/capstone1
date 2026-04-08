@@ -76,8 +76,10 @@ class EventController extends Controller
             'batch1_regular_price' => ['required', 'numeric', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
             'batch1_vip_price'    => ['required', 'numeric', 'min:0'],
-            'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch1_vvip_price'   => ['required', 'numeric', 'min:0'],
+            'batch1_regular_waiting_quota' => ['required', 'integer', 'min:0'],
+            'batch1_vip_waiting_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vvip_waiting_quota'   => ['required', 'integer', 'min:0'],
  
             'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
             'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at'],
@@ -139,7 +141,8 @@ class EventController extends Controller
                     'price' => $data['batch1_'.strtolower($cat).'_price'],
                     'quantity_total' => $data['batch1_'.strtolower($cat).'_quota'],
                     'quantity_sold' => 0,
-                    'batch_number' => 1
+                    'batch_number' => 1,
+                    'waiting_list_quota' => $data['batch1_'.strtolower($cat).'_waiting_quota'] ?? 0
                 ]);
 
                 // Batch 2
@@ -217,6 +220,9 @@ class EventController extends Controller
             'batch1_vip_price'    => ['required', 'numeric', 'min:0'],
             'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch1_vvip_price'   => ['required', 'numeric', 'min:0'],
+            'batch1_regular_waiting_quota' => ['required', 'integer', 'min:0'],
+            'batch1_vip_waiting_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vvip_waiting_quota'   => ['required', 'integer', 'min:0'],
 
             'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
             'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at'],
@@ -266,6 +272,7 @@ class EventController extends Controller
                 [
                     'price' => $data['batch1_'.strtolower($cat).'_price'],
                     'quantity_total' => $data['batch1_'.strtolower($cat).'_quota'],
+                    'waiting_list_quota' => $data['batch1_'.strtolower($cat).'_waiting_quota'] ?? 0,
                 ]
             );
 

@@ -99,6 +99,9 @@ class EventManagementController extends Controller
             'batch1_vip_price'    => ['required', 'integer', 'min:0'],
             'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch1_vvip_price'   => ['required', 'integer', 'min:0'],
+            'batch1_regular_waiting_quota' => ['required', 'integer', 'min:0'],
+            'batch1_vip_waiting_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vvip_waiting_quota'   => ['required', 'integer', 'min:0'],
 
             'batch2_start_at'   => ['required', 'date', 'after:batch1_start_at'],
             'batch2_ended_at'   => ['nullable', 'date', 'after:batch2_start_at'],
@@ -209,7 +212,8 @@ class EventManagementController extends Controller
                         'price' => $validated[$keyBase . '_price'],
                         'quantity_total' => $validated[$keyBase . '_quota'],
                         'quantity_sold' => 0,
-                        'batch_number' => $batch
+                        'batch_number' => $batch,
+                        'waiting_list_quota' => ($batch == 1) ? ($validated["batch1_" . strtolower($cat) . "_waiting_quota"] ?? 0) : 0
                     ]);
                 }
             }
@@ -261,6 +265,9 @@ class EventManagementController extends Controller
             'batch1_vip_price'    => ['required', 'integer', 'min:0'],
             'batch1_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch1_vvip_price'   => ['required', 'integer', 'min:0'],
+            'batch1_regular_waiting_quota' => ['required', 'integer', 'min:0'],
+            'batch1_vip_waiting_quota'    => ['required', 'integer', 'min:0'],
+            'batch1_vvip_waiting_quota'   => ['required', 'integer', 'min:0'],
 
             'batch2_start_at'   => ['required', 'date', 'after:batch1_start_at'],
             'batch2_ended_at'   => ['nullable', 'date', 'after:batch2_start_at'],
@@ -355,6 +362,7 @@ class EventManagementController extends Controller
                     [
                         'price' => $validated[$keyBase . '_price'],
                         'quantity_total' => $validated[$keyBase . '_quota'],
+                        'waiting_list_quota' => ($batch == 1) ? ($validated["batch1_" . strtolower($cat) . "_waiting_quota"] ?? 0) : 0,
                     ]
                 );
             }

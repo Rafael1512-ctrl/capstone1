@@ -274,6 +274,42 @@
                             </div>
                         </div>
 
+                        <!-- Waiting List Section -->
+                        <div class="col-md-12">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Waiting List (Batch 1) - Kuota</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="small text-muted mb-3">Tentukan kuota anggota waiting list per-kategori yang dapat mendaftar. Waiting list akan otomatis terbuka 5 menit setelah tiket reguler Batch 1 kategori terkait terjual habis, dan akan berlangsung selama 10 menit (atau sampai kuota habis).</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Kategori Tiket</th>
+                                                    <th>Kuota Waiting List *</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Regular</strong></td>
+                                                    <td><input type="number" name="batch1_regular_waiting_quota" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VIP</strong></td>
+                                                    <td><input type="number" name="batch1_vip_waiting_quota" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VVIP</strong></td>
+                                                    <td><input type="number" name="batch1_vvip_waiting_quota" class="form-control" required min="0" value="0"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Batch 2 -->
                         <div class="col-md-12">
                             <div class="card border-info">

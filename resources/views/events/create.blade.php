@@ -257,6 +257,42 @@
                                         </div>
                                     </div>
 
+                                    <!-- Waiting List Section -->
+                                    <div class="col-md-12 mb-4 text-white">
+                                        <div class="card bg-dark text-white border-warning">
+                                            <div class="card-header border-warning d-flex justify-content-between align-items-center">
+                                                <div class="card-title text-warning">Waiting List (Batch 1) - Kuota</div>
+                                            </div>
+                                            <div class="card-body">
+                                                <p class="small text-muted mb-3">Tentukan kuota anggota waiting list per-kategori yang dapat mendaftar. Waiting list akan otomatis terbuka 5 menit setelah tiket reguler Batch 1 kategori terkait terjual habis, dan akan berlangsung selama 10 menit (atau sampai kuota habis).</p>
+                                                <div class="table-responsive">
+                                                    <table class="table table-dark">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Kategori Tiket</th>
+                                                                <th>Kuota Waiting List <span class="text-danger">*</span></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td><strong>Regular</strong></td>
+                                                                <td><input type="number" name="batch1_regular_waiting_quota" class="form-control" required min="0" value="{{ old('batch1_regular_waiting_quota', 0) }}"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VIP</strong></td>
+                                                                <td><input type="number" name="batch1_vip_waiting_quota" class="form-control" required min="0" value="{{ old('batch1_vip_waiting_quota', 0) }}"></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td><strong>VVIP</strong></td>
+                                                                <td><input type="number" name="batch1_vvip_waiting_quota" class="form-control" required min="0" value="{{ old('batch1_vvip_waiting_quota', 0) }}"></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <!-- Batch 2 -->
                                     <div class="col-md-12 mb-4">
                                         <div class="card bg-dark text-white border-info">
