@@ -266,16 +266,6 @@
                                         <label class="small mb-0 text-white ms-2">Selesai:</label>
                                         <input type="datetime-local" name="batch1_ended_at" class="form-control form-control-sm @error('batch1_ended_at') is-invalid @enderror" 
                                             style="width: auto;" value="{{ old('batch1_ended_at', $event->batch1_ended_at ? $event->batch1_ended_at->format('Y-m-d\TH:i') : '') }}">
-                                        
-                                        @error('batch1_start_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
-                                        @error('batch1_ended_at') <div class="invalid-feedback d-block small mt-1">{{ $message }}</div> @enderror
-                                        
-                                        @if(!$event->batch1_ended_at && $event->batch1_start_at && $event->batch1_start_at->isPast())
-                                            <button type="button" class="btn btn-danger btn-sm" 
-                                                onclick="if(confirm('Akhiri Batch 1 secara manual?')){ document.getElementById('end-batch-1-form').submit(); }">
-                                                <i class="fas fa-stop-circle"></i> End Batch 1
-                                            </button>
-                                        @endif
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -294,11 +284,9 @@
                                                     <td><strong>Regular</strong></td>
                                                     <td>
                                                         <input type="number" name="batch1_regular_quota" class="form-control form-control-sm @error('batch1_regular_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_quota', $event->batch1_regular_quota) }}">
-                                                        @error('batch1_regular_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td>
                                                         <input type="number" name="batch1_regular_price" class="form-control form-control-sm @error('batch1_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_price', number_format($event->batch1_regular_price, 0, '', '')) }}">
-                                                        @error('batch1_regular_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td class="text-center">{{ $event->batch1_regular_sold }}</td>
                                                 </tr>
@@ -306,11 +294,9 @@
                                                     <td><strong>VIP</strong></td>
                                                     <td>
                                                         <input type="number" name="batch1_vip_quota" class="form-control form-control-sm @error('batch1_vip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_quota', $event->batch1_vip_quota) }}">
-                                                        @error('batch1_vip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td>
                                                         <input type="number" name="batch1_vip_price" class="form-control form-control-sm @error('batch1_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_price', number_format($event->batch1_vip_price, 0, '', '')) }}">
-                                                        @error('batch1_vip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td class="text-center">{{ $event->batch1_vip_sold }}</td>
                                                 </tr>
@@ -318,13 +304,47 @@
                                                     <td><strong>VVIP</strong></td>
                                                     <td>
                                                         <input type="number" name="batch1_vvip_quota" class="form-control form-control-sm @error('batch1_vvip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_quota', $event->batch1_vvip_quota) }}">
-                                                        @error('batch1_vvip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td>
                                                         <input type="number" name="batch1_vvip_price" class="form-control form-control-sm @error('batch1_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_price', number_format($event->batch1_vvip_price, 0, '', '')) }}">
-                                                        @error('batch1_vvip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td class="text-center">{{ $event->batch1_vvip_sold }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Waiting List Section -->
+                        <div class="col-md-12">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark py-2 d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">Waiting List (Batch 1) - Kuota</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="small text-muted mb-3">Tentukan kuota anggota waiting list per-kategori yang dapat mendaftar. Waiting list akan otomatis terbuka 5 menit setelah tiket reguler Batch 1 kategori terkait terjual habis, dan akan berlangsung selama 10 menit (atau sampai kuota habis).</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Kategori Tiket</th>
+                                                    <th>Kuota Waiting List *</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><strong>Regular</strong></td>
+                                                    <td><input type="number" name="batch1_regular_waiting_quota" class="form-control" required min="0" value="{{ old('batch1_regular_waiting_quota', $event->batch1_regular_waiting_quota) }}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VIP</strong></td>
+                                                    <td><input type="number" name="batch1_vip_waiting_quota" class="form-control" required min="0" value="{{ old('batch1_vip_waiting_quota', $event->batch1_vip_waiting_quota) }}"></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>VVIP</strong></td>
+                                                    <td><input type="number" name="batch1_vvip_waiting_quota" class="form-control" required min="0" value="{{ old('batch1_vvip_waiting_quota', $event->batch1_vvip_waiting_quota) }}"></td>
                                                 </tr>
                                             </tbody>
                                         </table>

@@ -340,7 +340,38 @@
 
                                         <div class="ticket-footer">
                                             @if($remaining <= 0)
-                                                <button class="buy-btn" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
+                                                @php
+                                                    $wlSoldColumn = "batch1_{$catLower}_waiting_sold";
+                                                    $wlQuotaColumn = "batch1_{$catLower}_waiting_quota";
+                                                    $wlQuota = ($batchNum == 1) ? ($event->$wlQuotaColumn ?? 0) : 0;
+                                                    $wlSold = ($batchNum == 1) ? ($event->$wlSoldColumn ?? 0) : 0;
+                                                    
+                                                    $now = now();
+                                                    $hasWlSchedule = !is_null($event->batch1_waiting_start_at);
+                                                    $wlStarted = $hasWlSchedule && $now->isAfter($event->batch1_waiting_start_at);
+                                                    $wlEnded = $event->batch1_waiting_ended_at && $now->isAfter($event->batch1_waiting_ended_at);
+                                                    $wlInPeriod = $wlStarted && !$wlEnded;
+                                                    
+                                                    $wlAvailable = ($batchNum == 1) ? max(0, $wlQuota - $wlSold) : 0;
+                                                @endphp
+
+                                                @if($batchNum == 1 && $wlAvailable > 0 && $wlInPeriod)
+                                                    <button class="buy-btn join-waiting-list-btn" 
+                                                        data-event-id="{{ $event->event_id }}" 
+                                                        data-ticket-type-id="{{ $ticketType->id }}"
+                                                        data-category="{{ $cat }}"
+                                                        style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+                                                        JOIN WAITING LIST
+                                                    </button>
+                                                @elseif($batchNum == 1 && $wlAvailable > 0 && !$wlStarted && $event->batch1_waiting_start_at)
+                                                    <button class="buy-btn wl-countdown-btn" 
+                                                        data-start="{{ $event->batch1_waiting_start_at->toIso8601String() }}"
+                                                        style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.8;" disabled>
+                                                        WAITING LIST IN: <span class="timer">05:00</span>
+                                                    </button>
+                                                @else
+                                                    <button class="buy-btn" style="background: #333; cursor: not-allowed; box-shadow: none; opacity: 0.6;" disabled>SOLD OUT</button>
+                                                @endif
                                             @else
                                                 <a href="{{ route('public.checkout.show', [$event->event_id, $ticketType->id]) }}" class="buy-btn text-white">Beli Sekarang</a>
                                             @endif
@@ -408,5 +439,112 @@
     <script src="{{ asset('concert-assets/js/tilt.jquery.js') }}"></script>
     <script src="{{ asset('concert-assets/js/plugins.js') }}"></script>
     <script src="{{ asset('concert-assets/js/main.js') }}"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+            $('.join-waiting-list-btn').on('click', function() {
+                const btn = $(this);
+                const eventId = btn.data('event-id');
+                const ticketTypeId = btn.data('ticket-type-id');
+                const category = btn.data('category');
+
+                Swal.fire({
+                    title: 'Join Waiting List?',
+                    text: `Anda akan terdaftar di waiting list ${category}. Jika Batch 2 dimulai, Anda akan diprioritaskan mendapat tiket dengan harga Batch 2.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f39c12',
+                    cancelButtonColor: '#333',
+                    confirmButtonText: 'Ya, Bergabung!',
+                    cancelButtonText: 'Batal',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/concert/${eventId}/waiting-list/${ticketTypeId}`,
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    Swal.fire({
+                                        title: 'Berhasil!',
+                                        text: response.message,
+                                        icon: 'success',
+                                        background: '#1a1a1a',
+                                        color: '#fff'
+                                    }).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Gagal',
+                                        text: response.message,
+                                        icon: 'error',
+                                        background: '#1a1a1a',
+                                        color: '#fff'
+                                    });
+                                }
+                            },
+                            error: function(xhr) {
+                                let msg = 'Terjadi kesalahan sistem.';
+                                if (xhr.status === 401) {
+                                    msg = 'Silakan login terlebih dahulu untuk bergabung dengan waiting list.';
+                                    window.location.href = '{{ route("login") }}';
+                                    return;
+                                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    msg = xhr.responseJSON.message;
+                                }
+                                Swal.fire({
+                                    title: 'Gagal',
+                                    text: msg,
+                                    icon: 'error',
+                                    background: '#1a1a1a',
+                                    color: '#fff'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+            });
+
+            // Waiting List Countdown Logic
+            const wlCountdownBtns = document.querySelectorAll('.wl-countdown-btn');
+            if (wlCountdownBtns.length > 0) {
+                const countdownInterval = setInterval(() => {
+                    let allFinished = true;
+                    wlCountdownBtns.forEach(btn => {
+                        const targetTime = new Date(btn.dataset.start).getTime();
+                        const now = new Date().getTime();
+                        const diff = targetTime - now;
+
+                        if (diff <= 0) {
+                            clearInterval(countdownInterval);
+                            window.location.reload();
+                        } else {
+                            allFinished = false;
+                            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                            
+                            const timerSpan = btn.querySelector('.timer');
+                            if (timerSpan) {
+                                timerSpan.innerText = 
+                                    (minutes < 10 ? "0" : "") + minutes + ":" + 
+                                    (seconds < 10 ? "0" : "") + seconds;
+                            }
+                        }
+                    });
+                    
+                    if (allFinished) {
+                        clearInterval(countdownInterval);
+                    }
+                }, 1000);
+            }
+        });
+    </script>
 </body>
 </html>

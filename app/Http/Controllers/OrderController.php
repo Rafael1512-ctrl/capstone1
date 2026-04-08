@@ -131,16 +131,31 @@ class OrderController extends Controller
             $ticketType = DB::table('ticket_type')->where('id', $ticket->ticket_type_id)->first();
             
             if ($ticketType) {
+                $newSold = $ticketType->quantity_sold + $order->total_ticket;
+                
                 // Update universal quantity_sold
                 DB::table('ticket_type')
                     ->where('id', $ticket->ticket_type_id)
-                    ->increment('quantity_sold', $order->total_ticket);
+                    ->update(['quantity_sold' => $newSold]);
                 
                 // Update batch-specific sold count in acara table
                 if ($ticketType->batch_number == 1) {
                     DB::table('acara')
                         ->where('event_id', $order->event_id)
                         ->increment('batch1_sold', $order->total_ticket);
+                        
+                    // Check if sold out to trigger waiting list automatically
+                    if ($newSold >= $ticketType->quantity_total) {
+                        $eventRecord = DB::table('acara')->where('event_id', $order->event_id)->first();
+                        if ($eventRecord && is_null($eventRecord->batch1_waiting_start_at)) {
+                            DB::table('acara')
+                                ->where('event_id', $order->event_id)
+                                ->update([
+                                    'batch1_waiting_start_at' => now()->addMinutes(5),
+                                    'batch1_waiting_ended_at' => now()->addMinutes(15)
+                                ]);
+                        }
+                    }
                 } elseif ($ticketType->batch_number == 2) {
                     DB::table('acara')
                         ->where('event_id', $order->event_id)

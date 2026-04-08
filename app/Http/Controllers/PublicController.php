@@ -187,4 +187,98 @@ class PublicController extends Controller
             ], 500);
         }
     }
+    /**
+     * Join the waiting list for Batch 1 transitioning to Batch 2
+     */
+    public function joinWaitingList(Request $request, Event $event, TicketType $ticketType)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'message' => 'Silakan login terlebih dahulu.'], 401);
+        }
+
+        if ($ticketType->event_id !== $event->event_id) {
+            return response()->json(['success' => false, 'message' => 'Invalid ticket type'], 400);
+        }
+
+        // Only allow waiting list for Batch 1
+        if ($ticketType->batch_number != 1) {
+            return response()->json(['success' => false, 'message' => 'Waiting list hanya tersedia untuk Batch 1.'], 403);
+        }
+
+        // Check if Batch 1 is actually sold out for this category
+        $catKey = strtolower($ticketType->name);
+        $soldColumn = "batch1_{$catKey}_sold";
+        $quotaColumn = "batch1_{$catKey}_quota";
+
+        if ($event->$soldColumn < $event->$quotaColumn) {
+            return response()->json(['success' => false, 'message' => 'Tiket Batch 1 masih tersedia.'], 400);
+        }
+
+        // Check waiting list dates
+        $now = now();
+        if ($event->batch1_waiting_start_at && $now->isBefore($event->batch1_waiting_start_at)) {
+            return response()->json(['success' => false, 'message' => 'Waiting list belum dimulai.'], 403);
+        }
+        if ($event->batch1_waiting_ended_at && $now->isAfter($event->batch1_waiting_ended_at)) {
+            return response()->json(['success' => false, 'message' => 'Waiting list sudah berakhir.'], 403);
+        }
+
+        // Check waiting list quota
+        $wlSoldColumn = "batch1_{$catKey}_waiting_sold";
+        $wlQuotaColumn = "batch1_{$catKey}_waiting_quota";
+
+        if ($event->$wlQuotaColumn <= 0) {
+            return response()->json(['success' => false, 'message' => 'Waiting list tidak tersedia untuk kategori ini.'], 403);
+        }
+
+        if ($event->$wlSoldColumn >= $event->$wlQuotaColumn) {
+            return response()->json(['success' => false, 'message' => 'Kuota waiting list sudah penuh.'], 403);
+        }
+
+        // Check if already in waiting list
+        $exists = DB::table('waiting_list')
+            ->where('event_id', $event->event_id)
+            ->where('ticket_type_id', $ticketType->id)
+            ->where('user_email', Auth::user()->email)
+            ->exists();
+
+        if ($exists) {
+            return response()->json(['success' => false, 'message' => 'Anda sudah terdaftar di waiting list ini.'], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Insert into waiting_list table
+            DB::table('waiting_list')->insert([
+                'event_id' => $event->event_id,
+                'ticket_type_id' => $ticketType->id,
+                'user_email' => Auth::user()->email,
+                'notified' => false,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Update counts
+            DB::table('acara')
+                ->where('event_id', $event->event_id)
+                ->increment($wlSoldColumn);
+
+            DB::table('ticket_type')
+                ->where('id', $ticketType->id)
+                ->increment('waiting_list_sold');
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Berhasil bergabung dengan waiting list! Anda akan mendapatkan prioritas tiket Batch 2 dengan harga Batch 2 saat dimulai.',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Waiting List Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal bergabung dengan waiting list: ' . $e->getMessage()], 500);
+        }
+    }
 }
