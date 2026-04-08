@@ -25,10 +25,12 @@ class Order extends Model
         'payment_status',
         'total_ticket',
         'total_amount',
+        'expires_at',
     ];
 
     protected $casts = [
         'payment_date' => 'datetime',
+        'expires_at' => 'datetime',
     ];
 
     public function user()
@@ -62,5 +64,10 @@ class Order extends Model
     public function isPending()
     {
         return $this->payment_status === 'Pending';
+    }
+
+    public function isExpired()
+    {
+        return $this->isPending() && $this->expires_at && $this->expires_at->isPast();
     }
 }

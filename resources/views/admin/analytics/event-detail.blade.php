@@ -122,8 +122,8 @@
                         <div class="row">
                             @foreach($ticketTypeSales as $type)
                                 @php
-                                    $tUsed = $event->tickets()->where('ticket_type_id', $type['id'])->where('ticket_status', 'Used')->count();
-                                    $tActive = $event->tickets()->where('ticket_type_id', $type['id'])->where('ticket_status', 'Active')->count();
+                                    $tUsed = $type['used'];
+                                    $tActive = $type['active'];
                                     $tTotal = max(1, $tUsed + $tActive);
                                     $percentUsed = ($tUsed / $tTotal) * 100;
                                 @endphp
@@ -185,8 +185,8 @@
                                 <tbody>
                                     @foreach($ticketTypeSales as $type)
                                         @php
-                                            $typeUsed = $event->tickets()->where('ticket_type_id', $type['id'])->where('ticket_status', 'Used')->count();
-                                            $typeActive = $event->tickets()->where('ticket_type_id', $type['id'])->where('ticket_status', 'Active')->count();
+                                            $typeUsed = $type['used'];
+                                            $typeActive = $type['active'];
                                         @endphp
                                         <tr>
                                             <td class="ps-4"><strong>{{ $type['name'] }}</strong></td>

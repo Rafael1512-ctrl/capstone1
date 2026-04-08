@@ -158,8 +158,10 @@ class AnalyticsController extends Controller
                 // In db_tixly, ticket_quota is on the event (acara) too?
                 // Let's check ticket_quota.
                 $totalTicketsAvailable = $event->ticket_quota;
-                // tickets() relationship on Event
-                $totalTicketsSold = $event->tickets()->count();
+                // tickets() relationship on Event - Only count Active and Used
+                $totalTicketsSold = $event->tickets()
+                    ->whereIn('ticket_status', ['Active', 'Used'])
+                    ->count();
                 $soldPercentage = $totalTicketsAvailable > 0 ? ($totalTicketsSold / $totalTicketsAvailable) * 100 : 0;
 
                 $revenue = $event->orders()
@@ -199,17 +201,32 @@ class AnalyticsController extends Controller
              'expired' => $event->tickets()->where('ticket_status', 'Expired')->count(),
          ];
  
-         // Sales per Ticket Type
-         $ticketTypeSales = $event->ticketTypes->map(function ($type) {
+         // Sales per Ticket Type - Grouped by Name to avoid duplicate cards for batches
+         $ticketTypeSales = $event->ticketTypes->groupBy('name')->map(function ($types, $name) use ($event) {
+             // Aggregate Used/Active counts for all ticket types in this group
+             $typeIds = $types->pluck('id')->toArray();
+             $usedCount = $event->tickets()->whereIn('ticket_type_id', $typeIds)->where('ticket_status', 'Used')->count();
+             $activeCount = $event->tickets()->whereIn('ticket_type_id', $typeIds)->where('ticket_status', 'Active')->count();
+             
+             $actualSold = $usedCount + $activeCount; // Only count those that are confirmed
+             $totalQuota = $types->sum('quantity_total');
+             
+             // Calculate revenue based on actual confirmed sold count
+             // Note: Using first type's price as they should be identical within the same group/name
+             $price = $types->first()->price;
+             $totalRevenue = $actualSold * $price;
+
              return [
-                 'id' => $type->id,
-                 'name' => $type->name,
-                 'price' => $type->price,
-                 'total' => $type->quantity_total,
-                 'sold' => $type->quantity_sold,
-                 'revenue' => $type->quantity_sold * $type->price,
+                 'name' => $name,
+                 'price' => $price,
+                 'total' => $totalQuota,
+                 'sold' => $actualSold,
+                 'revenue' => $totalRevenue,
+                 'used' => $usedCount,
+                 'active' => $activeCount,
+                 'ids' => $typeIds
              ];
-         });
+         })->values();
  
          // Daily Sales Trend for this specific event
          $salesTrend = Order::whereHas('tickets', function ($q) use ($event) {

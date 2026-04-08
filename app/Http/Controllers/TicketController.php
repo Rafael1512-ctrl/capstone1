@@ -354,7 +354,7 @@ class TicketController extends Controller
                 'event'              => $event,
                 'order'              => $order,
                 'ticket_count'       => $ticketsInOrder->count(),
-                'ticket_types'       => $types->map(fn($t, $name) => ['name' => $name, 'count' => $t->count()]),
+                'ticket_types'       => $types->map(fn($t, $name) => ['name' => $name, 'count' => $t->count(), 'id' => $t->first()->ticket_type_id]),
                 'has_active'         => $ticketsInOrder->contains('ticket_status', 'Active'),
                 'all_used'           => $ticketsInOrder->every(fn($t) => $t->ticket_status === 'Used'),
                 'purchased_at'       => $order?->payment_date,

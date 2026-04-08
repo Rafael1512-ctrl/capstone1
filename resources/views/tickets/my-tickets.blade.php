@@ -288,10 +288,36 @@
                                 <span style="font-size:0.73rem;color:rgba(255,255,255,0.3);">
                                     <i class="fa fa-shopping-cart"></i>
                                     {{ $order && $order->payment_date ? $order->payment_date->format('d M Y, H:i') . ' WIB' : 'Unknown' }}
+                                    
+                                    @if($order && $order->payment_status === 'Pending')
+                                        <span class="badge badge-warning ml-2" style="background: rgba(255,193,7,0.1); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); font-size: 10px;">🕒 PAYMENT PENDING</span>
+                                        @if($order->expires_at && $order->expires_at->isFuture())
+                                            <span class="timer-display ml-1" data-expires="{{ $order->expires_at->toIso8601String() }}" style="font-size: 10px; color: #ffc107; font-weight: bold;">--:--</span>
+                                        @endif
+                                    @elseif($order && $order->payment_status === 'Verified')
+                                        <span class="badge badge-success ml-2" style="background: rgba(40,167,69,0.1); color: #28a745; border: 1px solid rgba(40,167,69,0.3); font-size: 10px;">✅ PAID</span>
+                                    @elseif($order && $order->payment_status === 'Expired')
+                                        <span class="badge badge-danger ml-2" style="background: rgba(220,53,69,0.1); color: #dc3545; border: 1px solid rgba(220,53,69,0.3); font-size: 10px;">❌ EXPIRED</span>
+                                    @endif
                                 </span>
-                                <a href="{{ route('tickets.view', $ord['representative_id']) }}" class="btn-detail">
-                                    <i class="fa fa-qrcode"></i> Lihat {{ $ord['ticket_count'] }} QR Code
-                                </a>
+
+                                <div class="d-flex gap-2">
+                                    @if($order && $order->payment_status === 'Pending' && !$order->isExpired())
+                                        <a href="{{ route('public.checkout.show', [$event->event_id, $ord['ticket_types']->first()['id'] ?? 0]) }}?resume=1&order_id={{ $order->transaction_id }}" class="btn-detail" style="background: linear-gradient(135deg, #ffc107, #d39e00); box-shadow: 0 4px 15px rgba(255,193,7,0.3);">
+                                            <i class="fa fa-credit-card"></i> Pay Now
+                                        </a>
+                                    @endif
+
+                                    @if($order && $order->payment_status === 'Verified')
+                                        <a href="{{ route('tickets.view', $ord['representative_id']) }}" class="btn-detail">
+                                            <i class="fa fa-qrcode"></i> Lihat {{ $ord['ticket_count'] }} QR Code
+                                        </a>
+                                    @else
+                                        <button class="btn-detail" style="background: #333; cursor: not-allowed; opacity: 0.6;" disabled>
+                                            <i class="fa fa-lock"></i> Locked
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -305,9 +331,37 @@
                 <a href="{{ route('landing') }}" class="btn-detail" style="font-size:0.9rem;padding:12px 36px;">
                     🎵 Cari Konser
                 </a>
-            </div>
         @endif
 
     </div>
 
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const timers = document.querySelectorAll('.timer-display');
+        
+        function updateTimers() {
+            timers.forEach(timer => {
+                const expiresAt = new Date(timer.dataset.expires).getTime();
+                const now = new Date().getTime();
+                const distance = expiresAt - now;
+                
+                if (distance < 0) {
+                    timer.innerHTML = "EXPIRED";
+                    timer.style.color = "#dc3545";
+                    return;
+                }
+                
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                timer.innerHTML = (minutes < 10 ? "0" : "") + minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+            });
+        }
+        
+        if (timers.length > 0) {
+            updateTimers();
+            setInterval(updateTimers, 1000);
+        }
+    });
+    </script>
 @endsection

@@ -130,6 +130,50 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(220, 20, 60, 0.5);
         }
+        .post-confirm-box {
+            display: none;
+            background: #161616;
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid #dc143c;
+            animation: slideUp 0.5s ease forwards;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #dc143c;
+            text-shadow: 0 0 20px rgba(220,20,60,0.3);
+            margin: 20px 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .pay-later-btn {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 14px;
+            border-radius: 50px;
+            width: 100%;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+        .pay-later-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            border-color: rgba(255,255,255,0.4);
+        }
+        @if(isset($pendingOrder))
+        .checkout-card {
+            display: none;
+        }
+        #postConfirmSection {
+            display: block !important;
+        }
+        @endif
         /* Modal Styling Improvements */
         #paymentModal {
             position: fixed !important;
@@ -210,6 +254,32 @@
                             </div>
                         </form>
                     </div>
+
+                    <!-- Post Confirmation Section -->
+                    <div id="postConfirmSection" class="post-confirm-box mb-4">
+                        <div class="text-center">
+                            <div class="mb-3">
+                                <i class="fa fa-clock-o" style="font-size: 50px; color: #dc143c;"></i>
+                            </div>
+                            <h2 class="font-weight-bold text-white mb-2">Order Reserved!</h2>
+                            <p class="text-muted">Please complete your payment within:</p>
+                            <div class="timer-display" id="main-timer">15:00</div>
+                            <p class="small text-white-50 mb-4">Your tickets are being held. If you don't pay within the time limit, your reservation will be canceled automatically.</p>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <button type="button" class="confirm-btn m-0" onclick="showPaymentModal()" style="padding: 14px;">
+                                        <i class="fa fa-credit-card mr-2"></i> Pay Now
+                                    </button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <a href="{{ route('tickets.index') }}" class="pay-later-btn d-block text-center" style="text-decoration: none;">
+                                        <i class="fa fa-history mr-2"></i> Pay Later
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-5">
@@ -257,7 +327,7 @@
                             </div>
                         </div>
 
-                        <button type="button" class="confirm-btn" onclick="confirmPurchase()">Confirm & Pay Now</button>
+                        <button type="button" class="confirm-btn" id="mainConfirmBtn" onclick="confirmPurchase()">Confirm Order</button>
                         <p class="text-center mt-3 text-muted small"><i class="fa fa-lock mr-1"></i> SSL Encrypted Payment</p>
                     </div>
                 </div>
@@ -296,9 +366,12 @@
                             <span id="modal-method" class="font-weight-bold" style="color: #dc143c !important;">QRIS</span>
                         </div>
                         <hr style="border-color: rgba(255,255,255,0.1);">
-                        <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between mb-3">
                             <span class="font-weight-bold" style="font-size: 1.1rem; color: #fff !important;">Total Bayar</span>
                             <span class="font-weight-bold" style="font-size: 1.1rem; color: #dc143c !important;" id="modal-total">RP {{ number_format($ticketType->price, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="text-center p-2 rounded" style="background: rgba(220,20,60,0.08); border: 1px solid rgba(220,20,60,0.15); color: #ff6b6b; font-size: 13px; font-weight: bold;">
+                            Selesaikan dalam <span id="modal-timer-1">14:59</span> sebelum kuota dilepas
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0 px-4 pb-4">
@@ -343,7 +416,10 @@
                         <div id="vaSection2" style="display:none;">
                             <p class="mb-2" style="color: #aaa !important; font-size: 14px;">Nomor Virtual Account</p>
                             @php
-                                $vaNumber = "8806 " . rand(1000, 9999) . " " . rand(1000, 9999) . " " . rand(1000, 9999);
+                                // Make VA number deterministic based on transaction ID so it doesn't change on refresh
+                                $seed = isset($pendingOrder) ? $pendingOrder->transaction_id : (string)time();
+                                $h = substr(preg_replace('/[^0-9]/', '', md5($seed)), 0, 12);
+                                $vaNumber = "8806 " . substr($h, 0, 4) . " " . substr($h, 4, 4) . " " . substr($h, 8, 4);
                             @endphp
                             <div class="d-flex justify-content-center align-items-center mb-3">
                                 <h2 class="font-weight-bold mb-0 mr-3" id="va-number" style="letter-spacing: 2px; color: #dc143c !important; font-size: 1.5rem;">{{ $vaNumber }}</h2>
@@ -455,6 +531,31 @@
         let pricePerUnit = {{ $ticketType->price }};
         let selectedMethod = 'qris';
         let timerInterval = null;
+        let currentOrderId = @if(isset($pendingOrder)) '{{ $pendingOrder->transaction_id }}' @else null @endif;
+
+        $(document).ready(function() {
+            @if(isset($pendingOrder))
+                // Initialize state from existing pending order
+                qty = {{ $pendingOrder->total_ticket }};
+                updateOrder();
+                
+                let expiresAt = new Date('{{ $pendingOrder->expires_at->toDateTimeString() }}').getTime();
+                let now = new Date().getTime();
+                let remaining = Math.floor((expiresAt - now) / 1000);
+                
+                if (remaining > 0) {
+                    startTimer(remaining, '#main-timer');
+                    
+                    // If resume param is present, show modal immediately
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('resume')) {
+                        showPaymentModal();
+                    }
+                } else {
+                    location.reload(); // Expired while loading
+                }
+            @endif
+        });
 
         function copyVA() {
             let vaText = document.getElementById("va-number").innerText.replace(/\s+/g, '');
@@ -505,7 +606,7 @@
             selectedMethod = method;
         }
 
-        // Open modal at Step 1
+        // STEP 1: Confirm Order (Create record in DB & Reserve Quota)
         function confirmPurchase() {
             let form = document.getElementById('checkoutForm');
             if(!form.checkValidity()) {
@@ -513,70 +614,8 @@
                 return;
             }
 
-            let total = qty * pricePerUnit;
-            let totalFormatted = formatPrice(total);
-
-            // Update all total displays
-            $('#modal-qty').text(qty + 'x');
-            $('#modal-method').text(selectedMethod === 'qris' ? 'QRIS' : 'Bank Transfer / VA');
-            $('#modal-total, #modal-total-2, #modal-total-3, #modal-total-4').text(totalFormatted);
-            $('#modal-summary-qty').text(qty + 'x');
-
-            // Show step 1, hide others
-            $('#p-step-1').show();
-            $('#p-step-2, #p-step-3, #p-step-4').hide();
-
-            $('#paymentModal').modal('show');
-        }
-
-        // Step 1 -> Step 2
-        function goToStep2() {
-            // Show correct payment section
-            if(selectedMethod === 'qris') {
-                $('#qrisSection2').show();
-                $('#vaSection2').hide();
-            } else {
-                $('#qrisSection2').hide();
-                $('#vaSection2').show();
-            }
-
-            $('#p-step-1').fadeOut(200, function() {
-                $('#p-step-2').fadeIn(200);
-            });
-
-            // Start countdown timer
-            startTimer(15 * 60);
-        }
-
-        // Step 2 -> Step 1
-        function goToStep1() {
-            if(timerInterval) clearInterval(timerInterval);
-            $('#p-step-2').fadeOut(200, function() {
-                $('#p-step-1').fadeIn(200);
-            });
-        }
-
-        // Step 2 -> Step 3 (user clicks "Saya Sudah Bayar")
-        function goToStep3() {
-            if(timerInterval) clearInterval(timerInterval);
-            $('#p-step-2').fadeOut(200, function() {
-                $('#p-step-3').fadeIn(200);
-            });
-        }
-
-        // Step 3 -> Step 2 (user clicks "Belum, Kembali")
-        function backToStep2() {
-            $('#p-step-3').fadeOut(200, function() {
-                $('#p-step-2').fadeIn(200);
-            });
-            startTimer(15 * 60);
-        }
-
-        // Step 3 -> Step 4 (confirmed! - send to backend)
-        function confirmPaymentDone() {
-            let $btn = $('#p-step-3').find('button').first();
-            let originalText = $btn.html();
-            $btn.html('<i class="fa fa-spinner fa-spin mr-2"></i> Memproses...').prop('disabled', true);
+            let $btn = $('#mainConfirmBtn');
+            $btn.html('<i class="fa fa-spinner fa-spin mr-2"></i> Processing...').prop('disabled', true);
 
             $.ajax({
                 url: '{{ route("public.checkout.process", [$event->event_id, $ticketType->id]) }}',
@@ -590,9 +629,108 @@
                 },
                 success: function(response) {
                     if(response.success) {
+                        currentOrderId = response.order_id;
+                        
+                        // Switch UI
+                        $('#checkoutForm').closest('.checkout-card').fadeOut(300, function() {
+                            $('#postConfirmSection').fadeIn(300);
+                        });
+                        
+                        // Disable buttons that change quantity
+                        $('#plus, #minus').prop('disabled', true).css('opacity', 0.5);
+                        $btn.fadeOut();
+
+                        // Start global 15 minute timer
+                        startTimer(15 * 60, '#main-timer');
+                    } else {
+                        alert('Error: ' + response.message);
+                        $btn.html('Confirm Order').prop('disabled', false);
+                    }
+                },
+                error: function(xhr) {
+                    let msg = xhr.responseJSON ? xhr.responseJSON.message : 'Terjadi kesalahan.';
+                    alert('Error: ' + msg);
+                    $btn.html('Confirm Order').prop('disabled', false);
+                }
+            });
+        }
+
+        // STEP 2: Show Payment Options Modal (Pay Now)
+        function showPaymentModal() {
+            let total = qty * pricePerUnit;
+            let totalFormatted = formatPrice(total);
+
+            // Update modal displays
+            $('#modal-qty').text(qty + 'x');
+            $('#modal-method').text(selectedMethod === 'qris' ? 'QRIS' : 'Bank Transfer / VA');
+            $('#modal-total, #modal-total-2, #modal-total-3, #modal-total-4').text(totalFormatted);
+            $('#modal-summary-qty').text(qty + 'x');
+
+            // Show step 1 in modal (Payment Detail)
+            $('#p-step-1').show();
+            $('#p-step-2, #p-step-3, #p-step-4').hide();
+
+            $('#paymentModal').modal('show');
+        }
+
+        // Modal Step 1 -> Step 2
+        function goToStep2() {
+            if(selectedMethod === 'qris') {
+                $('#qrisSection2').show();
+                $('#vaSection2').hide();
+            } else {
+                $('#qrisSection2').hide();
+                $('#vaSection2').show();
+            }
+
+            $('#p-step-1').fadeOut(200, function() {
+                $('#p-step-2').fadeIn(200);
+            });
+
+            // Start modal-specific timer synced with main timer? 
+            // Better to just show the same remaining time
+            let remaining = getRemainingSeconds('#main-timer');
+            startTimer(remaining, '#countdown');
+        }
+
+        function goToStep1() {
+            $('#p-step-2').fadeOut(200, function() {
+                $('#p-step-1').fadeIn(200);
+            });
+        }
+
+        function goToStep3() {
+            $('#p-step-2').fadeOut(200, function() {
+                $('#p-step-3').fadeIn(200);
+            });
+        }
+
+        function backToStep2() {
+            $('#p-step-3').fadeOut(200, function() {
+                $('#p-step-2').fadeIn(200);
+            });
+        }
+
+        // STEP 3: Final Confirmation (Verified in DB)
+        function confirmPaymentDone() {
+            let $btn = $('#p-step-3').find('button').first();
+            let originalText = $btn.html();
+            $btn.html('<i class="fa fa-spinner fa-spin mr-2"></i> Verifying...').prop('disabled', true);
+
+            $.ajax({
+                url: '/order/' + currentOrderId + '/confirm-payment',
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if(response.success) {
                         $('#p-step-3').fadeOut(200, function() {
                             $('#p-step-4').fadeIn(200);
                         });
+                        // Stop main timer
+                        if(timerInterval) clearInterval(timerInterval);
+                        $('#main-timer').text('PAID').css('color', '#28a745');
                     } else {
                         alert('Error: ' + response.message);
                         $btn.html(originalText).prop('disabled', false);
@@ -606,20 +744,46 @@
             });
         }
 
-        function startTimer(duration) {
-            if(timerInterval) clearInterval(timerInterval);
-            let timer = duration, minutes, seconds;
-            timerInterval = setInterval(function () {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
+        function startTimer(duration, elementId) {
+            // If it's the main timer, handle the interval globally
+            if(elementId === '#main-timer' && timerInterval) clearInterval(timerInterval);
+            
+            let timer = duration;
+            function update() {
+                let minutes = parseInt(timer / 60, 10);
+                let seconds = parseInt(timer % 60, 10);
                 minutes = minutes < 10 ? "0" + minutes : minutes;
                 seconds = seconds < 10 ? "0" + seconds : seconds;
-                $('#countdown').text(minutes + ":" + seconds);
+                
+                let display = minutes + ":" + seconds;
+                $(elementId).text(display);
+                
+                // Sync with modal timers
+                if(elementId === '#main-timer') {
+                    $('#modal-timer-1').text(display);
+                    $('#countdown').text(display);
+                }
+                
                 if (--timer < 0) {
                     clearInterval(timerInterval);
-                    timer = 0;
+                    $(elementId).text("00:00");
+                    if(elementId === '#main-timer') {
+                        alert('Sesi pemesanan telah habis. Silakan buat pesanan baru.');
+                        location.reload();
+                    }
                 }
-            }, 1000);
+            }
+            
+            update();
+            let interval = setInterval(update, 1000);
+            if(elementId === '#main-timer') timerInterval = interval;
+            return interval;
+        }
+
+        function getRemainingSeconds(elementId) {
+            let parts = $(elementId).text().split(':');
+            if(parts.length !== 2) return 15*60;
+            return (parseInt(parts[0]) * 60) + parseInt(parts[1]);
         }
     </script>
 </body>

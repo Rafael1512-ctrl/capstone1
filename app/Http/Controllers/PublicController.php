@@ -60,6 +60,9 @@ class PublicController extends Controller
             abort(404);
         }
 
+        // Auto-update overdue events and cleanup expired orders before showing checkout
+        Event::updateOverdueEvents();
+
         // --- BATCH ACTIVITY CHECK ON PAGE LOAD ---
         $activeBatch = $event->active_batch;
         if (!$activeBatch) {
@@ -72,8 +75,25 @@ class PublicController extends Controller
                              ->with('error', 'Batch ini tidak lagi tersedia.');
         }
         // ----------------------------------------
+        
+        // Find if user already has a pending order for this event
+        $pendingOrder = null;
+        if (Auth::check()) {
+            $query = Order::where('user_id', Auth::id())
+                ->where('payment_status', 'Pending')
+                ->where('expires_at', '>', now());
+            
+            if (request('order_id')) {
+                $query->where('transaction_id', request('order_id'));
+            } else {
+                $ticketTypeIds = $event->ticketTypes->pluck('id')->toArray();
+                $query->whereIn('ticket_id', $ticketTypeIds)->orderBy('expires_at', 'desc');
+            }
+            
+            $pendingOrder = $query->first();
+        }
 
-        return view('checkout', compact('event', 'ticketType'));
+        return view('checkout', compact('event', 'ticketType', 'pendingOrder'));
     }
 
     /**
@@ -114,30 +134,24 @@ class PublicController extends Controller
                 (string) $event->event_id,
                 (int) $ticketType->id,
                 (string) $request->payment_method,
-                'Verified',
+                'Pending', // Set to pending initially
                 (int) $request->quantity
             ]);
 
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-            // Update batch-category specific sold count in acara table
-            $catKey = strtolower($ticketType->name); // regular, vip, vvip
-            $batchNum = $ticketType->batch_number ?? 1;
-            $column = "batch{$batchNum}_{$catKey}_sold";
-            
-            // Check if column exists before incrementing to avoid errors with unmapped types
-            if (in_array($column, ['batch1_regular_sold', 'batch1_vip_sold', 'batch1_vvip_sold', 'batch2_regular_sold', 'batch2_vip_sold', 'batch2_vvip_sold'])) {
-                DB::table('acara')
-                    ->where('event_id', $event->event_id)
-                    ->increment($column, (int) $request->quantity);
-            }
-            
-            // Check if multiple tickets need to be created (if stored procedure didn't)
+            // Find the order that was just created
             $order = Order::where('user_id', $user->user_id)
-                ->orderBy('payment_date', 'desc')
+                ->orderBy('payment_date', 'desc') // procedute sets payment_date to current timestamp
                 ->first();
-            
+
             if ($order) {
+                // Set the 15 minute expiration
+                $order->update([
+                    'expires_at' => now()->addMinutes(15)
+                ]);
+
+                // Ensure tickets are created but marked accordingly if needed
                 $currentTicketCount = DB::table('ticket')->where('transaction_id', $order->transaction_id)->count();
                 if ($currentTicketCount < $request->quantity) {
                     for ($i = $currentTicketCount; $i < $request->quantity; $i++) {
@@ -145,7 +159,7 @@ class PublicController extends Controller
                             'ticket_id' => 'TIX-' . strtoupper(Str::random(10)),
                             'event_id' => $event->event_id,
                             'ticket_type_id' => $ticketType->id,
-                            'ticket_status' => 'Active', // Public checkout sets status to Verified immediately
+                            'ticket_status' => 'Pending', // Mark tickets as pending
                             'transaction_id' => $order->transaction_id,
                             'qr_code' => ''
                         ]);
@@ -153,38 +167,92 @@ class PublicController extends Controller
                 }
             }
 
-            DB::commit();
-
-            // Refresh order with all tickets for email
-            $latestOrder = Order::where('user_id', $user->user_id)
-                ->with(['tickets.ticketType', 'tickets.event', 'event'])
-                ->orderBy('payment_date', 'desc')
-                ->first();
-
-            if ($latestOrder) {
-                try {
-                    Mail::to($user->email)->send(new TicketMail($user, $latestOrder, $latestOrder->tickets));
-                } catch (\Exception $mailEx) {
-                    Log::error('Failed to send ticket email: ' . $mailEx->getMessage());
-                    // We don't abort since the purchase IS successful in the DB
-                }
+            // Update batch-category specific sold count in acara table (Quota Reservation)
+            $catKey = strtolower($ticketType->name); 
+            $batchNum = $ticketType->batch_number ?? 1;
+            $column = "batch{$batchNum}_{$catKey}_sold";
+            
+            if (in_array($column, ['batch1_regular_sold', 'batch1_vip_sold', 'batch1_vvip_sold', 'batch2_regular_sold', 'batch2_vip_sold', 'batch2_vvip_sold'])) {
+                DB::table('acara')
+                    ->where('event_id', $event->event_id)
+                    ->increment($column, (int) $request->quantity);
             }
+
+            // Also increment TicketType's quantity_sold
+            $ticketType->increment('quantity_sold', (int) $request->quantity);
+
+            DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Tiket berhasil dibeli!',
-                'redirect' => route('tickets.index')
+                'message' => 'Pesanan berhasil dibuat! Silakan selesaikan pembayaran dalam 15 menit.',
+                'order_id' => $order->transaction_id,
+                'expires_at' => $order->expires_at->toDateTimeString(),
+                'total_amount' => $order->total_amount
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            // Ensure FK checks are re-enabled even on failure
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             
             Log::error('Checkout Processing Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memproses pembelian: ' . $e->getMessage()
+                'message' => 'Gagal memproses pesanan: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Confirm payment for a pending order
+     */
+    public function confirmPayment(Request $request, $orderId)
+    {
+        try {
+            DB::beginTransaction();
+            $order = Order::where('transaction_id', $orderId)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
+
+            if ($order->payment_status === 'Verified') {
+                return response()->json(['success' => true, 'message' => 'Pembayaran sudah dikonfirmasi.']);
+            }
+
+            if ($order->isExpired()) {
+                // If checking manually while it's expired, trigger cleanup
+                Event::cleanupExpiredOrders();
+                return response()->json(['success' => false, 'message' => 'Maaf, batas waktu pembayaran 15 menit telah habis.'], 400);
+            }
+
+            // Update status to Verified
+            $order->update([
+                'payment_status' => 'Verified',
+                'payment_date' => now()
+            ]);
+
+            // Update tickets status
+            \App\Models\Ticket::where('transaction_id', $orderId)->update([
+                'ticket_status' => 'Active'
+            ]);
+
+            DB::commit();
+
+            // Send Email
+            try {
+                $user = Auth::user();
+                $orderWithTickets = $order->load(['tickets.ticketType', 'tickets.event', 'event']);
+                Mail::to($user->email)->send(new TicketMail($user, $orderWithTickets, $orderWithTickets->tickets));
+            } catch (\Exception $mailEx) {
+                Log::error('Failed to send ticket email after payment: ' . $mailEx->getMessage());
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Pembayaran Anda telah berhasil dikonfirmasi!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Payment Confirmation Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal mengonfirmasi pembayaran.'], 500);
         }
     }
     /**

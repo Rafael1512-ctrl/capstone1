@@ -23,17 +23,16 @@
               </li>
               <li class="d-block mb-3">
                 <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Concierge</span>
-                <span class="caption-text" style="color: #999; font-size: 14px;">+62 895 0810 1257</span><br>
-                <span class="caption-text" style="color: #999; font-size: 14px;">+62 853 2555 3535</span><br>
-                <span class="caption-text" style="color: #999; font-size: 14px;">+62 895 3608 28717</span>
+                <a href="https://wa.me/6289508101257" target="_blank" style="color: #999; font-size: 14px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#999'">+62 895 0810 1257</a><br>
+                <a href="https://wa.me/6285325553535" target="_blank" style="color: #999; font-size: 14px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#999'">+62 853 2555 3535</a><br>
+                <a href="https://wa.me/62895360828717" target="_blank" style="color: #999; font-size: 14px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#999'">+62 895 3608 28717</a>
               </li>
               <li class="d-block">
                 <span class="d-block caption" style="color: #8B0000; font-weight: 700; text-transform: uppercase; font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.8;">Email</span>
-                <span class="caption-text" style="color: #999; font-size: 14px;">2472020@maranatha.ac.id</span><br>
-                <span class="caption-text" style="color: #999; font-size: 14px;">2472024@maranatha.ac.id</span><br>
-                <span class="caption-text" style="color: #999; font-size: 14px;">2472025@maranatha.ac.id</span>
+                <a href="mailto:2472020@maranatha.ac.id" style="color: #999; font-size: 14px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#999'">2472020@maranatha.ac.id</a><br>
+                <a href="mailto:2472024@maranatha.ac.id" style="color: #999; font-size: 14px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#999'">2472024@maranatha.ac.id</a><br>
+                <a href="mailto:2472025@maranatha.ac.id" style="color: #999; font-size: 14px; text-decoration: none; transition: 0.3s;" onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='#999'">2472025@maranatha.ac.id</a>
               </li>
-            </ul>
           </div>
 
           
