@@ -2,16 +2,16 @@
 
 @section('content')
 <div class="container-fluid px-4 mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
         <div>
-            <h1 class="h3 mb-1 text-white">Order Management</h1>
-            <p class="text-muted small">Monitor and manage all customer transactions.</p>
+            <h1 class="page-title mb-0">Order Management</h1>
+            <p class="text-muted small mb-0">Monitor and manage all customer transactions.</p>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header py-3 border-bottom d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold text-white">All Transactions ({{ $orders->total() }})</h6>
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-header border-0 bg-transparent py-4">
+            <h5 class="m-0 text-white fw-bold">All Transactions ({{ $orders->total() }})</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -60,10 +60,12 @@
                                     <div class="font-weight-bold">{{ $order->payment_date ? $order->payment_date->format('d M Y') : '-' }}</div>
                                     <div class="text-muted small">Time: {{ $order->payment_date ? $order->payment_date->format('H:i') : '-' }} WIB</div>
                                 </td>
-                                <td class="py-3 align-middle text-center">
-                                    <a href="{{ route('admin.orders.show', $order->transaction_id) }}" class="btn btn-outline-info btn-lg rounded-circle" title="View Detail (Lihat Tiket)" style="width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                <td class="pe-4">
+                                    <div class="d-flex justify-content-center">
+                                        <a href="{{ route('admin.orders.show', $order->transaction_id) }}" class="btn-action btn-action-view" title="View Detail (Lihat Tiket)">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

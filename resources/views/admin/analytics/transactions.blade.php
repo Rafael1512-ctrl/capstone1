@@ -2,12 +2,15 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-            <h1 class="h3 mb-0">Transaction Analytics</h1>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
+        <div>
+            <h1 class="page-title mb-0">Transaction Analytics</h1>
+            <p class="text-muted small mb-0">Track and analyze payment flows</p>
         </div>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary px-4">
+            <i class="fas fa-arrow-left me-1"></i> Kembali
+        </a>
+    </div>
 
         <!-- Filter -->
         <div class="card mb-4">
@@ -23,8 +26,8 @@
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <a href="{{ route('admin.export.transactions-pdf', ['days' => request('days', 30)]) }}" class="btn btn-outline-primary w-100">
-                             <i class="fas fa-file-pdf"></i> Export PDF
+                        <a href="{{ route('admin.export.transactions-pdf', ['days' => request('days', 30)]) }}" class="btn btn-primary w-100 fw-bold py-2">
+                             <i class="fas fa-file-pdf me-1"></i> Export PDF
                         </a>
                     </div>
                 </form>
@@ -40,12 +43,12 @@
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
-                            <thead class="table-light">
+                             <thead>
                                 <tr>
-                                    <th>Metode</th>
+                                    <th class="ps-4">Metode</th>
                                     <th>Total Transaksi</th>
                                     <th>Total Amount</th>
-                                    <th>Rata-rata</th>
+                                    <th class="pe-4">Rata-rata</th>
                                 </tr>
                             </thead>
                             <tbody>

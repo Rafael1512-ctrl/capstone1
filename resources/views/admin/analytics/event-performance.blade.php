@@ -2,20 +2,23 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-            <h1 class="h3 mb-0">Event Performance Analytics</h1>
-            <div>
-                <a href="{{ route('admin.export.event-performance') }}" class="btn btn-outline-success">
-                    <i class="fas fa-file-csv"></i> Export CSV
-                </a>
-                <a href="{{ route('admin.export.event-performance-pdf') }}" class="btn btn-outline-primary">
-                    <i class="fas fa-file-pdf"></i> Export PDF
-                </a>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Kembali
-                </a>
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
+        <div>
+            <h1 class="page-title mb-0">Event Performance</h1>
+            <p class="text-muted small mb-0">Evaluate event success and fill rates</p>
         </div>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.export.event-performance') }}" class="btn btn-info px-4">
+                <i class="fas fa-file-csv me-1"></i> Export CSV
+            </a>
+            <a href="{{ route('admin.export.event-performance-pdf') }}" class="btn btn-primary px-4">
+                <i class="fas fa-file-pdf me-1"></i> Export PDF
+            </a>
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary px-4">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
+            </a>
+        </div>
+    </div>
 
         <!-- Filter -->
         <div class="card mb-4">
@@ -35,13 +38,12 @@
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="card">
+        <div class="card border-0 shadow-sm">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th>Event</th>
+                            <th class="ps-4">Event</th>
                             <th>Kategori</th>
                             <th>Tanggal</th>
                             <th>Status</th>
@@ -49,15 +51,15 @@
                             <th>Tiket Terjual</th>
                             <th>Fill Rate</th>
                             <th>Revenue</th>
-                            <th>Orders</th>
+                            <th class="pe-4">Orders</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($events as $event)
                             <tr>
-                                <td>
-                                    <a href="{{ route('admin.events.show', $event['event_id']) }}">
-                                        <strong>{{ $event['name'] }}</strong>
+                                <td class="ps-4">
+                                    <a href="{{ route('admin.events.show', $event['event_id']) }}" class="text-decoration-none fw-bold text-white">
+                                        {{ $event['name'] }}
                                     </a>
                                 </td>
                                 <td>{{ $event['category'] ?? '-' }}</td>

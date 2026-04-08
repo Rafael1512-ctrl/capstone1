@@ -3,10 +3,14 @@
 @section('content')
     <div class="container-fluid px-4">
         <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-            <h1 class="h3 mb-0">Kelola Kategori Event</h1>
-            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Kategori Baru
+        <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
+            <div>
+                <h1 class="page-title mb-0">Kelola Kategori Event</h1>
+                <p class="text-muted small mb-0">Daftar kategori untuk pengelompokan event</p>
+            </div>
+            <a href="{{ route('admin.categories.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="fas fa-plus"></i>
+                <span>Kategori Baru</span>
             </a>
         </div>
 
@@ -28,54 +32,35 @@
         <div class="card">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
-                            <th>Nama</th>
-                            <th>Deskripsi</th>
-                            <th>Warna</th>
-                            <th>Status</th>
-                            <th>Jumlah Event</th>
-                            <th>Aksi</th>
+                            <th class="ps-4">Nama Kategori</th>
+                            <th class="text-center">Jumlah Event</th>
+                            <th class="text-center pe-4">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($categories as $category)
-                            <tr>
-                                <td>
-                                    <strong>{{ $category->name }}</strong>
+                             <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-white">{{ $category->name }}</div>
                                     @if ($category->icon)
-                                        <br><small class="text-muted">{{ $category->icon }}</small>
+                                        <div class="text-muted small mt-1"><i class="{{ $category->icon }} me-1"></i> {{ $category->icon }}</div>
                                     @endif
                                 </td>
-                                <td>
-                                    <small class="text-muted">{{ Str::limit($category->description, 50) }}</small>
+                                <td class="text-center">
+                                    <span class="badge bg-info px-3">{{ $category->events()->count() }} Event</span>
                                 </td>
-                                <td>
-                                    <span class="badge"
-                                        style="background-color: {{ $category->color }}; padding: 5px 10px;">
-                                        {{ $category->color }}
-                                    </span>
-                                </td>
-                                <td>
-                                    @if ($category->is_active)
-                                        <span class="badge bg-success">Aktif</span>
-                                    @else
-                                        <span class="badge bg-secondary">Nonaktif</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge bg-info">{{ $category->events()->count() }}</span>
-                                </td>
-                                <td>
-                                    <div class="btn-group btn-group-sm">
+                                <td class="pe-4">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
                                         <a href="{{ route('admin.categories.edit', $category) }}"
-                                            class="btn btn-outline-warning" title="Edit">
+                                            class="btn-action btn-action-edit" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
-                                            style="display:inline;">
+                                            class="m-0">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-outline-danger" title="Hapus"
+                                            <button type="submit" class="btn-action btn-action-delete" title="Hapus"
                                                 onclick="return confirm('Yakin ingin menghapus?')">
                                                 <i class="fas fa-trash"></i>
                                             </button>

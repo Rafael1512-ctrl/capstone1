@@ -2,12 +2,15 @@
 
 @section('content')
     <div class="container-fluid px-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
-            <h1 class="h3 mb-0">Sales Analytics</h1>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Kembali
-            </a>
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
+        <div>
+            <h1 class="page-title mb-0">Sales Analytics</h1>
+            <p class="text-muted small mb-0">Monitor your revenue and sales trends</p>
         </div>
+        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary px-4">
+            <i class="fas fa-arrow-left me-1"></i> Kembali
+        </a>
+    </div>
 
         <!-- Filter -->
         <div class="card mb-4">
@@ -26,12 +29,12 @@
                     </div>
                     <div class="col-md-5 d-flex gap-2">
                         <a href="{{ route('admin.export.sales', ['period' => $period]) }}"
-                            class="btn btn-outline-success flex-fill">
-                            <i class="fas fa-file-csv"></i> Export CSV
+                            class="btn btn-info flex-fill fw-bold">
+                            <i class="fas fa-file-csv me-1"></i> Export CSV
                         </a>
                         <a href="{{ route('admin.export.sales-pdf', ['period' => $period]) }}"
-                            class="btn btn-outline-primary flex-fill">
-                            <i class="fas fa-file-pdf"></i> Export PDF
+                            class="btn btn-primary flex-fill fw-bold">
+                            <i class="fas fa-file-pdf me-1"></i> Export PDF
                         </a>
                     </div>
                 </form>
@@ -52,12 +55,12 @@
         <div class="card">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
-                            <th>Periode</th>
+                            <th class="ps-4">Periode</th>
                             <th>Total Orders</th>
                             <th>Total Revenue</th>
-                            <th>Rata-rata per Order</th>
+                            <th class="pe-4">Rata-rata per Order</th>
                         </tr>
                     </thead>
                     <tbody>

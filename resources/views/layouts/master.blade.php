@@ -809,6 +809,90 @@
             border-color: rgba(255, 255, 255, 0.25) !important;
             transform: translateY(-1px) !important;
         }
+
+        /* ── Premium Action Buttons ── */
+        .btn-action {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            font-size: 15px;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: none !important;
+        }
+
+        .btn-action-edit {
+            background: rgba(251, 191, 36, 0.08);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.15);
+        }
+
+        .btn-action-edit:hover {
+            background: #fbbf24;
+            color: #1a0a0f !important;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-delete {
+            background: rgba(220, 20, 60, 0.08);
+            color: #ff6080;
+            border-color: rgba(220, 20, 60, 0.15);
+        }
+
+        .btn-action-delete:hover {
+            background: #dc143c;
+            color: #fff !important;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-view {
+            background: rgba(59, 130, 246, 0.08);
+            color: #60a5fa;
+            border-color: rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-action-view:hover {
+            background: #3b82f6;
+            color: #fff !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-success {
+            background: rgba(34, 197, 94, 0.08);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.15);
+            width: auto;
+            padding: 0 15px;
+            font-weight: 700;
+            gap: 6px;
+        }
+
+        .btn-action-success:hover {
+            background: #22c55e;
+            color: #1a0a0f !important;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-action-disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.05);
+            cursor: not-allowed;
+            pointer-events: none;
+            width: auto;
+            padding: 0 15px;
+            font-weight: 700;
+            gap: 6px;
+        }
     </style>
 
     @yield('ExtraCSS')

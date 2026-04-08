@@ -2,14 +2,15 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-5 mt-2">
         <div>
-            <h1 class="h3 mb-0 text-dark">Tickets Management</h1>
-            <p class="text-muted small">Manage all issued tickets, activate them upon entry, or delete if necessary.</p>
+            <h1 class="page-title mb-0">Tickets Management</h1>
+            <p class="text-muted small mb-0">Manage all issued tickets, activate them upon entry, or delete if necessary.</p>
         </div>
-        <div class="btn-group">
-            <a href="{{ route('tickets.scanner') }}" class="btn btn-dark">
-                <i class="fas fa-qrcode"></i> Open QR Scanner
+        <div class="d-flex gap-2">
+            <a href="{{ route('tickets.scanner') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="fas fa-qrcode"></i>
+                <span>Open QR Scanner</span>
             </a>
         </div>
     </div>
@@ -22,30 +23,29 @@
                     <input type="text" name="search" class="form-control" placeholder="Search by Ticket ID, Buyer Name, or Event Title..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-2 mb-2">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search"></i> Search
+                    <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm font-weight-bold">
+                        <i class="fas fa-search me-1"></i> Search
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- All Tickets Table -->
-    <div class="card shadow-sm mb-4 border-0">
-        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-            <h6 class="m-0 font-weight-bold text-primary">All Issued Tickets ({{ $tickets->total() }})</h6>
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-header border-0 bg-transparent py-4">
+            <h5 class="m-0 text-white fw-bold">All Issued Tickets ({{ $tickets->total() }})</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="bg-light text-muted uppercase small font-weight-bold">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
                         <tr>
-                            <th class="py-3 px-4">Ticket ID</th>
-                            <th class="py-3">Event Name</th>
-                            <th class="py-3">Buyer</th>
-                            <th class="py-3">Type/Tier</th>
-                            <th class="py-3">Status</th>
-                            <th class="py-3 text-center">Action</th>
+                            <th class="ps-4">Ticket ID</th>
+                            <th>Event Name</th>
+                            <th>Buyer</th>
+                            <th>Type/Tier</th>
+                            <th>Status</th>
+                            <th class="text-center pe-4">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -61,37 +61,37 @@
                             <td>{{ $ticket->ticketType->name ?? 'N/A' }}</td>
                             <td class="ticket-status-col">
                                 @if($ticket->ticket_status === 'Active')
-                                    <span class="badge bg-success status-badge" style="font-size: 10px;">ACTIVE</span>
+                                    <span class="badge bg-success">ACTIVE</span>
                                 @else
-                                    <span class="badge bg-secondary status-badge" style="font-size: 10px;">USED</span>
+                                    <span class="badge bg-secondary">USED</span>
                                 @endif
                             </td>
-                            <td class="text-center">
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.tickets.show', $ticket->ticket_id) }}" class="btn btn-sm btn-outline-info" target="_blank" title="View Ticket Detail">
+                            <td class="pe-4">
+                                <div class="d-flex justify-content-center align-items-center gap-2">
+                                    <a href="{{ route('admin.tickets.show', $ticket->ticket_id) }}" class="btn-action btn-action-view" target="_blank" title="View Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
                                     @if($ticket->ticket_status === 'Active')
                                         <button type="button" 
-                                                class="btn btn-sm btn-success validate-btn" 
+                                                class="btn-action btn-action-success validate-btn" 
                                                 data-id="{{ $ticket->ticket_id }}"
                                                 data-url="{{ route('tickets.validate.ajax', $ticket->ticket_id) }}" 
                                                 title="Activate Ticket">
-                                            <i class="fas fa-power-off"></i> ACTIVATE
+                                            <i class="fas fa-check-circle"></i> ACTIVATE
                                         </button>
                                     @else
-                                        <button class="btn btn-sm btn-light disabled" disabled title="Ticket Already Activated">
-                                            <i class="fas fa-check text-success"></i> ACTIVATED
+                                        <button class="btn-action btn-action-disabled" disabled>
+                                            <i class="fas fa-check-circle"></i> ACTIVATED
                                         </button>
                                     @endif
 
                                     <button type="button"
-                                            class="btn btn-sm btn-outline-danger delete-ticket-btn"
+                                            class="btn-action btn-action-delete delete-ticket-btn"
                                             data-id="{{ $ticket->ticket_id }}"
                                             data-url="{{ route('admin.tickets.destroy', $ticket->ticket_id) }}"
                                             title="Delete Ticket">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </div>
                             </td>
@@ -167,18 +167,18 @@
                                 // Reset the button group to remove ACTIVATE and keep VIEW/DELETE
                                 const btnGroup = this.parentElement;
                                 btnGroup.innerHTML = `
-                                    <a href="{{ url('admin/tickets') }}/${ticketId}" class="btn btn-sm btn-outline-info" target="_blank" title="View Ticket Detail">
+                                    <a href="{{ url('admin/tickets') }}/${ticketId}" class="btn-action btn-action-view" target="_blank" title="View Ticket Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <button class="btn btn-sm btn-light disabled" disabled>
-                                        <i class="fas fa-check text-success"></i> ACTIVATED
+                                    <button class="btn-action btn-action-disabled" disabled>
+                                        <i class="fas fa-check-circle"></i> ACTIVATED
                                     </button>
                                     <button type="button"
-                                            class="btn btn-sm btn-outline-danger delete-ticket-btn"
+                                            class="btn-action btn-action-delete delete-ticket-btn"
                                             data-id="${ticketId}"
                                             data-url="{{ url('admin/tickets') }}/${ticketId}"
                                             title="Delete Ticket">
-                                        <i class="fas fa-trash"></i>
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
                                 `;
                                 // Re-attach delete listener to new button
@@ -258,8 +258,7 @@
     .card { border-radius: 12px; }
     .table thead th { border-top: none; }
     code { color: #dc143c; }
-    .validate-btn, .delete-ticket-btn { border-radius: 8px; font-weight: 700; transform: scale(1); transition: all 0.2s; }
-    .validate-btn:hover, .delete-ticket-btn:hover { transform: scale(1.05); }
+    .validate-btn, .delete-ticket-btn { font-weight: 700; }
     .fade-out { opacity: 0; transform: translateX(-20px); transition: all 0.5s; }
 </style>
 @endsection

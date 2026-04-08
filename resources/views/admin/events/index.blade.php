@@ -50,7 +50,7 @@
         <div class="card border-0 shadow-sm">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                    <thead>
                         <tr>
                             <th class="ps-4">Status</th>
                             <th>Judul Event</th>
@@ -59,7 +59,7 @@
                             <th>Jadwal</th>
                             <th>Lokasi</th>
                             <th>Tiket Terjual</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="text-center pe-4">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,20 +128,20 @@
                                     </div>
                                     <small class="text-muted smaller">dari {{ $total }}</small>
                                 </td>
-                                <td class="text-center">
-                                    <div class="btn-group shadow-sm">
-                                        <a href="{{ route('admin.events.show', $event->event_id) }}" class="btn btn-white btn-sm text-info"
+                                <td class="pe-4">
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <a href="{{ route('admin.events.show', $event->event_id) }}" class="btn-action btn-action-view"
                                             title="View Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="{{ route('admin.events.edit', $event->event_id) }}" class="btn btn-white btn-sm text-warning"
+                                        <a href="{{ route('admin.events.edit', $event->event_id) }}" class="btn-action btn-action-edit"
                                             title="Edit Event">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="{{ route('admin.events.destroy', $event->event_id) }}" method="POST"
-                                            style="display:inline;">
+                                            class="m-0">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-white btn-sm text-danger" title="Delete"
+                                            <button type="submit" class="btn-action btn-action-delete" title="Delete"
                                                 onclick="return confirm('Apakah Anda yakin ingin menghapus event ini?')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>

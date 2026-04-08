@@ -11,12 +11,12 @@
                     <i class="fas fa-map-marker-alt"></i> {{ $event->location }}
                 </p>
             </div>
-            <div class="btn-group">
-                <a href="{{ route('admin.events.edit', $event) }}" class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Edit
+            <div class="d-flex gap-2">
+                <a href="{{ route('admin.events.index') }}" class="btn btn-secondary px-4">
+                    <i class="fas fa-arrow-left me-1"></i> Kembali
                 </a>
-                <a href="{{ route('admin.events.index') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Kembali
+                <a href="{{ route('admin.events.edit', $event) }}" class="btn btn-primary px-4">
+                    <i class="fas fa-edit me-1"></i> Edit Event
                 </a>
             </div>
         </div>
@@ -215,7 +215,7 @@
         <div class="card">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th>Nama Tiket</th>
                             <th>Harga</th>

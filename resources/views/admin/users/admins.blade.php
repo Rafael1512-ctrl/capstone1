@@ -35,14 +35,20 @@
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td><span class="badge badge-danger">{{ ucfirst($user->role) }}</span></td>
-                                            <td>
-                                                <a href="{{ route('admin.users.edit', $user->user_id) }}" class="btn btn-sm btn-info">Edit</a>
-                                                <form action="{{ route('admin.users.destroy', $user->user_id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
-                                                </form>
-                                            </td>
+                                             <td>
+                                                 <div class="d-flex align-items-center gap-2">
+                                                     <a href="{{ route('admin.users.edit', $user->user_id) }}" class="btn-action btn-action-edit" title="Edit">
+                                                         <i class="fas fa-edit"></i>
+                                                     </a>
+                                                     <form action="{{ route('admin.users.destroy', $user->user_id) }}" method="POST" class="m-0">
+                                                         @csrf
+                                                         @method('DELETE')
+                                                         <button type="submit" class="btn-action btn-action-delete" onclick="return confirm('Are you sure?')" title="Delete">
+                                                             <i class="fas fa-trash-alt"></i>
+                                                         </button>
+                                                     </form>
+                                                 </div>
+                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
