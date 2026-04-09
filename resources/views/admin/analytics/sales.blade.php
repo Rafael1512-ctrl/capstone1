@@ -19,11 +19,11 @@
                     <div class="col-md-4">
                         <select class="form-select" name="period" onchange="this.form.submit()">
                             <option value="daily" {{ request('period', 'monthly') === 'daily' ? 'selected' : '' }}>Harian
-                                (7 Hari)</option>
-                            <option value="weekly" {{ request('period') === 'weekly' ? 'selected' : '' }}>Mingguan (30 Hari)
+                                (30 Hari)</option>
+                            <option value="weekly" {{ request('period') === 'weekly' ? 'selected' : '' }}>Mingguan (12 Minggu)
                             </option>
                             <option value="monthly" {{ request('period', 'monthly') === 'monthly' ? 'selected' : '' }}>
-                                Bulanan (90 Hari)</option>
+                                Bulanan (Jan - Des)</option>
                             <option value="yearly" {{ request('period') === 'yearly' ? 'selected' : '' }}>Tahunan</option>
                         </select>
                     </div>
@@ -69,7 +69,7 @@
                                 <td><strong>{{ $data->period }}</strong></td>
                                 <td>{{ $data->total_orders }}</td>
                                 <td>Rp {{ number_format($data->total_revenue, 0, ',', '.') }}</td>
-                                <td>Rp {{ number_format($data->total_revenue / $data->total_orders, 0, ',', '.') }}</td>
+                                <td>Rp {{ $data->total_orders > 0 ? number_format($data->total_revenue / $data->total_orders, 0, ',', '.') : 0 }}</td>
                             </tr>
                         @empty
                             <tr>

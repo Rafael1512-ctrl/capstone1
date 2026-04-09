@@ -7,12 +7,7 @@
             <h1 class="page-title mb-0">Tickets Management</h1>
             <p class="text-muted small mb-0">Manage all issued tickets, activate them upon entry, or delete if necessary.</p>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('tickets.scanner') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                <i class="fas fa-qrcode"></i>
-                <span>Open QR Scanner</span>
-            </a>
-        </div>
+
     </div>
 
     <!-- Search Box -->

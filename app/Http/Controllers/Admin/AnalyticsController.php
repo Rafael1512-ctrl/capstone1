@@ -53,13 +53,24 @@ class AnalyticsController extends Controller
             ->limit(5)
             ->get();
 
-        // Daily Sales (Last 7 Days)
-        $dailySales = Order::where('payment_status', 'Verified')
+        // Daily Sales (Last 7 Days) - Ensure all 7 days are present
+        $rawDailySales = Order::where('payment_status', 'Verified')
             ->where('payment_date', '>=', now()->subDays(6)->startOfDay())
             ->select(DB::raw('DATE(payment_date) as date'), DB::raw('COUNT(*) as orders'), DB::raw('SUM(total_amount) as revenue'))
             ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+            ->get()
+            ->keyBy('date');
+
+        $dailySales = collect();
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $data = $rawDailySales->get($date);
+            $dailySales->push((object)[
+                'date' => $date,
+                'orders' => $data ? $data->orders : 0,
+                'revenue' => $data ? $data->revenue : 0
+            ]);
+        }
 
         return view('admin.dashboard', compact(
             'totalRevenue',
@@ -83,34 +94,93 @@ class AnalyticsController extends Controller
     public function sales(Request $request)
     {
         $period = $request->input('period', 'monthly');
+        $now = now();
+        $startDate = null;
+        $endDate = $now->copy();
 
-        $dateFormat = match ($period) {
+        // Determine Start Date based on Period
+        if ($period === 'daily') {
+            $startDate = $now->copy()->subDays(29); // Last 30 days
+        } elseif ($period === 'weekly') {
+            $startDate = $now->copy()->subWeeks(11); // Last 12 weeks
+        } elseif ($period === 'monthly') {
+            $startDate = $now->copy()->startOfYear(); // From Jan
+            $endDate = $now->copy()->endOfYear(); // To Dec
+        } elseif ($period === 'yearly') {
+            $startDate = $now->copy()->subYears(4); // Last 5 years
+        }
+
+        // Query verified orders
+        $query = Order::where('payment_status', 'Verified');
+        if ($startDate) {
+            $query->where('payment_date', '>=', $startDate->startOfDay());
+        }
+        if ($endDate) {
+            $query->where('payment_date', '<=', $endDate->endOfDay());
+        }
+
+        // Use a sortable grouped key (YYYY-MM-DD, YYYY-WW, YYYY-MM, or YYYY)
+        $sqlFormat = match ($period) {
             'daily' => '%Y-%m-%d',
-            'weekly' => 'Week %v (%Y)',
-            'monthly' => '%M %Y',
+            'weekly' => '%x-%v', // ISO Year and Week for MySQL
+            'monthly' => '%Y-%m',
             'yearly' => '%Y',
             default => '%Y-%m',
         };
 
-        $query = Order::where('payment_status', 'Verified');
-
-        // Apply date range filters based on period label
-        if ($period === 'daily') {
-            $query->where('payment_date', '>=', now()->subDays(7));
-        } elseif ($period === 'weekly') {
-            $query->where('payment_date', '>=', now()->subDays(30));
-        } elseif ($period === 'monthly') {
-            $query->where('payment_date', '>=', now()->subDays(90));
-        }
-
-        $salesData = $query->select(
-                DB::raw("DATE_FORMAT(payment_date, '$dateFormat') as period"),
+        $rawSales = $query->select(
+                DB::raw("DATE_FORMAT(payment_date, '$sqlFormat') as period_key"),
                 DB::raw('COUNT(*) as total_orders'),
                 DB::raw('SUM(total_amount) as total_revenue')
             )
-            ->groupBy('period')
-            ->orderBy('period')
-            ->get();
+            ->groupBy('period_key')
+            ->get()
+            ->keyBy('period_key');
+
+        // Fill missing periods with zero data
+        $salesData = collect();
+        $current = $startDate->copy();
+        
+        while ($current <= $endDate) {
+            $key = match ($period) {
+                'daily' => $current->format('Y-m-d'),
+                'weekly' => $current->format('o-W'), // ISO Year and Week for PHP
+                'monthly' => $current->format('Y-m'),
+                'yearly' => $current->format('Y'),
+            };
+
+            $monthNames = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+
+            $label = match ($period) {
+                'daily' => $current->format('d M Y'),
+                'weekly' => 'M' . $current->format('W') . ' (' . $current->format('o') . ')',
+                'monthly' => $monthNames[$current->month] . ' ' . $current->year,
+                'yearly' => $current->format('Y'),
+            };
+
+            $data = $rawSales->get($key);
+
+            $salesData->push((object)[
+                'period' => $label,
+                'total_orders' => $data ? $data->total_orders : 0,
+                'total_revenue' => $data ? (float)$data->total_revenue : 0,
+            ]);
+
+            // Advance to next period
+            match ($period) {
+                'daily' => $current->addDay(),
+                'weekly' => $current->addWeek(),
+                'monthly' => $current->addMonth(),
+                'yearly' => $current->addYear(),
+            };
+
+            // Safety break
+            if ($salesData->count() > 500) break;
+        }
 
         return view('admin.analytics.sales', compact('salesData', 'period'));
     }
