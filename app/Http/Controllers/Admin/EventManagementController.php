@@ -232,10 +232,11 @@ class EventManagementController extends Controller
     public function edit($event_id)
     {
         $event = Event::with('ticketTypes')->findOrFail($event_id);
+        $isLocked = $event->ticketTypes->sum('quantity_sold') > 0;
         $categories = DB::table('kategori_acara')->get();
         $organizers = User::where('role_id', 2)->get();
 
-        return view('admin.events.edit', compact('event', 'categories', 'organizers'));
+        return view('admin.events.edit', compact('event', 'categories', 'organizers', 'isLocked'));
     }
 
     /**
@@ -243,7 +244,10 @@ class EventManagementController extends Controller
      */
     public function update(Request $request, $event_id)
     {
-        $event = Event::findOrFail($event_id);
+        $event = Event::with('ticketTypes')->findOrFail($event_id);
+        
+        // Cek apakah sudah ada tiket yang terjual
+        $hasSoldTickets = $event->ticketTypes->sum('quantity_sold') > 0;
 
         $validated = $request->validate([
             'organizer_id' => 'required|exists:users,user_id',
@@ -278,6 +282,23 @@ class EventManagementController extends Controller
             'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch2_vvip_price'   => ['required', 'integer', 'min:0'],
         ]);
+
+        // Proteksi Harga: Jika sudah ada tiket terjual, harga tidak dapat diubah
+        if ($hasSoldTickets) {
+            $categories = ['regular', 'vip', 'vvip'];
+            foreach ([1, 2] as $batch) {
+                foreach ($categories as $cat) {
+                    $key = "batch{$batch}_{$cat}_price";
+                    $existing = $event->ticketTypes->where('batch_number', $batch)
+                                                   ->where('name', strtoupper($cat))
+                                                   ->first();
+                    
+                    if ($existing && (int)$request->input($key) !== (int)$existing->price) {
+                        return back()->with('error', "Gagal: Harga tiket " . strtoupper($cat) . " (Batch $batch) tidak dapat diubah karena sudah ada tiket yang terjual.")->withInput();
+                    }
+                }
+            }
+        }
 
         // Handle banner upload or external URL
         if ($request->hasFile('banner')) {

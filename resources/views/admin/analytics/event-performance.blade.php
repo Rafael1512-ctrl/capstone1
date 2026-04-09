@@ -9,7 +9,7 @@
         </div>
         <div class="d-flex gap-2">
             <a href="{{ route('admin.export.event-performance') }}" class="btn btn-info px-4">
-                <i class="fas fa-file-csv me-1"></i> Export CSV
+                <i class="fas fa-file-excel me-1"></i> Export Excel
             </a>
             <a href="{{ route('admin.export.event-performance-pdf') }}" class="btn btn-primary px-4">
                 <i class="fas fa-file-pdf me-1"></i> Export PDF

@@ -9,6 +9,18 @@
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
+ 
+        @if ($isLocked)
+            <div class="alert alert-warning border-start border-4 border-warning shadow-sm mb-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-lock fa-2x me-3 text-warning"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">Harga Tiket Terkunci</h5>
+                        <p class="mb-0">Sudah ada tiket yang terjual untuk event ini. Demi menjaga konsistensi data transaksi, Anda tetap dapat mengubah kuota, namun <strong>harga tiket tidak dapat diubah lagi</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         @if ($errors->any())
             <div class="alert alert-danger alert-dismissible fade show">
@@ -286,7 +298,7 @@
                                                         <input type="number" name="batch1_regular_quota" class="form-control form-control-sm @error('batch1_regular_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_quota', $event->batch1_regular_quota) }}">
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="batch1_regular_price" class="form-control form-control-sm @error('batch1_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_price', number_format($event->batch1_regular_price, 0, '', '')) }}">
+                                                        <input type="number" name="batch1_regular_price" class="form-control form-control-sm @error('batch1_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch1_regular_price', number_format($event->batch1_regular_price, 0, '', '')) }}" {{ $isLocked ? 'readonly' : '' }}>
                                                     </td>
                                                     <td class="text-center">{{ $event->batch1_regular_sold }}</td>
                                                 </tr>
@@ -296,7 +308,7 @@
                                                         <input type="number" name="batch1_vip_quota" class="form-control form-control-sm @error('batch1_vip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_quota', $event->batch1_vip_quota) }}">
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="batch1_vip_price" class="form-control form-control-sm @error('batch1_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_price', number_format($event->batch1_vip_price, 0, '', '')) }}">
+                                                        <input type="number" name="batch1_vip_price" class="form-control form-control-sm @error('batch1_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vip_price', number_format($event->batch1_vip_price, 0, '', '')) }}" {{ $isLocked ? 'readonly' : '' }}>
                                                     </td>
                                                     <td class="text-center">{{ $event->batch1_vip_sold }}</td>
                                                 </tr>
@@ -306,7 +318,7 @@
                                                         <input type="number" name="batch1_vvip_quota" class="form-control form-control-sm @error('batch1_vvip_quota') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_quota', $event->batch1_vvip_quota) }}">
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="batch1_vvip_price" class="form-control form-control-sm @error('batch1_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_price', number_format($event->batch1_vvip_price, 0, '', '')) }}">
+                                                        <input type="number" name="batch1_vvip_price" class="form-control form-control-sm @error('batch1_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch1_vvip_price', number_format($event->batch1_vvip_price, 0, '', '')) }}" {{ $isLocked ? 'readonly' : '' }}>
                                                     </td>
                                                     <td class="text-center">{{ $event->batch1_vvip_sold }}</td>
                                                 </tr>
@@ -402,7 +414,7 @@
                                                         @error('batch2_regular_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="batch2_regular_price" class="form-control form-control-sm @error('batch2_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch2_regular_price', number_format($event->batch2_regular_price, 0, '', '')) }}">
+                                                        <input type="number" name="batch2_regular_price" class="form-control form-control-sm @error('batch2_regular_price') is-invalid @enderror" required min="0" value="{{ old('batch2_regular_price', number_format($event->batch2_regular_price, 0, '', '')) }}" {{ $isLocked ? 'readonly' : '' }}>
                                                         @error('batch2_regular_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td class="text-center">{{ $event->batch2_regular_sold }}</td>
@@ -414,7 +426,7 @@
                                                         @error('batch2_vip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="batch2_vip_price" class="form-control form-control-sm @error('batch2_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vip_price', number_format($event->batch2_vip_price, 0, '', '')) }}">
+                                                        <input type="number" name="batch2_vip_price" class="form-control form-control-sm @error('batch2_vip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vip_price', number_format($event->batch2_vip_price, 0, '', '')) }}" {{ $isLocked ? 'readonly' : '' }}>
                                                         @error('batch2_vip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td class="text-center">{{ $event->batch2_vip_sold }}</td>
@@ -426,7 +438,7 @@
                                                         @error('batch2_vvip_quota') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="batch2_vvip_price" class="form-control form-control-sm @error('batch2_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vvip_price', number_format($event->batch2_vvip_price, 0, '', '')) }}">
+                                                        <input type="number" name="batch2_vvip_price" class="form-control form-control-sm @error('batch2_vvip_price') is-invalid @enderror" required min="0" value="{{ old('batch2_vvip_price', number_format($event->batch2_vvip_price, 0, '', '')) }}" {{ $isLocked ? 'readonly' : '' }}>
                                                         @error('batch2_vvip_price') <div class="invalid-feedback small">{{ $message }}</div> @enderror
                                                     </td>
                                                     <td class="text-center">{{ $event->batch2_vvip_sold }}</td>

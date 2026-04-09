@@ -30,7 +30,7 @@
                     <div class="col-md-5 d-flex gap-2">
                         <a href="{{ route('admin.export.sales', ['period' => $period]) }}"
                             class="btn btn-info flex-fill fw-bold">
-                            <i class="fas fa-file-csv me-1"></i> Export CSV
+                            <i class="fas fa-file-excel me-1"></i> Export Excel
                         </a>
                         <a href="{{ route('admin.export.sales-pdf', ['period' => $period]) }}"
                             class="btn btn-primary flex-fill fw-bold">

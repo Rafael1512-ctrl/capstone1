@@ -15,15 +15,8 @@ class EventCategory extends Model
 
     protected $fillable = [
         'name',
-        'description',
-        'icon',
-        'color',
-        'is_active',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
 
     public function events()
     {
