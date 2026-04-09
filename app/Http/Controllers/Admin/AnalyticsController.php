@@ -190,15 +190,30 @@ class AnalyticsController extends Controller
      /**
       * Get detailed analytics for a single event
       */
-     public function eventDetail(Event $event)
+     public function eventDetail(Request $request, Event $event)
      {
-         $event->load(['ticketTypes', 'category', 'organizer']);
+         $selectedBatch = $request->input('batch');
  
-         // Ticket Status Distribution
+         // Filter ticketTypes based on batch if selected
+         $event->load(['ticketTypes' => function($query) use ($selectedBatch) {
+             if ($selectedBatch) {
+                 $query->where('batch_number', $selectedBatch);
+             }
+         }, 'category', 'organizer']);
+ 
+         // Update ticketStats distribution filtered by batch
+         $ticketQuery = $event->tickets();
+         if ($selectedBatch) {
+             $ticketQuery->whereHas('ticketType', function($q) use ($selectedBatch) {
+                 $q->where('batch_number', $selectedBatch);
+             });
+         }
+ 
          $ticketStats = [
-             'active' => $event->tickets()->where('ticket_status', 'Active')->count(),
-             'used' => $event->tickets()->where('ticket_status', 'Used')->count(),
-             'expired' => $event->tickets()->where('ticket_status', 'Expired')->count(),
+             'total' => (clone $ticketQuery)->count(),
+             'active' => (clone $ticketQuery)->where('ticket_status', 'Active')->count(),
+             'used' => (clone $ticketQuery)->where('ticket_status', 'Used')->count(),
+             'expired' => (clone $ticketQuery)->where('ticket_status', 'Expired')->count(),
          ];
  
          // Sales per Ticket Type - Grouped by Name to avoid duplicate cards for batches
@@ -212,10 +227,9 @@ class AnalyticsController extends Controller
              $totalQuota = $types->sum('quantity_total');
              
              // Calculate revenue based on actual confirmed sold count
-             // Note: Using first type's price as they should be identical within the same group/name
              $price = $types->first()->price;
              $totalRevenue = $actualSold * $price;
-
+ 
              return [
                  'name' => $name,
                  'price' => $price,
@@ -228,17 +242,24 @@ class AnalyticsController extends Controller
              ];
          })->values();
  
-         // Daily Sales Trend for this specific event
-         $salesTrend = Order::whereHas('tickets', function ($q) use ($event) {
+         // Daily Sales Trend for this specific event - Filtered by Batch if selected
+         $salesTrendQuery = Order::whereHas('tickets', function ($q) use ($event, $selectedBatch) {
                  $q->where('event_id', $event->event_id);
+                 if ($selectedBatch) {
+                     $q->whereHas('ticketType', function($sq) use ($selectedBatch) {
+                         $sq->where('batch_number', $selectedBatch);
+                     });
+                 }
              })
-             ->where('payment_status', 'Verified')
+             ->where('payment_status', 'Verified');
+ 
+         $salesTrend = $salesTrendQuery
              ->select(DB::raw('DATE(payment_date) as date'), DB::raw('SUM(total_ticket) as tickets'), DB::raw('SUM(total_amount) as revenue'))
              ->groupBy('date')
              ->orderBy('date')
              ->get();
  
-         return view('admin.analytics.event-detail', compact('event', 'ticketStats', 'ticketTypeSales', 'salesTrend'));
+         return view('admin.analytics.event-detail', compact('event', 'ticketStats', 'ticketTypeSales', 'salesTrend', 'selectedBatch'));
      }
  
      /**

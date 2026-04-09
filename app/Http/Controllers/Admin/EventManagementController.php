@@ -489,13 +489,11 @@ class EventManagementController extends Controller
     {
         $event = Event::with(['organizer', 'ticketTypes'])->findOrFail($event_id);
 
-        $totalTicketsSold = DB::table('ticket_type')->where('event_id', $event_id)->sum('quantity_sold');
-        $totalTicketsAvailable = DB::table('ticket_type')->where('event_id', $event_id)->sum('quantity_total');
-        $totalRevenue = DB::table('transaksi')
-            ->join('ticket_type', 'transaksi.ticket_id', '=', 'ticket_type.id')
-            ->where('ticket_type.event_id', $event_id)
-            ->where('transaksi.payment_status', 'Verified')
-            ->sum('transaksi.total_amount');
+        $totalTicketsSold = $event->ticketTypes->sum('quantity_sold');
+        $totalTicketsAvailable = $event->ticketTypes->sum('quantity_total');
+        $totalRevenue = $event->ticketTypes->sum(function($type) {
+            return $type->quantity_sold * $type->price;
+        });
 
         return view('admin.events.show', compact('event', 'totalTicketsSold', 'totalTicketsAvailable', 'totalRevenue'));
     }

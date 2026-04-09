@@ -6,20 +6,27 @@
             <div>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-1">
-                        <li class="breadcrumb-item"><a href="{{ route('admin.analytics.event-performance') }}">Event Performance</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Detail Report</li>
+                        <li class="breadcrumb-item">Event Performance</li>
                     </ol>
                 </nav>
                 <h1 class="h3 mb-0">{{ $event->title }}</h1>
             </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('admin.export.event-performance-pdf', ['event' => $event->event_id]) }}" class="btn btn-outline-primary">
-                    <i class="fas fa-file-pdf"></i> Export Detail PDF
-                </a>
-                <a href="{{ route('admin.analytics.event-performance') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left"></i> Kembali
-                </a>
-            </div>
+             <div class="d-flex gap-2 align-items-center">
+                 <form action="{{ route('admin.analytics.event-detail', $event->event_id) }}" method="GET" class="d-flex gap-2 align-items-center me-3" id="filterForm">
+                     <label for="batchFilter" class="small text-muted text-nowrap mb-0 fw-bold">FILTER:</label>
+                     <select name="batch" id="batchFilter" class="form-select form-select-sm bg-light border-primary" onchange="this.form.submit()" style="min-width: 130px; border-radius: 20px;">
+                         <option value="" {{ !$selectedBatch ? 'selected' : '' }}>All</option>
+                         <option value="1" {{ $selectedBatch == 1 ? 'selected' : '' }}>Batch 1</option>
+                         <option value="2" {{ $selectedBatch == 2 ? 'selected' : '' }}>Batch 2</option>
+                     </select>
+                 </form>
+                 <a href="{{ route('admin.export.event-performance-pdf', ['event' => $event->event_id]) }}" class="btn btn-outline-primary rounded-pill">
+                     <i class="fas fa-file-pdf"></i> Export Detail PDF
+                 </a>
+                 <a href="{{ route('admin.analytics.event-performance') }}" class="btn btn-outline-secondary rounded-pill">
+                     <i class="fas fa-arrow-left"></i> Kembali
+                 </a>
+             </div>
         </div>
 
         <div class="row">
@@ -30,47 +37,47 @@
                         <h5 class="card-title mb-0 text-muted small text-uppercase fw-bold">Ticket Consumption</h5>
                     </div>
                     <div class="card-body px-4 pb-4">
-                        <div class="d-flex align-items-center mb-4">
-                            <div class="flex-grow-1">
-                                <h2 class="mb-0 fw-bold">{{ $ticketStats['used'] }} / {{ $event->tickets()->count() }}</h2>
-                                <p class="text-muted mb-0 small">Tiket yang sudah di-scan (Used)</p>
-                            </div>
-                            <div class="ms-3">
-                                <div class="p-3 bg-success-light rounded-circle text-success">
-                                    <i class="fas fa-check-circle fa-2x"></i>
-                                </div>
-                            </div>
-                        </div>
+                         <div class="d-flex align-items-center mb-4">
+                             <div class="flex-grow-1">
+                                 <h2 class="mb-0 fw-bold">{{ $ticketStats['used'] }} / {{ $ticketStats['total'] }}</h2>
+                                 <p class="text-muted mb-0 small">Tiket yang sudah di-scan (Used)</p>
+                             </div>
+                             <div class="ms-3">
+                                 <div class="p-3 bg-success-light rounded-circle text-success">
+                                     <i class="fas fa-check-circle fa-2x"></i>
+                                 </div>
+                             </div>
+                         </div>
                         
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1 small text-muted">
-                                <span>Used (Sudah Digunakan)</span>
-                                <span>{{ $ticketStats['used'] }}</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ $event->tickets()->count() > 0 ? ($ticketStats['used'] / $event->tickets()->count()) * 100 : 0 }}%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="d-flex justify-content-between mb-1 small text-muted">
-                                <span>Active (Belum Digunakan)</span>
-                                <span>{{ $ticketStats['active'] }}</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-info" role="progressbar" style="width: {{ $event->tickets()->count() > 0 ? ($ticketStats['active'] / $event->tickets()->count()) * 100 : 0 }}%"></div>
-                            </div>
-                        </div>
-
-                        <div class="mb-0">
-                            <div class="d-flex justify-content-between mb-1 small text-muted">
-                                <span>Expired (Kadaluwarsa)</span>
-                                <span>{{ $ticketStats['expired'] }}</span>
-                            </div>
-                            <div class="progress" style="height: 8px;">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $event->tickets()->count() > 0 ? ($ticketStats['expired'] / $event->tickets()->count()) * 100 : 0 }}%"></div>
-                            </div>
-                        </div>
+                         <div class="mb-3">
+                             <div class="d-flex justify-content-between mb-1 small text-muted">
+                                 <span>Used (Sudah Digunakan)</span>
+                                 <span>{{ $ticketStats['used'] }}</span>
+                             </div>
+                             <div class="progress" style="height: 8px;">
+                                 <div class="progress-bar bg-success" role="progressbar" style="width: {{ $ticketStats['total'] > 0 ? ($ticketStats['used'] / $ticketStats['total']) * 100 : 0 }}%"></div>
+                             </div>
+                         </div>
+                         
+                         <div class="mb-3">
+                             <div class="d-flex justify-content-between mb-1 small text-muted">
+                                 <span>Active (Belum Digunakan)</span>
+                                 <span>{{ $ticketStats['active'] }}</span>
+                             </div>
+                             <div class="progress" style="height: 8px;">
+                                 <div class="progress-bar bg-info" role="progressbar" style="width: {{ $ticketStats['total'] > 0 ? ($ticketStats['active'] / $ticketStats['total']) * 100 : 0 }}%"></div>
+                             </div>
+                         </div>
+ 
+                         <div class="mb-0">
+                             <div class="d-flex justify-content-between mb-1 small text-muted">
+                                 <span>Expired (Kadaluwarsa)</span>
+                                 <span>{{ $ticketStats['expired'] }}</span>
+                             </div>
+                             <div class="progress" style="height: 8px;">
+                                 <div class="progress-bar bg-danger" role="progressbar" style="width: {{ $ticketStats['total'] > 0 ? ($ticketStats['expired'] / $ticketStats['total']) * 100 : 0 }}%"></div>
+                             </div>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -90,10 +97,10 @@
                                 <h4 class="mb-0 fw-bold">{{ $ticketTypeSales->sum('sold') }}</h4>
                                 <p class="text-muted small mb-0">Tiket Terjual</p>
                             </div>
-                            <div class="col-6">
-                                <h4 class="mb-0 fw-bold">{{ $event->total_available ?? $event->ticket_quota }}</h4>
-                                <p class="text-muted small mb-0">Total Kuota</p>
-                            </div>
+                             <div class="col-6">
+                                 <h4 class="mb-0 fw-bold">{{ $ticketTypeSales->sum('total') }}</h4>
+                                 <p class="text-muted small mb-0">Total Kuota</p>
+                             </div>
                         </div>
                     </div>
                 </div>
