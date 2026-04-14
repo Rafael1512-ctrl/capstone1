@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketMail;
 use App\Models\Order;
 use Illuminate\Support\Str;
+use App\Services\GoogleCalendarService;
 
 class PublicController extends Controller
 {
@@ -245,9 +246,22 @@ class PublicController extends Controller
                 Log::error('Failed to send ticket email after payment: ' . $mailEx->getMessage());
             }
 
+            // Generate Google Calendar link
+            $calendarLink = null;
+            try {
+                $event = $order->event;
+                if ($event) {
+                    $ticketTypeName = $order->tickets->first()?->ticketType?->name;
+                    $calendarLink = GoogleCalendarService::generateCalendarLink($event, $ticketTypeName);
+                }
+            } catch (\Exception $calEx) {
+                Log::error('Failed to generate Google Calendar link: ' . $calEx->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Pembayaran Anda telah berhasil dikonfirmasi!'
+                'message' => 'Pembayaran Anda telah berhasil dikonfirmasi!',
+                'calendar_link' => $calendarLink
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

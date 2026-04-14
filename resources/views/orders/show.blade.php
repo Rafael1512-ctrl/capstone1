@@ -61,13 +61,38 @@
                     </div>
 
                     @if ($order->payment_status === 'Verified')
-                        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center p-4 mb-5">
+                        <div class="alert alert-success border-0 shadow-sm d-flex align-items-center p-4 mb-4">
                             <i class="fas fa-check-circle fa-3x me-4 text-success"></i>
                             <div>
                                 <h5 class="alert-heading mb-1">Pembayaran Berhasil!</h5>
                                 <p class="mb-0">Tiket Anda sudah aktif. Silakan tunjukkan QR Code di bawah ini saat masuk ke lokasi acara.</p>
                             </div>
                         </div>
+
+                        {{-- Google Calendar Reminder Button --}}
+                        @php
+                            $calendarLink = session('calendar_link');
+                            if (!$calendarLink && $order->event) {
+                                $ticketTypeName = $order->tickets->first()?->ticketType?->name ?? null;
+                                $calendarLink = \App\Services\GoogleCalendarService::generateCalendarLink($order->event, $ticketTypeName);
+                            }
+                        @endphp
+                        @if($calendarLink)
+                        <div class="alert border-0 shadow-sm p-3 mb-5" style="background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%); border-radius: 12px;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap">
+                                <div class="d-flex align-items-center mb-2 mb-md-0">
+                                    <div class="me-3" style="font-size: 2rem;">📅</div>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark">Jangan Lupa Konsernya!</h6>
+                                        <small class="text-muted">Tambahkan jadwal konser ke Google Calendar sebagai pengingat</small>
+                                    </div>
+                                </div>
+                                <a href="{{ $calendarLink }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary px-4 py-2 rounded-pill fw-bold" style="background: linear-gradient(135deg, #4285F4 0%, #1a73e8 100%); border: none; box-shadow: 0 4px 12px rgba(66,133,244,0.3); transition: all 0.3s;">
+                                    <i class="fas fa-calendar-plus me-2"></i> Tambah ke Google Calendar
+                                </a>
+                            </div>
+                        </div>
+                        @endif
                         
                         <div class="mt-5">
                             <h5 class="mb-4 text-center font-weight-bold">Digital Tickets & QR Codes</h5>

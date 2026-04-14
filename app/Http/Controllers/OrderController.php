@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TicketMail;
 use Illuminate\Support\Str;
+use App\Services\GoogleCalendarService;
 
 class OrderController extends Controller
 {
@@ -183,6 +184,19 @@ class OrderController extends Controller
             Mail::to($user->email)->send(new TicketMail($user, $order, $order->tickets));
         } catch (\Exception $e) {
             Log::error('Failed to send simulated ticket email: ' . $e->getMessage());
+        }
+
+        // Generate Google Calendar link
+        try {
+            $order->load(['tickets.ticketType', 'event']);
+            $event = $order->event;
+            if ($event) {
+                $ticketTypeName = $order->tickets->first()?->ticketType?->name;
+                $calendarLink = GoogleCalendarService::generateCalendarLink($event, $ticketTypeName);
+                session()->flash('calendar_link', $calendarLink);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to generate Google Calendar link: ' . $e->getMessage());
         }
 
         return back()->with('success', 'Pembayaran berhasil disimulasi! Tiket Anda sudah aktif sekarang.');

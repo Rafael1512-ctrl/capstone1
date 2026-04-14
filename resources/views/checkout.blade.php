@@ -495,6 +495,12 @@
                         <div class="p-3 rounded mb-4" style="background: rgba(40,167,69,0.1) !important; border: 1px solid rgba(40,167,69,0.2); border-radius: 10px !important;">
                             <p class="mb-0 small" style="color: #28a745 !important;"><i class="fa fa-ticket mr-1"></i> E-Tiket sudah tersedia di halaman <strong>My Tickets</strong></p>
                         </div>
+
+                        <!-- Google Calendar Button -->
+                        <a href="#" id="gcal-btn" target="_blank" rel="noopener noreferrer" class="btn w-100 py-3 mb-2 gcal-btn-style" style="display: none; border-radius: 50px; background: linear-gradient(135deg, #4285F4 0%, #1a73e8 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(66,133,244,0.35); text-decoration: none; transition: all 0.3s ease;">
+                            <i class="fa fa-calendar-plus-o mr-2"></i> Tambahkan ke Google Calendar
+                        </a>
+
                         <a href="{{ route('tickets.index') }}" class="btn w-100 py-3 mb-2" style="border-radius: 50px; background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%) !important; border: none; color: white !important; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 15px rgba(220,20,60,0.35); display: block; text-decoration: none;">
                             <i class="fa fa-ticket mr-2"></i> Lihat My Tickets
                         </a>
@@ -524,6 +530,17 @@
             0% { transform: scale(0.3); opacity: 0; }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); opacity: 1; }
+        }
+        .gcal-btn-style:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 30px rgba(66,133,244,0.5) !important;
+        }
+        @keyframes gcalSlideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .gcal-animate {
+            animation: gcalSlideIn 0.4s ease forwards;
         }
     </style>
     <script>
@@ -725,6 +742,14 @@
                 },
                 success: function(response) {
                     if(response.success) {
+                        // Show Google Calendar button if link is available
+                        if(response.calendar_link) {
+                            let gcalBtn = document.getElementById('gcal-btn');
+                            gcalBtn.href = response.calendar_link;
+                            gcalBtn.style.display = 'block';
+                            gcalBtn.classList.add('gcal-animate');
+                        }
+
                         $('#p-step-3').fadeOut(200, function() {
                             $('#p-step-4').fadeIn(200);
                         });
