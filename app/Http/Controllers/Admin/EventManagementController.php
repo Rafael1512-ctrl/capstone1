@@ -399,106 +399,32 @@ class EventManagementController extends Controller
     {
         $event = Event::findOrFail($event_id);
 
-        // Delete banner if exists
-        if ($event->banner_url) {
-            $path = str_replace('/storage/', '', $event->banner_url);
-            Storage::disk('public')->delete($path);
+        // Logic check: Event cannot be deleted if it is currently active/running.
+        // It can be deleted if it's still a draft, cancelled, or overdue (finished).
+        
+        $now = now();
+        $isStarted = $event->batch1_start_at && $event->batch1_start_at->isPast();
+        $isFinished = ($event->status === 'overdue') || ($event->schedule_time && $event->schedule_time->isPast());
+        
+        // Status checks
+        $isDraft = in_array($event->status, ['draft', 'Non-Active']);
+        $isCancelled = $event->status === 'cancelled';
+        
+        // An event is considered "currently active/running" if it has started and is not yet overdue
+        $isRunning = ($event->status === 'Active' || $event->status === 'published') && $isStarted && !$isFinished;
+
+        if ($isRunning && !$isDraft && !$isCancelled) {
+            return redirect()->route('admin.events.index')->with('error', 'Gagal: Event yang sedang aktif/berjalan tidak dapat dihapus. Event harus sudah berakhir (overdue) atau dalam status draft/cancelled untuk dapat dihapus.');
         }
 
-        // Delete performer photos if exist
-        if ($event->performers && is_array($event->performers)) {
-            foreach ($event->performers as $performer) {
-                if (!empty($performer['photo'])) {
-                    $path = str_replace('/storage/', '', $performer['photo']);
-                    Storage::disk('public')->delete($path);
-                }
-            }
-        }
-
-        // Use transaction for reliability with foreign key check disabled temporarily
-        DB::beginTransaction();
         try {
-            // Disable foreign key checks to handle circular dependencies and complex relations
-            DB::statement('SET FOREIGN_KEY_CHECKS=0');
-
-            // Get all ticket type IDs belonging to this event
-            $ticketTypeIds = TicketType::where('event_id', $event_id)->pluck('id');
-            // Get all ticket IDs belonging to these types
-            $ticketIds = DB::table('ticket')->whereIn('ticket_type_id', $ticketTypeIds)->pluck('ticket_id');
-
-            // 1. Get all transaction IDs related to these tickets
-            $transactionIdsFromTickets = DB::table('ticket')
-                ->whereIn('ticket_type_id', $ticketTypeIds)
-                ->pluck('transaction_id')
-                ->filter()
-                ->unique();
-
-            $transactionIdsFromOrders = DB::table('transaksi')
-                ->whereIn('ticket_id', $ticketIds)
-                ->pluck('transaction_id')
-                ->filter()
-                ->unique();
-
-            $allTransactionIds = $transactionIdsFromTickets->merge($transactionIdsFromOrders)->unique();
-
-            // 2. Perform Exhaustive Dependency Cleanup (Checking table existence first)
-
-            // Cleanup: Report (CRITICAL: Often causes FK failure)
-            if (Schema::hasTable('report')) {
-                DB::table('report')->where('event_id', $event_id)->delete();
-            }
-
-            // Cleanup: Waiting Lists
-            if (Schema::hasTable('waiting_lists')) {
-                DB::table('waiting_lists')->where('event_id', $event_id)->delete();
-                if ($ticketTypeIds->isNotEmpty()) {
-                    DB::table('waiting_lists')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
-                }
-            } else if (Schema::hasTable('waiting_list')) { // Also check for singular name mapping
-                DB::table('waiting_list')->where('event_id', $event_id)->delete();
-            }
-
-            // Cleanup: Ticket Reservations
-            if (Schema::hasTable('ticket_reservations') && $ticketTypeIds->isNotEmpty()) {
-                DB::table('ticket_reservations')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
-            }
-
-            // Cleanup: Order Items
-            if (Schema::hasTable('order_items') && $ticketTypeIds->isNotEmpty()) {
-                DB::table('order_items')->whereIn('ticket_type_id', $ticketTypeIds)->delete();
-            }
-
-            // Cleanup: Payments
-            if (Schema::hasTable('payments') && $allTransactionIds->isNotEmpty()) {
-                DB::table('payments')->whereIn('order_id', $allTransactionIds)->delete();
-            }
-
-            // Cleanup: Transactions/Orders (transaksi)
-            if ($allTransactionIds->isNotEmpty()) {
-                DB::table('transaksi')->whereIn('transaction_id', $allTransactionIds)->delete();
-            }
-
-            // Fallback for transactions that might only be linked by old ticket_id field
-            DB::table('transaksi')->whereIn('ticket_id', $ticketIds)->delete();
-
-            // 3. Delete associated tickets
-            DB::table('ticket')->whereIn('ticket_type_id', $ticketTypeIds)->orWhere('event_id', $event_id)->delete();
-
-            // 4. Delete the ticket types themselves
-            TicketType::where('event_id', $event_id)->delete();
-
-            // 5. Delete the event record (acara)
+            // Perform Soft Delete
+            // We skip deleting physical files and related records to ensure historical data (tickets, transactions) 
+            // remains intact for reporting purposes, as requested.
             $event->delete();
 
-            // Re-enable foreign key checks
-            DB::statement('SET FOREIGN_KEY_CHECKS=1');
-
-            DB::commit();
-            return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus beserta semua data terkait.');
+            return redirect()->route('admin.events.index')->with('success', 'Event berhasil dihapus. Data asli tetap tersimpan di database (Soft Delete).');
         } catch (\Exception $e) {
-            DB::rollBack();
-            // Ensure foreign key checks are re-enabled even on failure
-            DB::statement('SET FOREIGN_KEY_CHECKS=1');
             return redirect()->route('admin.events.index')->with('error', 'Gagal menghapus event: ' . $e->getMessage());
         }
     }

@@ -192,9 +192,94 @@
     .perforation-top { top: -15px; }
     .perforation-bottom { bottom: -15px; }
 
-    /* Print Only Container - Hidden on Screen */
-    .print-only-container {
+    /* Shared Printable Stub Styles (Available for Screen & Print) */
+    .print-stub-page {
         display: none;
+        width: 100% !important;
+        position: relative !important;
+        box-sizing: border-box !important;
+    }
+
+    .print-stub {
+        display: flex !important;
+        width: 21cm !important;
+        height: 9.5cm !important;
+        border: 1px solid #333 !important;
+        background: #fff !important;
+        margin: 0 auto !important;
+        position: relative !important;
+        overflow: hidden !important;
+        text-align: left !important;
+        color: #000 !important;
+    }
+
+    .print-stub-left {
+        width: 38% !important;
+        height: 100% !important;
+        position: relative !important;
+        background-color: #000 !important;
+    }
+
+    .print-stub-left img {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .print-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+    }
+
+    .print-header {
+        position: absolute;
+        bottom: 30px;
+        left: 30px;
+        color: #fff;
+    }
+
+    .print-badge { font-size: 10pt; font-weight: 800; letter-spacing: 2pt; color: #dc143c; }
+    .print-title { font-size: 28pt; margin: 0; font-family: 'DM Serif Display', serif; }
+
+    .print-stub-right {
+        width: 62%;
+        padding: 25px 35px;
+        display: flex;
+        flex-direction: column;
+        border-left: 2px dashed #eee;
+        text-align: left;
+        box-sizing: border-box;
+    }
+
+    .print-branding { font-size: 11pt; font-weight: 900; color: #dc143c; margin-bottom: 15px; text-align: right;}
+    .print-tier { 
+        background: #000; 
+        color: #fff; 
+        padding: 4px 12px; 
+        display: inline-block; 
+        font-weight: 800; 
+        font-size: 10pt;
+        margin-bottom: 20px;
+        align-self: flex-start;
+    }
+
+    .print-qr { text-align: center; margin-bottom: 20px; }
+    .print-qr img, .print-qr svg { height: 3.5cm; width: 3.5cm; }
+    .print-hint { font-size: 7.5pt; color: #888; font-weight: 800; margin-top: 5px; }
+
+    .print-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
+    .p-info-item { margin-bottom: 5px; }
+    .p-info-item small { display: block; font-size: 6.5pt; color: #888; font-weight: 800; text-transform: uppercase; }
+    .p-info-item p { font-size: 10pt; font-weight: 700; color: #000; margin: 0; line-height: 1.2; }
+    
+    .print-serial { 
+        margin-top: 10px; 
+        font-size: 6pt; 
+        font-family: monospace; 
+        color: #aaa;
+        text-align: right;
     }
 
     /* Printing Logic */
@@ -223,13 +308,9 @@
         }
         .print-stub-page {
             display: block !important;
-            width: 100% !important;
             page-break-after: always !important;
             break-after: page !important;
-            margin: 0 !important;
-            padding: 2cm 0 !important;
-            box-sizing: border-box !important;
-            position: relative !important;
+            padding: 3.5cm 0 !important; /* Increased top margin for better printing */
             visibility: visible !important;
         }
         .print-stub-page:last-child {
@@ -237,86 +318,23 @@
             break-after: auto !important;
         }
         .print-stub {
-            display: flex !important;
-            width: 21cm !important;
-            height: 9.5cm !important;
             border: 1px solid #333 !important;
             background: #fff !important;
-            margin: 0 auto !important;
-            position: relative !important;
-            overflow: hidden !important;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
             visibility: visible !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         .print-stub-left {
-            width: 38%;
-            height: 100%;
-            position: relative;
             background-color: #000 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        .print-stub-left img {
-            display: block !important;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 1 !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
         .print-overlay {
-            position: absolute;
-            inset: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.85), transparent) !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
-        }
-        .print-header {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            color: #fff;
-        }
-        .print-badge { font-size: 10pt; font-weight: 800; letter-spacing: 2pt; color: #dc143c; }
-        .print-title { font-size: 28pt; margin: 0; font-family: 'DM Serif Display', serif; }
-
-        .print-stub-right {
-            width: 62%;
-            padding: 25px 35px;
-            display: flex;
-            flex-direction: column;
-            border-left: 2px dashed #eee;
-            text-align: left;
-            box-sizing: border-box;
-        }
-        .print-branding { font-size: 11pt; font-weight: 900; color: #dc143c; margin-bottom: 15px; text-align: right;}
-        .print-tier { 
-            background: #000; 
-            color: #fff; 
-            padding: 4px 12px; 
-            display: inline-block; 
-            font-weight: 800; 
-            font-size: 10pt;
-            margin-bottom: 20px;
-            align-self: flex-start;
-        }
-        .print-qr { text-align: center; margin-bottom: 20px; }
-        .print-qr img, .print-qr svg { height: 3.5cm; width: 3.5cm; }
-        .print-hint { font-size: 7.5pt; color: #888; font-weight: 800; margin-top: 5px; }
-
-        .print-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; }
-        .p-info-item { margin-bottom: 5px; }
-        .p-info-item small { display: block; font-size: 6.5pt; color: #888; font-weight: 800; text-transform: uppercase; }
-        .p-info-item p { font-size: 10pt; font-weight: 700; color: #000; margin: 0; line-height: 1.2; }
-        
-        .print-serial { 
-            margin-top: 10px; 
-            font-size: 6pt; 
-            font-family: monospace; 
-            color: #aaa;
-            text-align: right;
         }
     }
 
@@ -361,38 +379,56 @@
 
     // PDF Download using html2pdf
     function downloadTicketPDF(ticketId) {
-        const targetPage = document.querySelector(`.print-ticket-${ticketId}`);
-        if (!targetPage) return;
+        const wrapper = document.querySelector(`.print-ticket-${ticketId}`);
+        const originalStub = wrapper ? wrapper.querySelector('.print-stub') : null;
+        
+        if (!originalStub) {
+            console.error('Ticket stub not found for: ' + ticketId);
+            return;
+        }
 
-        // Clone the printable area to avoid breaking CSS visibility flow
-        const clone = targetPage.cloneNode(true);
-        clone.style.display = 'block';
+        // Step 1: Make the wrapper temporarily visible off-screen to measure real dimensions
+        const tempHolder = document.createElement('div');
+        tempHolder.style.cssText = 'position:fixed; top:-9999px; left:0; visibility:hidden; display:block; width:100%;';
+        const clone = originalStub.cloneNode(true);
+        clone.style.cssText = ''; // Reset inline styles to let CSS take over
+        tempHolder.appendChild(clone);
+        document.body.appendChild(tempHolder);
+
+        // Step 2: Measure the actual rendered dimensions
+        const rect = clone.getBoundingClientRect();
+        const W = Math.ceil(rect.width) || 794;
+        const H = Math.ceil(rect.height) || 360;
+
+        // Step 3: Fix the clone to the measured size for capture
+        clone.style.position = 'fixed';
+        clone.style.top = '0';
+        clone.style.left = '0';
+        clone.style.width = W + 'px';
+        clone.style.height = H + 'px';
+        clone.style.display = 'flex';
+        clone.style.overflow = 'hidden';
         clone.style.visibility = 'visible';
-        clone.style.margin = '0';
-        clone.style.padding = '0';
-        clone.style.width = '21cm';
-        clone.style.height = '9.5cm';
-
-        // Add a temporary container to render the clone exactly right
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'absolute';
-        tempContainer.style.top = '-9999px';
-        tempContainer.style.left = '0';
-        tempContainer.style.width = '21cm';
-        tempContainer.appendChild(clone);
-        document.body.appendChild(tempContainer);
 
         const opt = {
-            margin:       0,
-            filename:     `TIXLY_${ticketId}.pdf`,
-            image:        { type: 'jpeg', quality: 1 },
-            html2canvas:  { scale: 3, useCORS: true, letterRendering: true },
-            jsPDF:        { unit: 'in', format: [8.26, 3.74], orientation: 'landscape' } // Real ticket aspect
+            margin:      0,
+            filename:    `TIXLY_${ticketId}.pdf`,
+            image:       { type: 'jpeg', quality: 1 },
+            html2canvas: {
+                scale:       2,
+                useCORS:     true,
+                backgroundColor: '#ffffff',
+                width:       W,
+                height:      H,
+                windowWidth: W,
+                windowHeight: H
+            },
+            jsPDF: { unit: 'px', format: [W, H], orientation: 'landscape' }
         };
 
-        // Download and remove clone
+        // Step 4: Capture and cleanup
         html2pdf().set(opt).from(clone).save().then(() => {
-            document.body.removeChild(tempContainer);
+            document.body.removeChild(tempHolder);
         });
     }
 </script>

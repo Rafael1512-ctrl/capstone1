@@ -128,26 +128,35 @@
                                     </div>
                                     <small class="text-muted smaller">dari {{ $total }}</small>
                                 </td>
-                                <td class="pe-4">
-                                    <div class="d-flex justify-content-center align-items-center gap-2">
-                                        <a href="{{ route('admin.events.show', $event->event_id) }}" class="btn-action btn-action-view"
-                                            title="View Detail">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('admin.events.edit', $event->event_id) }}" class="btn-action btn-action-edit"
-                                            title="Edit Event">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('admin.events.destroy', $event->event_id) }}" method="POST"
-                                            class="m-0">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn-action btn-action-delete" title="Delete"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus event ini?')">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
+                                        <td class="pe-4">
+                                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                                <a href="{{ route('admin.events.show', $event->event_id) }}" class="btn-action btn-action-view"
+                                                    title="View Detail">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('admin.events.edit', $event->event_id) }}" class="btn-action btn-action-edit"
+                                                    title="Edit Event">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                
+                                                @php
+                                                    $isStarted = $event->batch1_start_at && now()->isAfter($event->batch1_start_at);
+                                                    $isFinished = ($event->status === 'overdue') || ($event->schedule_time && now()->isAfter($event->schedule_time));
+                                                    $isRunning = ($event->status === 'Active' || $event->status === 'published') && $isStarted && !$isFinished;
+                                                    $isDraftOrCancelled = in_array($event->status, ['draft', 'cancelled', 'Non-Active']);
+                                                    $canDelete = !$isRunning || $isDraftOrCancelled;
+                                                @endphp
+
+                                                <form action="{{ route('admin.events.destroy', $event->event_id) }}" method="POST"
+                                                    class="m-0 delete-event-form">
+                                                    @csrf @method('DELETE')
+                                                    <button type="button" class="btn-action btn-action-delete" title="Delete"
+                                                        onclick="confirmDelete(this.form, {{ $canDelete ? 'true' : 'false' }})">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
                             </tr>
                         @empty
                             <tr>
@@ -172,4 +181,50 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('ExtraJS')
+<script>
+function confirmDelete(form, canDelete) {
+    if (!canDelete) {
+        Swal.fire({
+            title: '<span style="color: #fff; font-family: \'DM Serif Display\', serif;">Aksi Ditolak</span>',
+            html: '<p style="color: rgba(255,255,255,0.7);">Event sedang aktif dan tidak dapat dihapus.<br><small>Harap tunggu hingga event berakhir atau batalkan event terlebih dahulu.</small></p>',
+            icon: 'error',
+            iconColor: '#dc143c',
+            background: 'linear-gradient(135deg, #1a0a0f 0%, #110710 100%)',
+            customClass: {
+                popup: 'tixly-swal-popup',
+                confirmButton: 'tixly-swal-confirm'
+            },
+            buttonsStyling: false,
+            confirmButtonText: 'Mengerti'
+        });
+        return false;
+    }
+
+    Swal.fire({
+        title: '<span style="color: #fff; font-family: \'DM Serif Display\', serif;">Hapus Event?</span>',
+        html: '<p style="color: rgba(255,255,255,0.7);">Apakah Anda yakin ingin menghapus event ini? <br> <strong style="color: #60a5fa;">data tetap tersimpan untuk laporan.</strong></p>',
+        icon: 'warning',
+        iconColor: '#fbbf24',
+        showCancelButton: true,
+        background: 'linear-gradient(135deg, #1a0a0f 0%, #110710 100%)',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batalkan',
+        customClass: {
+            popup: 'tixly-swal-popup',
+            confirmButton: 'tixly-swal-confirm',
+            cancelButton: 'tixly-swal-cancel',
+            actions: 'tixly-swal-actions'
+        },
+        buttonsStyling: false,
+        reverseButtons: true
+    }).then((result) => {
+        if (result.isConfirmed) {
+            form.submit();
+        }
+    });
+}
+</script>
 @endsection
