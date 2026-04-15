@@ -210,7 +210,7 @@
 
                             <script>
                                 document.addEventListener('DOMContentLoaded', function() {
-                                    const targetDate = new Date("{{ $targetTime->format('Y-m-d H:i:s') }}").getTime();
+                                    const targetDate = new Date("{{ $targetTime->toIso8601String() }}").getTime();
                                     
                                     function updateTimer() {
                                         const now = new Date().getTime();
