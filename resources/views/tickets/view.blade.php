@@ -94,11 +94,12 @@
                                         </button>
                                     </div>
                                     <div class="col-sm-6 mb-2">
-                                        <button class="btn btn-outline-danger btn-block py-2 font-weight-bold" 
-                                                style="border-radius: 10px; border: 1px solid rgba(220,20,60,0.5); background: rgba(220,20,60,0.1); color: #ff6b6b;"
-                                                onclick="downloadTicketPDF('{{ $t->ticket_id }}')">
+                                        <a href="{{ route('tickets.download.pdf', $t->ticket_id) }}" 
+                                           target="_blank"
+                                           class="btn btn-outline-danger btn-block py-2 font-weight-bold" 
+                                           style="border-radius: 10px; border: 1px solid rgba(220,20,60,0.5); background: rgba(220,20,60,0.1); color: #ff6b6b;">
                                             <i class="fa fa-file-pdf-o mr-2"></i> DOWNLOAD PDF
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -361,15 +362,14 @@
         document.querySelectorAll('.print-stub-page').forEach(page => {
             page.classList.remove('active-single-print');
         });
-        
+
         // Add active class to target ticket
         const targetPage = document.querySelector(`.print-ticket-${ticketId}`);
-        if(targetPage) {
+        if (targetPage) {
             targetPage.classList.add('active-single-print');
             document.body.classList.add('printing-single');
             window.print();
-            
-            // Clean up after print dialog closes
+
             window.onafterprint = function() {
                 document.body.classList.remove('printing-single');
                 targetPage.classList.remove('active-single-print');
@@ -377,60 +377,100 @@
         }
     }
 
-    // PDF Download using html2pdf
     function downloadTicketPDF(ticketId) {
+        // Find the print-stub inside the print-only-container for this ticket
         const wrapper = document.querySelector(`.print-ticket-${ticketId}`);
         const originalStub = wrapper ? wrapper.querySelector('.print-stub') : null;
-        
+
         if (!originalStub) {
-            console.error('Ticket stub not found for: ' + ticketId);
+            alert('Ticket not found.');
             return;
         }
 
-        // Step 1: Make the wrapper temporarily visible off-screen to measure real dimensions
-        const tempHolder = document.createElement('div');
-        tempHolder.style.cssText = 'position:fixed; top:-9999px; left:0; visibility:hidden; display:block; width:100%;';
-        const clone = originalStub.cloneNode(true);
-        clone.style.cssText = ''; // Reset inline styles to let CSS take over
-        tempHolder.appendChild(clone);
-        document.body.appendChild(tempHolder);
-
-        // Step 2: Measure the actual rendered dimensions
-        const rect = clone.getBoundingClientRect();
-        const W = Math.ceil(rect.width) || 794;
-        const H = Math.ceil(rect.height) || 360;
-
-        // Step 3: Fix the clone to the measured size for capture
-        clone.style.position = 'fixed';
-        clone.style.top = '0';
-        clone.style.left = '0';
-        clone.style.width = W + 'px';
-        clone.style.height = H + 'px';
-        clone.style.display = 'flex';
-        clone.style.overflow = 'hidden';
-        clone.style.visibility = 'visible';
-
-        const opt = {
-            margin:      0,
-            filename:    `TIXLY_${ticketId}.pdf`,
-            image:       { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale:       2,
-                useCORS:     true,
-                backgroundColor: '#ffffff',
-                width:       W,
-                height:      H,
-                windowWidth: W,
-                windowHeight: H
-            },
-            jsPDF: { unit: 'px', format: [W, H], orientation: 'landscape' }
-        };
-
-        // Step 4: Capture and cleanup
-        html2pdf().set(opt).from(clone).save().then(() => {
-            document.body.removeChild(tempHolder);
+        // Collect all <style> and <link rel="stylesheet"> from the current page
+        let stylesHtml = '';
+        document.querySelectorAll('style').forEach(s => {
+            stylesHtml += s.outerHTML;
         });
+        document.querySelectorAll('link[rel="stylesheet"]').forEach(l => {
+            stylesHtml += l.outerHTML;
+        });
+
+        // Build full HTML for the iframe: just the stub, fully styled
+        const stubHTML = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+${stylesHtml}
+<style>
+  /* Override to make stub visible in iframe */
+  html, body { margin: 0; padding: 0; background: #fff !important; }
+  .print-stub-page { display: block !important; visibility: visible !important; padding: 0 !important; }
+  .print-stub {
+    display: flex !important;
+    width: 21cm !important;
+    height: 9.5cm !important;
+    border: 1px solid #333 !important;
+    background: #fff !important;
+    margin: 0 auto !important;
+    overflow: hidden !important;
+    color: #000 !important;
+  }
+  .no-print, header, footer, .navbar, .tickets-container { display: none !important; }
+  @page { size: landscape; margin: 0; }
+  @media print {
+    html, body { background: #fff !important; }
+    .print-stub-page { display: block !important; }
+    .print-stub { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .print-stub-left { background-color: #000 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .print-overlay { background: linear-gradient(to top, rgba(0,0,0,0.85), transparent) !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+<div class="print-stub-page print-ticket-${ticketId}">
+  ${originalStub.outerHTML}
+</div>
+</body>
+</html>`;
+
+        // Create hidden iframe
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:29.7cm;height:21cm;border:0;visibility:hidden;';
+        document.body.appendChild(iframe);
+
+        const iframeDoc = iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(stubHTML);
+        iframeDoc.close();
+
+        // Wait for images and fonts to load, then print
+        iframe.onload = function() {
+            setTimeout(function() {
+                try {
+                    // Override the default print filename through document title
+                    const originalTitle = document.title;
+                    document.title = `TIXLY_T-${ticketId}`;
+                    iframe.contentWindow.focus();
+                    iframe.contentWindow.print();
+                    // Restore title after short delay
+                    setTimeout(function() {
+                        document.title = originalTitle;
+                    }, 1000);
+                } catch(e) {
+                    console.error('Print error:', e);
+                }
+                // Remove iframe after dialog closes
+                iframe.contentWindow.onafterprint = function() {
+                    document.body.removeChild(iframe);
+                };
+                setTimeout(function() {
+                    if (document.body.contains(iframe)) {
+                        document.body.removeChild(iframe);
+                    }
+                }, 30000);
+            }, 800); // slight delay for fonts/images
+        };
     }
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 @endsection

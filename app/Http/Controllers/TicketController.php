@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use BaconQrCode\Encoder\Encoder as BaconEncoder;
+use BaconQrCode\Common\ErrorCorrectionLevel;
 
 class TicketController extends Controller
 {
@@ -45,7 +47,7 @@ class TicketController extends Controller
     }
 
     /**
-     * Download tiket sebagai file gambar QR
+     * Download tiket sebagai file QR (legacy)
      */
     public function download(Ticket $ticket)
     {
@@ -61,13 +63,102 @@ class TicketController extends Controller
         // Generate QR jika belum ada
         if (!$ticket->qr_code || !Storage::disk('public')->exists($ticket->qr_code)) {
             $this->generateQrCode($ticket);
-            $ticket->refresh(); // reload data setelah update
+            $ticket->refresh();
         }
 
         $path = Storage::disk('public')->path($ticket->qr_code);
         $extension = pathinfo($path, PATHINFO_EXTENSION);
 
         return response()->download($path, $ticket->ticket_id . '.' . $extension);
+    }
+
+    /**
+     * Download tiket sebagai PDF (DomPDF — 1 tiket per klik)
+     */
+    public function downloadPdf(Ticket $ticket)
+    {
+        $user = Auth::user();
+        $isOwner = $user->user_id === $ticket->order->user_id;
+        $isAdmin = $user->isAdmin();
+        $isOrganizer = $user->isOrganizer() && ($ticket->ticketType->event->organizer_id ?? null) === $user->user_id;
+
+        if (!$isOwner && !$isAdmin && !$isOrganizer) {
+            abort(403);
+        }
+
+        $ticket->load('ticketType.event', 'order.user');
+
+        $event       = $ticket->ticketType->event;
+        $transaction = $ticket->order;
+        $qrUrl       = route('tickets.scan.direct', $ticket->ticket_id);
+
+        // ── QR Code: render as HTML table (100% DomPDF-compatible, no Imagick needed)
+        // BaconQrCode Encoder gives us the raw matrix (0=white, 1=black)
+        $qrHtml = null;
+        try {
+            $qrEncoded = BaconEncoder::encode($qrUrl, ErrorCorrectionLevel::M());
+            $matrix    = $qrEncoded->getMatrix();
+            $size      = $matrix->getWidth();
+            $cellPx    = max(2, (int) floor(130 / $size)); // ~4px per cell
+            $totalPx   = $cellPx * $size;
+
+            $tbl = '<table cellspacing="0" cellpadding="0" style="border-collapse:collapse;width:' . $totalPx . 'px;height:' . $totalPx . 'px;margin:0 auto;">';
+            for ($y = 0; $y < $size; $y++) {
+                $tbl .= '<tr>';
+                for ($x = 0; $x < $size; $x++) {
+                    $bg   = ($matrix->get($x, $y) === 1) ? '#000000' : '#ffffff';
+                    $tbl .= '<td style="width:' . $cellPx . 'px;height:' . $cellPx . 'px;background:' . $bg . ';padding:0;font-size:0;"></td>';
+                }
+                $tbl .= '</tr>';
+            }
+            $tbl   .= '</table>';
+            $qrHtml = $tbl;
+        } catch (\Exception $e) {}
+
+        // ── Event image: base64 for DomPDF ────────────────────────────────────
+        $imgBase64 = null;
+        if ($event->banner_url) {
+            try {
+                if (filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
+                    $src = \App\Models\SiteSetting::forceDirectUrl($event->banner_url);
+                    $ctx = stream_context_create(['http' => [
+                        'timeout'        => 12,
+                        'follow_location' => true,
+                        'header'         => "User-Agent: Mozilla/5.0\r\n",
+                    ]]);
+                    $imgContent = @file_get_contents($src, false, $ctx);
+                } else {
+                    $rel       = ltrim($event->banner_url, '/');
+                    $localPath = str_starts_with($rel, 'storage/')
+                        ? public_path($rel)
+                        : storage_path('app/public/' . $rel);
+                    $imgContent = file_exists($localPath) ? file_get_contents($localPath) : false;
+                }
+                if ($imgContent) {
+                    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+                    $mime  = $finfo->buffer($imgContent);
+                    if (str_starts_with($mime, 'image/')) {
+                        $imgBase64 = 'data:' . $mime . ';base64,' . base64_encode($imgContent);
+                    }
+                }
+            } catch (\Exception $e) {}
+        }
+
+        $ticketData = [[
+            'ticket'       => $ticket,
+            'event'        => $event,
+            'transaction'  => $transaction,
+            'qrHtml'       => $qrHtml,
+            'imgBase64'    => $imgBase64,
+            'scheduleText' => $event->schedule_time
+                ? $event->schedule_time->format('d M Y | H:i') . ' WIB'
+                : 'TBA',
+        ]];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('tickets.ticket-pdf', compact('ticket', 'ticketData'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('TIXLY_' . $ticket->ticket_id . '.pdf');
     }
 
     /**

@@ -202,6 +202,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tickets/{ticket}', [TicketController::class, 'view'])->name('tickets.view');
     Route::get('/tickets/{ticket}/qr', [TicketController::class, 'generateQrCode'])->name('tickets.qr');
     Route::get('/tickets/{ticket}/download', [TicketController::class, 'download'])->name('tickets.download');
+    Route::get('/tickets/{ticket}/download-pdf', [TicketController::class, 'downloadPdf'])->name('tickets.download.pdf');
     Route::post('/tickets/validate', [TicketController::class, 'verifyTicket'])->name('tickets.validate');
     Route::post('/tickets/scan', [TicketController::class, 'scan'])->name('tickets.scan');
     Route::get('/scan-ticket/{ticket}', [TicketController::class, 'scanDirect'])->name('tickets.scan.direct');

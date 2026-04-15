@@ -517,7 +517,7 @@
                             $aboutUsImage = asset('cardboard-assets/img/hero_1.jpg');
                         }
                     @endphp
-                    <img src="{{ $aboutUsImage }}" alt="About Us" class="img-fluid rounded shadow" referrerpolicy="no-referrer">
+                    <img src="{{ $aboutUsImage }}" alt="About Us" class="img-fluid rounded shadow" referrerpolicy="no-referrer" style="width: 100%; height: 650px; object-fit: cover;">
                 </div>
 
                 <div class="col-lg-6 mb-4">
