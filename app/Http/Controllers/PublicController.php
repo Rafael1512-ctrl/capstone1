@@ -66,14 +66,33 @@ class PublicController extends Controller
 
         // --- BATCH ACTIVITY CHECK ON PAGE LOAD ---
         $activeBatch = $event->active_batch;
-        if (!$activeBatch) {
-            return redirect()->route('public.ticket.show', $event->event_id)
-                             ->with('error', 'Penjualan tiket belum dimulai.');
+        $isWaitingListUser = false;
+        
+        if (\Illuminate\Support\Facades\Auth::check() && $ticketType->batch_number == 2) {
+            $batch1Ticket = \App\Models\TicketType::where('event_id', $event->event_id)
+                ->where('batch_number', 1)
+                ->where('name', $ticketType->name)
+                ->first();
+                
+            if ($batch1Ticket) {
+                $isWaitingListUser = \Illuminate\Support\Facades\DB::table('waiting_list')
+                    ->where('event_id', $event->event_id)
+                    ->where('ticket_type_id', $batch1Ticket->id)
+                    ->where('user_email', \Illuminate\Support\Facades\Auth::user()->email)
+                    ->exists();
+            }
         }
 
-        if ($ticketType->batch_number != $activeBatch) {
-            return redirect()->route('public.ticket.show', $event->event_id)
-                             ->with('error', 'Batch ini tidak lagi tersedia.');
+        if (!$isWaitingListUser) {
+            if (!$activeBatch) {
+                return redirect()->route('public.ticket.show', $event->event_id)
+                                 ->with('error', 'Penjualan tiket belum dimulai.');
+            }
+
+            if ($ticketType->batch_number != $activeBatch) {
+                return redirect()->route('public.ticket.show', $event->event_id)
+                                 ->with('error', 'Batch ini tidak lagi tersedia.');
+            }
         }
         // ----------------------------------------
         
@@ -113,14 +132,33 @@ class PublicController extends Controller
 
         // --- BATCH ACTIVITY CHECK ---
         $activeBatch = $event->active_batch;
-        if (!$activeBatch) {
-            return response()->json(['success' => false, 'message' => 'Penjualan tiket belum dimulai.'], 403);
+        $isWaitingListUser = false;
+        
+        if (\Illuminate\Support\Facades\Auth::check() && $ticketType->batch_number == 2) {
+            $batch1Ticket = \App\Models\TicketType::where('event_id', $event->event_id)
+                ->where('batch_number', 1)
+                ->where('name', $ticketType->name)
+                ->first();
+                
+            if ($batch1Ticket) {
+                $isWaitingListUser = \Illuminate\Support\Facades\DB::table('waiting_list')
+                    ->where('event_id', $event->event_id)
+                    ->where('ticket_type_id', $batch1Ticket->id)
+                    ->where('user_email', \Illuminate\Support\Facades\Auth::user()->email)
+                    ->exists();
+            }
         }
 
-        // Ensure user is buying the TICKET FROM THE ACTIVE BATCH
-        if ($ticketType->batch_number != $activeBatch) {
-            $msg = $activeBatch == 1 ? "Saat ini hanya Batch 1 yang tersedia." : "Penjualan Batch 1 sudah berakhir, silakan beli tiket Batch 2.";
-            return response()->json(['success' => false, 'message' => $msg], 403);
+        if (!$isWaitingListUser) {
+            if (!$activeBatch) {
+                return response()->json(['success' => false, 'message' => 'Penjualan tiket belum dimulai.'], 403);
+            }
+
+            // Ensure user is buying the TICKET FROM THE ACTIVE BATCH
+            if ($ticketType->batch_number != $activeBatch) {
+                $msg = $activeBatch == 1 ? "Saat ini hanya Batch 1 yang tersedia." : "Penjualan Batch 1 sudah berakhir, silakan beli tiket Batch 2.";
+                return response()->json(['success' => false, 'message' => $msg], 403);
+            }
         }
         // ----------------------------
 
@@ -181,6 +219,24 @@ class PublicController extends Controller
 
             // Also increment TicketType's quantity_sold
             $ticketType->increment('quantity_sold', (int) $request->quantity);
+
+            // --- AUTO TRIGGER BATCH 1 WAITING LIST ---
+            if ($activeBatch == 1) {
+                // Refresh event to get accurate active sold quotas
+                $e = Event::find($event->event_id);
+                $isAllSoldOut = ($e->batch1_regular_sold >= $e->batch1_regular_quota) && 
+                                ($e->batch1_vip_sold >= $e->batch1_vip_quota) && 
+                                ($e->batch1_vvip_sold >= $e->batch1_vvip_quota);
+
+                if ($isAllSoldOut && is_null($e->batch1_waiting_start_at)) {
+                    $e->update([
+                        'batch1_ended_at' => now(),
+                        'batch1_waiting_start_at' => now(),
+                        'batch1_waiting_ended_at' => now()->addMinutes(10),
+                    ]);
+                }
+            }
+            // ------------------------------------------
 
             DB::commit();
 
@@ -354,7 +410,7 @@ class PublicController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Berhasil bergabung dengan waiting list! Anda akan mendapatkan prioritas tiket Batch 2 dengan harga Batch 2 saat dimulai.',
+                'message' => 'Berhasil bergabung dengan waiting list! Anda sekarang memiliki akses untuk membeli tiket Batch 2 lebih awal tanpa perlu war.',
             ]);
 
         } catch (\Exception $e) {

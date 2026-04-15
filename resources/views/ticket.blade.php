@@ -165,8 +165,14 @@
                             $countdownLabel = "";
 
                             if ($activeBatch == 1) {
-                                $targetTime = $event->batch1_ended_at;
-                                $countdownLabel = "Batch 1 Ends In";
+                                // If batch 1 has ended but waiting list is active, countdown to WL end
+                                if ($event->batch1_ended_at && $event->batch1_ended_at->isPast() && $event->batch1_waiting_ended_at && $event->batch1_waiting_ended_at->isFuture()) {
+                                    $targetTime = $event->batch1_waiting_ended_at;
+                                    $countdownLabel = "Waiting List Ends In";
+                                } else {
+                                    $targetTime = $event->batch1_ended_at;
+                                    $countdownLabel = "Batch 1 Ends In";
+                                }
                             } elseif ($activeBatch == 2) {
                                 $targetTime = $event->batch2_ended_at;
                                 $countdownLabel = "Batch 2 Ends In";
@@ -272,7 +278,7 @@
                         $categories = ['Regular', 'VIP', 'VVIP'];
                         $isBatch1SoldOut = true;
                         
-                        // Check if Batch 1 is completely sold out to decide if we should mention Batch 2
+                        // Check if Batch 1 is completely sold out
                         if ($batchNum == 1) {
                             $isBatch1SoldOut = ($event->batch1_regular_sold >= $event->batch1_regular_quota) && 
                                                ($event->batch1_vip_sold >= $event->batch1_vip_quota) && 
@@ -280,16 +286,7 @@
                         }
                     @endphp
 
-                    @if($batchNum == 1 && $isBatch1SoldOut && $event->batch2_start_at && $now->isBefore($event->batch2_start_at))
-                        <div class="col-12 text-center text-white py-5">
-                            <div class="important-info-box wow fadeInUp" data-wow-duration="1s">
-                                <h4 class="text-danger mb-3">Tiket Batch 1 Sudah Habis</h4>
-                                <p>Silakan tunggu <strong>Batch 2</strong> yang akan dibuka pada:</p>
-                                <h2 class="text-white mt-3">{{ $event->batch2_start_at->format('d M Y, H:i') }} WIB</h2>
-                            </div>
-                        </div>
-                    @else
-                        @foreach($categories as $cat)
+                    @foreach($categories as $cat)
                             @php
                                 $catLower = strtolower($cat);
                                 $quotaLabel = "batch{$batchNum}_{$catLower}_quota";
@@ -305,25 +302,56 @@
                                     ->where('batch_number', $batchNum)
                                     ->where('name', $cat)
                                     ->first();
+                                    
+                                $isAlreadyInWL = auth()->check() && $ticketType ? \Illuminate\Support\Facades\DB::table('waiting_list')
+                                    ->where('event_id', $event->event_id)
+                                    ->where('ticket_type_id', $ticketType->id)
+                                    ->where('user_email', auth()->user()->email)
+                                    ->exists() : false;
+                                
+                                $batch2Ticket = \App\Models\TicketType::where('event_id', $event->event_id)
+                                    ->where('batch_number', 2)
+                                    ->where('name', $cat)
+                                    ->first();
+                                    
+                                $showWLCard = $batchNum == 1 && $isAlreadyInWL && $batch2Ticket;
+                                $displayPrice = $showWLCard ? $batch2Ticket->price : $price;
+                                
+                                $wlSoldColumn = "batch1_{$catLower}_waiting_sold";
+                                $wlQuotaColumn = "batch1_{$catLower}_waiting_quota";
+                                $wlQuota = ($batchNum == 1) ? ($event->$wlQuotaColumn ?? 0) : 0;
+                                $wlSold = ($batchNum == 1) ? ($event->$wlSoldColumn ?? 0) : 0;
+                                
+                                $now = now();
+                                $hasWlSchedule = !is_null($event->batch1_waiting_start_at);
+                                $wlStarted = $hasWlSchedule && $now->isAfter($event->batch1_waiting_start_at);
+                                $wlEnded = $event->batch1_waiting_ended_at && $now->isAfter($event->batch1_waiting_ended_at);
+                                $wlInPeriod = $wlStarted && !$wlEnded;
+                                
+                                $wlAvailable = ($batchNum == 1) ? max(0, $wlQuota - $wlSold) : 0;
                             @endphp
 
                             @if($quota > 0 && $ticketType)
                                 <div class="col-12 col-md-6 col-lg-4 mb-4 px-3">
-                                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay="{{ $loop->index * 0.2 }}s">
+                                    <div class="ticket-card text-center wow fadeInUp" data-wow-duration="1s" data-wow-delay="{{ $loop->index * 0.2 }}s" @if($showWLCard) style="border-color: rgba(40, 167, 69, 0.5); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.1);" @endif>
                                         <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%); 
-                                            background: {{ $batchNum == 1 ? 'linear-gradient(135deg, #007bff 0%, #004085 100%)' : 'linear-gradient(135deg, #17a2b8 0%, #0b515d 100%)' }}; 
+                                            background: {{ $showWLCard ? 'linear-gradient(135deg, #28a745 0%, #218838 100%)' : ($batchNum == 1 ? 'linear-gradient(135deg, #007bff 0%, #004085 100%)' : 'linear-gradient(135deg, #17a2b8 0%, #0b515d 100%)') }}; 
                                             color: white; padding: 5px 20px; border-radius: 20px; font-size: 11px; font-weight: bold; text-transform: uppercase; z-index: 2;">
-                                            Batch {{ $batchNum }}
+                                            @if($showWLCard) BATCH 2 (JALUR WL) @else Batch {{ $batchNum }} @endif
                                         </div>
                                         
                                         <div class="ticket-content">
                                             <div class="ticket-title @if($cat == 'Regular') text-primary @elseif($cat == 'VIP') text-warning @else text-danger @endif">
                                                 @if($cat == 'VVIP') <i class="fa fa-crown mr-2"></i> @endif {{ $cat }}
                                             </div>
-                                            <div class="ticket-price">RP {{ number_format($price, 0, ',', '.') }}</div>
+                                            <div class="ticket-price">RP {{ number_format($displayPrice, 0, ',', '.') }}</div>
                                             
-                                            @if($remaining <= 0)
-                                                <div class="alert alert-danger bg-transparent border-danger text-danger mt-4 py-2 small">
+                                            @if($showWLCard)
+                                                <div class="alert bg-transparent text-success mt-4 py-2 small mb-2" style="border: 1px solid #28a745;">
+                                                    <i class="fa fa-check-circle"></i> Akses Batch 2 Terbuka.
+                                                </div>
+                                            @elseif($remaining <= 0)
+                                                <div class="alert alert-danger bg-transparent border-danger text-danger mt-4 py-2 small mb-2">
                                                     <i class="fa fa-exclamation-circle"></i> Tiket Kategori {{ $cat }} Habis.
                                                 </div>
                                             @else
@@ -338,26 +366,25 @@
                                                     @endif
                                                 </ul>
                                             @endif
+                                            
+                                            @if($batchNum == 1 && $remaining <= 0 && $wlInPeriod)
+                                                @if($wlAvailable > 0)
+                                                    <div class="badge badge-warning w-100 py-2 mt-1" style="font-size: 0.85rem; background: rgba(243, 156, 18, 0.1); border: 1px solid #f39c12; color: #f39c12; white-space: normal;">
+                                                        <i class="fa fa-users mr-1"></i> Slot Waiting List: <strong>{{ $wlAvailable }}</strong>/{{ $wlQuota }}
+                                                    </div>
+                                                @else
+                                                    <div class="badge badge-secondary w-100 py-2 mt-1" style="font-size: 0.85rem; white-space: normal;">
+                                                        <i class="fa fa-users mr-1"></i> Waiting List Habis
+                                                    </div>
+                                                @endif
+                                            @endif
                                         </div>
 
                                         <div class="ticket-footer">
                                             @if($remaining <= 0)
-                                                @php
-                                                    $wlSoldColumn = "batch1_{$catLower}_waiting_sold";
-                                                    $wlQuotaColumn = "batch1_{$catLower}_waiting_quota";
-                                                    $wlQuota = ($batchNum == 1) ? ($event->$wlQuotaColumn ?? 0) : 0;
-                                                    $wlSold = ($batchNum == 1) ? ($event->$wlSoldColumn ?? 0) : 0;
-                                                    
-                                                    $now = now();
-                                                    $hasWlSchedule = !is_null($event->batch1_waiting_start_at);
-                                                    $wlStarted = $hasWlSchedule && $now->isAfter($event->batch1_waiting_start_at);
-                                                    $wlEnded = $event->batch1_waiting_ended_at && $now->isAfter($event->batch1_waiting_ended_at);
-                                                    $wlInPeriod = $wlStarted && !$wlEnded;
-                                                    
-                                                    $wlAvailable = ($batchNum == 1) ? max(0, $wlQuota - $wlSold) : 0;
-                                                @endphp
-
-                                                @if($batchNum == 1 && $wlAvailable > 0 && $wlInPeriod)
+                                                @if($showWLCard)
+                                                    <a href="{{ route('public.checkout.show', [$event->event_id, $batch2Ticket->id]) }}" class="buy-btn text-white w-100" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); font-size: 13px; padding: 12px 5px;"><i class="fa fa-ticket mr-1"></i> BELI BATCH 2 (JALUR WL)</a>
+                                                @elseif($batchNum == 1 && $wlAvailable > 0 && $wlInPeriod)
                                                     <button class="buy-btn join-waiting-list-btn" 
                                                         data-event-id="{{ $event->event_id }}" 
                                                         data-ticket-type-id="{{ $ticketType->id }}"
@@ -382,7 +409,6 @@
                                 </div>
                             @endif
                         @endforeach
-                    @endif
                 @endif
             </div>
         </div>
@@ -453,7 +479,7 @@
 
                 Swal.fire({
                     title: 'Join Waiting List?',
-                    text: `Anda akan terdaftar di waiting list ${category}. Jika Batch 2 dimulai, Anda akan diprioritaskan mendapat tiket dengan harga Batch 2.`,
+                    text: `Anda akan terdaftar di waiting list ${category}. Setelah berhasil, Anda dapat langsung membeli tiket Batch 2 tanpa perlu menunggu atau berebut kuota (war). Harga mengikuti harga Batch 2.`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#f39c12',
@@ -511,7 +537,6 @@
                         });
                     }
                 });
-            });
             });
 
             // Waiting List Countdown Logic
