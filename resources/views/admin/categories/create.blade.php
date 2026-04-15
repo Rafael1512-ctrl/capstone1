@@ -26,22 +26,22 @@
                 <form action="{{ route('admin.categories.store') }}" method="POST">
                     @csrf
 
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="name" class="form-label">Nama Kategori *</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
-                                id="name" placeholder="misal: Konser, Teater, dll" value="{{ old('name') }}"
-                                required>
-                            @error('name')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    <div class="d-flex gap-2">
+                    <div class="mb-4">
+                        <label for="name" class="form-label">Nama Kategori *</label>
+                        <input type="text" class="form-control @error('name') is-invalid @enderror" name="name"
+                            id="name" placeholder="Contoh: Festival, Konser, Workshop..." value="{{ old('name') }}"
+                            required>
+                        @error('name')
+                            <span class="invalid-feedback">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Simpan Kategori
+                            <i class="fas fa-save me-2"></i> Simpan Kategori
                         </button>
-                        <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-times"></i> Batal
+                        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i> Batal
                         </a>
                     </div>
                 </form>

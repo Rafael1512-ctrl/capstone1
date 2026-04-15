@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Http\Controllers\Actions;
 
 use App\Models\Event;
 use App\Models\Order;

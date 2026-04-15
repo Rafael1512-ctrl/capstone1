@@ -19,6 +19,15 @@ use App\Exports\EventPerformanceExport;
 class ExportController extends Controller
 {
     /**
+     * Display centralized export center
+     */
+    public function index()
+    {
+        $events = Event::orderBy('title')->get();
+        return view('admin.exports.index', compact('events'));
+    }
+
+    /**
      * Export events to Excel (CSV)
      */
     public function exportEvents(Request $request)
@@ -121,6 +130,59 @@ class ExportController extends Controller
         ]);
 
         return $pdf->download('sales-analytics-' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Export Unified Comprehensive Sales Report (PDF)
+     */
+    public function exportComprehensiveSalesPdf(Request $request)
+    {
+        $period = $request->input('period', 'monthly');
+        $dateFormat = match ($period) {
+            'daily' => '%Y-%m-%d',
+            'weekly' => 'Week %v (%Y)',
+            'monthly' => '%M %Y',
+            'yearly' => '%Y',
+            default => '%Y-%m',
+        };
+
+        // 1. Periodic Sales Data (Overall Overview)
+        $salesOverview = Order::where('payment_status', 'Verified')
+            ->select(
+                DB::raw("DATE_FORMAT(payment_date, '$dateFormat') as period"),
+                DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(total_amount) as total_revenue')
+            )
+            ->groupBy('period')
+            ->orderBy('period')
+            ->get();
+
+        // 2. Per-Event Breakdown
+        $eventsData = Event::with(['category', 'tickets.order' => function($q) {
+            $q->where('payment_status', 'Verified')->with('user');
+        }])->get()->map(function($event) {
+            $verifiedTickets = $event->tickets->filter(function($t) {
+                return $t->order && $t->order->payment_status === 'Verified';
+            });
+            $uniqueOrders = $verifiedTickets->pluck('order')->unique('transaction_id');
+            return [
+                'event' => $event,
+                'total_tickets' => $verifiedTickets->count(),
+                'total_revenue' => $uniqueOrders->sum('total_amount'),
+                'orders' => $uniqueOrders
+            ];
+        });
+
+        $pdf = Pdf::loadView('exports.comprehensive-sales', [
+            'title' => 'TIXLY — Comprehensive Sales Report',
+            'salesOverview' => $salesOverview,
+            'eventsData' => $eventsData,
+            'grand_total_revenue' => $eventsData->sum('total_revenue'),
+            'grand_total_tickets' => $eventsData->sum('total_tickets'),
+            'period_label' => ucfirst($period),
+        ]);
+
+        return $pdf->download('comprehensive-sales-report-' . date('Y-m-d') . '.pdf');
     }
 
     /**
@@ -238,5 +300,44 @@ class ExportController extends Controller
         ]);
 
         return $pdf->download('user-stats-' . date('Y-m-d') . '.pdf');
+    }
+
+    /**
+     * Export sales for a SPECIFIC event (Excel)
+     */
+    public function exportEventSalesExcel(Request $request, $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $orders = Order::where('event_id', $eventId)
+            ->where('payment_status', 'Verified')
+            ->with(['user'])
+            ->get();
+        
+        $totalRevenue = $orders->sum('total_amount');
+
+        if (ob_get_contents()) ob_end_clean();
+        return Excel::download(new SalesReportExport($orders, $totalRevenue), 'event-' . str_replace(' ', '-', strtolower($event->title)) . '-sales-' . date('Y-m-d') . '.xlsx');
+    }
+
+    /**
+     * Export sales for a SPECIFIC event (PDF)
+     */
+    public function exportEventSalesPdf(Request $request, $eventId)
+    {
+        $event = Event::findOrFail($eventId);
+        $orders = Order::where('event_id', $eventId)
+            ->where('payment_status', 'Verified')
+            ->with(['user'])
+            ->get();
+
+        $pdf = Pdf::loadView('exports.event-sales', [
+            'title' => 'Event Sales Report',
+            'event' => $event,
+            'orders' => $orders,
+            'total_revenue' => $orders->sum('total_amount'),
+            'total_tickets' => $orders->sum('total_ticket'),
+        ]);
+
+        return $pdf->download('event-' . str_replace(' ', '-', strtolower($event->title)) . '-sales-' . date('Y-m-d') . '.pdf');
     }
 }

@@ -95,7 +95,7 @@
                     <ul class="tixly-sub-nav">
                         <li><a href="{{ route('admin.tickets.index') }}">Ticket Management</a></li>
                         <li><a href="{{ route('admin.orders.index') }}">Order History</a></li>
-                        <li><a href="{{ route('admin.export.sales') }}">Export Report</a></li>
+                        <li><a href="{{ route('admin.export.index') }}">Export Report</a></li>
                     </ul>
                 </div>
             </li>
