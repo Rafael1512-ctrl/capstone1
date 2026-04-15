@@ -28,6 +28,16 @@ class TicketType extends Model
         return $this->belongsTo(Event::class, 'event_id', 'event_id');
     }
 
+    /**
+     * Relasi event yang menyertakan soft-deleted events.
+     * Digunakan di history tiket agar gambar/info event tetap tampil
+     * meskipun event sudah dihapus (soft delete) oleh admin.
+     */
+    public function eventWithTrashed()
+    {
+        return $this->belongsTo(Event::class, 'event_id', 'event_id')->withTrashed();
+    }
+
     public function availableStock()
     {
         return $this->quantity_total - $this->quantity_sold;

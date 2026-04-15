@@ -86,9 +86,9 @@ class TicketController extends Controller
             abort(403);
         }
 
-        $ticket->load('ticketType.event', 'order.user');
+        $ticket->load('ticketType.eventWithTrashed', 'order.user');
 
-        $event       = $ticket->ticketType->event;
+        $event       = $ticket->ticketType->eventWithTrashed;
         $transaction = $ticket->order;
         $qrUrl       = route('tickets.scan.direct', $ticket->ticket_id);
 
@@ -175,11 +175,12 @@ class TicketController extends Controller
             abort(403);
         }
 
-        $ticket->load('ticketType.event', 'order.user');
+        $ticket->load('ticketType.eventWithTrashed', 'order.user');
         
         // Explicitly get ALL tickets in this transaction to ensure none are missed
+        // Menggunakan eventWithTrashed agar event yang di-soft delete tetap tampil
         $ticketsInOrder = Ticket::where('transaction_id', $ticket->transaction_id)
-            ->with(['ticketType.event'])
+            ->with(['ticketType.eventWithTrashed', 'order.user'])
             ->get();
 
         return view('tickets.view', compact('ticket', 'ticketsInOrder'));
@@ -430,12 +431,15 @@ class TicketController extends Controller
         $usedCount   = (clone $baseQuery)->where('ticket_status', 'Used')->count();
 
         // Group by order/transaction — one card per purchase
-        $allTickets = $baseQuery->with(['ticketType.event', 'order.user'])->get();
+        // Menggunakan eventWithTrashed agar event yang sudah di-soft delete
+        // oleh admin tetap bisa diakses di history tiket user
+        $allTickets = $baseQuery->with(['ticketType.eventWithTrashed', 'order.user'])->get();
 
         // Group tickets by transaction_id, picking one representative ticket per order
         $orders = $allTickets->groupBy('transaction_id')->map(function($ticketsInOrder) {
             $first = $ticketsInOrder->first();
-            $event = $first->ticketType->event ?? null;
+            // Gunakan eventWithTrashed agar event soft-deleted tetap bisa diakses
+            $event = $first->ticketType->eventWithTrashed ?? $first->ticketType->event ?? null;
             $order = $first->order ?? null;
             $types = $ticketsInOrder->groupBy(fn($t) => $t->ticketType->name ?? 'Standard');
 
@@ -450,6 +454,7 @@ class TicketController extends Controller
                 'all_used'           => $ticketsInOrder->every(fn($t) => $t->ticket_status === 'Used'),
                 'purchased_at'       => $order?->payment_date,
                 'total_amount'       => $order?->total_amount,
+                'event_deleted'      => $event && $event->trashed(), // flag jika event sudah dihapus
             ];
         })->sortByDesc(fn($o) => $o['purchased_at'])->values();
 

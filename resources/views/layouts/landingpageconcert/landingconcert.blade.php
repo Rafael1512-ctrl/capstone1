@@ -10,7 +10,7 @@
   <meta name="keywords" content="" />
   <meta name="author" content="Free-Template.co" />
 
-  <link rel="shortcut icon" href="{{ asset('cardboard-assets/img/ftco-32x32.png') }}">
+  <link rel="icon" type="image/svg+xml" href="{{ asset('tixly-favicon.svg') }}">
 
   <link href="https://fonts.googleapis.com/css?family=DM+Serif+Display:400,400i|Roboto+Mono&display=swap" rel="stylesheet">
 

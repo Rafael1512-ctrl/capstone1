@@ -1,6 +1,6 @@
 @extends('layouts.landingpageconcert.landingconcert')
 
-@section('title', 'E-Ticket — ' . ($ticket->ticketType->event->title ?? 'TIXLY'))
+@section('title', 'E-Ticket — ' . (($ticket->ticketType->eventWithTrashed ?? $ticket->ticketType->event)?->title ?? 'TIXLY'))
 
 @section('contentlandingconcert')
 <div class="container py-5">
@@ -28,16 +28,28 @@
                         <!-- Left Section: Poster -->
                         <div class="col-md-5 position-relative overflow-hidden" style="min-height: 400px;">
                             @php
-                                $event = $t->ticketType->event;
-                                $imgUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL) ? $event->banner_url : (str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url));
+                                // Pakai eventWithTrashed agar event soft-deleted tetap tampil
+                                $event = $t->ticketType->eventWithTrashed ?? $t->ticketType->event;
+                                $imgUrl = null;
+                                if ($event && $event->banner_url) {
+                                    $imgUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL)
+                                        ? $event->banner_url
+                                        : (str_starts_with($event->banner_url, '/storage/')
+                                            ? $event->banner_url
+                                            : \Illuminate\Support\Facades\Storage::url($event->banner_url));
+                                }
                                 $transaction = $t->order;
                             @endphp
-                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="{{ $event->title }}" class="h-100 w-100" style="object-fit: cover; opacity: 0.8;" >
+                            @if($imgUrl)
+                                <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="{{ $event->title ?? 'Event' }}" class="h-100 w-100" style="object-fit: cover; opacity: 0.8;" >
+                            @else
+                                <div class="h-100 w-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #1e0a0a, #2a1020); font-size: 4rem;">🎵</div>
+                            @endif
                             <div class="position-absolute" style="top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, rgba(0,0,0,0.4), transparent, rgba(0,0,0,0.85));"></div>
                             
                             <div class="position-absolute p-4" style="bottom: 0; left: 0; width: 100%;">
-                                <h1 class="text-white" style="font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1;">{{ $event->title }}</h1>
-                                <p class="text-white-50 mb-0 small" style="letter-spacing: 2px;">{{ $event->location }}</p>
+                                <h1 class="text-white" style="font-family: 'DM Serif Display', serif; font-size: 2.2rem; line-height: 1;">{{ $event->title ?? 'Event' }}</h1>
+                                <p class="text-white-50 mb-0 small" style="letter-spacing: 2px;">{{ $event->location ?? '' }}</p>
                             </div>
                         </div>
 
@@ -64,7 +76,7 @@
                                         </div>
                                         <div class="col-6">
                                             <label class="text-white-50 d-block text-uppercase mb-1 small" style="letter-spacing: 1px;">DATE/TIME</label>
-                                            <span class="text-white h6 font-weight-bold">{{ $event->schedule_time ? $event->schedule_time->format('d M, H:i') : 'TBA' }} WIB</span>
+                                        <span class="text-white h6 font-weight-bold">{{ $event && $event->schedule_time ? $event->schedule_time->format('d M, H:i') : 'TBA' }} WIB</span>
                                         </div>
                                     </div>
                                     
@@ -116,16 +128,28 @@
             <div class="print-stub-page print-ticket-{{ $t->ticket_id }}">
                 <div class="print-stub">
                     @php
-                        $event = $t->ticketType->event;
-                        $imgUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL) ? $event->banner_url : (str_starts_with($event->banner_url, '/storage/') ? $event->banner_url : \Illuminate\Support\Facades\Storage::url($event->banner_url));
+                        // Pakai eventWithTrashed agar event soft-deleted tetap tampil di print view
+                        $event = $t->ticketType->eventWithTrashed ?? $t->ticketType->event;
+                        $imgUrl = null;
+                        if ($event && $event->banner_url) {
+                            $imgUrl = filter_var($event->banner_url, FILTER_VALIDATE_URL)
+                                ? $event->banner_url
+                                : (str_starts_with($event->banner_url, '/storage/')
+                                    ? $event->banner_url
+                                    : \Illuminate\Support\Facades\Storage::url($event->banner_url));
+                        }
                         $transaction = $t->order;
                     @endphp
                     <div class="print-stub-left">
-                        <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="Poster" >
+                        @if($imgUrl)
+                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgUrl) }}" alt="Poster" >
+                        @else
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#111;font-size:3rem;">🎵</div>
+                        @endif
                         <div class="print-overlay"></div>
                         <div class="print-header">
                             <div class="print-badge">OFFICIAL ENTRY</div>
-                            <h1 class="print-title">{{ $event->title }}</h1>
+                            <h1 class="print-title">{{ $event->title ?? 'Event' }}</h1>
                         </div>
                     </div>
                     <div class="print-stub-right">
@@ -146,11 +170,11 @@
                         <div class="print-info">
                             <div class="p-info-item">
                                 <small>DATE / TIME</small>
-                                <p>{{ $event->schedule_time ? $event->schedule_time->format('d M Y | H:i') : 'TBA' }} WIB</p>
+                                <p>{{ $event && $event->schedule_time ? $event->schedule_time->format('d M Y | H:i') : 'TBA' }} WIB</p>
                             </div>
                             <div class="p-info-item">
                                 <small>VENUE</small>
-                                <p>{{ $event->location }}</p>
+                                <p>{{ $event->location ?? 'TBA' }}</p>
                             </div>
                             <div class="p-info-item">
                                 <small>ATTENDEE</small>

@@ -23,10 +23,17 @@
                 <a href="#" class="dropdown-toggle d-flex align-items-center gap-2 text-decoration-none"
                    data-bs-toggle="dropdown" aria-expanded="false"
                    style="padding:6px 14px; border-radius:10px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);">
-                    <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#dc143c,#8b0000);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0;">
-                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                    </div>
-                    <span style="color:#fff; font-weight:700; font-size:13px;">{{ explode(' ', Auth::user()->name)[0] }}</span>
+                    @php $headerUser = Auth::user(); @endphp
+                    @if($headerUser->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($headerUser->profile_photo))
+                        <img src="{{ asset('storage/' . $headerUser->profile_photo) }}"
+                             alt="Avatar"
+                             style="width:30px;height:30px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1.5px solid rgba(220,20,60,0.5);">
+                    @else
+                        <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#dc143c,#8b0000);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:13px;flex-shrink:0;">
+                            {{ strtoupper(substr($headerUser->name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <span style="color:#fff; font-weight:700; font-size:13px;">{{ explode(' ', $headerUser->name)[0] }}</span>
                     <i class="fas fa-chevron-down" style="font-size:10px; color:rgba(255,255,255,0.4);"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" style="background:#1a0a0a; border:1px solid rgba(220,20,60,0.2); border-radius:14px; padding:8px; min-width:220px; margin-top:8px; box-shadow:0 20px 60px rgba(0,0,0,0.6);">

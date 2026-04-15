@@ -86,9 +86,11 @@
         .order-card-img {
             width: 160px;
             min-width: 160px;
+            height: 100%;
             object-fit: cover;
             display: block;
             flex-shrink: 0;
+            align-self: stretch;
         }
 
         .order-card-img-placeholder {
@@ -240,6 +242,7 @@
                     @php
                         $event = $ord['event'];
                         $order = $ord['order'];
+                        $isEventDeleted = $ord['event_deleted'] ?? false;
                         $imgSrc = null;
                         if ($event && $event->banner_url) {
                             if (filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
@@ -253,8 +256,14 @@
                     <div class="order-card">
                         {{-- Image --}}
                         @if($imgSrc)
-                            <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgSrc) }}" alt="{{ $event->title }}"
-                                class="order-card-img" onerror="this.style.display='none';">
+                            <div style="position:relative;flex-shrink:0;width:160px;min-width:160px;align-self:stretch;">
+                                <img src="{{ \App\Models\SiteSetting::forceDirectUrl($imgSrc) }}" alt="{{ $event->title }}"
+                                    style="width:100%;height:100%;object-fit:cover;display:block;"
+                                    onerror="this.parentElement.innerHTML='<div style=\'width:160px;min-width:160px;background:linear-gradient(135deg,#1e0a0a,#2a1020);display:flex;align-items:center;justify-content:center;font-size:3rem;align-self:stretch;\'>🎵</div>'">
+                                @if($isEventDeleted)
+                                    <span style="position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.75);color:#ff6080;font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 7px;border-radius:4px;border:1px solid rgba(220,20,60,0.4);text-transform:uppercase;">Event Dihapus</span>
+                                @endif
+                            </div>
                         @else
                             <div class="order-card-img-placeholder">🎵</div>
                         @endif
@@ -265,6 +274,9 @@
                             <div>
                                 <h5 style="color:#fff;font-weight:800;font-size:1.1rem;margin-bottom:6px;">
                                     {{ $event->title ?? 'Event' }}
+                                    @if($isEventDeleted)
+                                        <span style="font-size:10px;font-weight:700;color:#888;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;margin-left:6px;vertical-align:middle;">Tidak Tersedia</span>
+                                    @endif
                                 </h5>
                                 <div style="font-size:0.8rem;color:rgba(255,255,255,0.38);margin-bottom:12px;">
                                     <i class="fa fa-calendar" style="color:#dc143c;"></i>
@@ -302,7 +314,7 @@
                                 </span>
 
                                 <div class="d-flex gap-2">
-                                    @if($order && $order->payment_status === 'Pending' && !$order->isExpired())
+                                    @if($order && $order->payment_status === 'Pending' && !$order->isExpired() && !$isEventDeleted)
                                         <a href="{{ route('public.checkout.show', [$event->event_id, $ord['ticket_types']->first()['id'] ?? 0]) }}?resume=1&order_id={{ $order->transaction_id }}" class="btn-detail" style="background: linear-gradient(135deg, #ffc107, #d39e00); box-shadow: 0 4px 15px rgba(255,193,7,0.3);">
                                             <i class="fa fa-credit-card"></i> Pay Now
                                         </a>

@@ -17,10 +17,17 @@
     <!-- User badge -->
     <div class="px-3 py-3" style="border-bottom:1px solid rgba(255,255,255,0.05);">
         <div class="d-flex align-items-center gap-3">
-            <div
-                style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#dc143c,#8b0000);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;flex-shrink:0;">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-            </div>
+            @php $sidebarUser = Auth::user(); @endphp
+            @if($sidebarUser->profile_photo && \Illuminate\Support\Facades\Storage::disk('public')->exists($sidebarUser->profile_photo))
+                <img src="{{ asset('storage/' . $sidebarUser->profile_photo) }}"
+                     alt="Avatar"
+                     style="width:38px;height:38px;border-radius:10px;object-fit:cover;flex-shrink:0;border:2px solid rgba(220,20,60,0.4);">
+            @else
+                <div
+                    style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#dc143c,#8b0000);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:15px;flex-shrink:0;">
+                    {{ strtoupper(substr($sidebarUser->name, 0, 1)) }}
+                </div>
+            @endif
             <div style="overflow:hidden;">
                 <div
                     style="color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
