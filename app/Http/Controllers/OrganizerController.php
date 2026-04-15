@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Order;
+use App\Models\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -303,5 +304,33 @@ class OrganizerController extends Controller
         ]);
 
         return back()->with('success', 'Capacity change request submitted to admin!');
+    }
+
+    public function guestList(Request $request)
+    {
+        $user = Auth::user();
+        
+        $query = Ticket::whereHas('event', function($q) use ($user) {
+            $q->where('organizer_id', $user->user_id);
+        })->with(['order.user', 'ticketType.event']);
+
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('ticket_id', 'LIKE', "%{$search}%")
+                  ->orWhereHas('order.user', function($qu) use ($search) {
+                      $qu->where('name', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('ticketType.event', function($qe) use ($search) {
+                      $qe->where('title', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('ticketType', function($qt) use ($search) {
+                      $qt->where('batch_number', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $tickets = $query->orderBy('ticket_id', 'desc')->paginate(20);
+        
+        return view('organizer_guestlist', compact('tickets'));
     }
 }

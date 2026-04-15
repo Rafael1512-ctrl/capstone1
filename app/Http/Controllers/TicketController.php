@@ -361,6 +361,9 @@ class TicketController extends Controller
                   })
                   ->orWhereHas('ticketType.event', function($qe) use ($search) {
                       $qe->where('title', 'LIKE', "%{$search}%");
+                  })
+                  ->orWhereHas('ticketType', function($qt) use ($search) {
+                      $qt->where('batch_number', 'LIKE', "%{$search}%");
                   });
             });
         }

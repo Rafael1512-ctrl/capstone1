@@ -229,6 +229,7 @@ Route::middleware('auth')->group(function () {
 
         // QR Scanner
         Route::get('/organizer/scanner', [TicketController::class, 'showScanner'])->name('tickets.scanner');
+        Route::get('/organizer/guest-list', [OrganizerController::class, 'guestList'])->name('organizer.guestlist');
         
         // Global Ticket Management for Admin/Organizer
         Route::get('/admin/tickets', [TicketController::class, 'allTickets'])->name('admin.tickets.index');

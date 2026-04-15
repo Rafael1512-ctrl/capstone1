@@ -137,11 +137,6 @@
                                         style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
                                         <i class="fa fa-tachometer" style="width:18px; color:#dc143c;"></i> Dashboard
                                     </a>
-                                @elseif (Auth::user()->role === 'Organizer' || Auth::user()->role === 'organizer')
-                                    <a class="dropdown-item" href="{{ route('organizer.dashboard') }}"
-                                        style="color: rgba(255,255,255,0.75); font-size:0.88rem; padding: 10px 18px;">
-                                        <i class="fa fa-bar-chart" style="width:18px; color:#dc143c;"></i> Org. Dashboard
-                                    </a>
                                 @endif
                                 <a class="dropdown-item" href="{{ route('profile.show') }}"
                                     style="color: rgba(255,255,255,0.7); font-size:0.87rem; padding: 12px 20px; transition: all 0.2s ease; border-radius: 8px;"

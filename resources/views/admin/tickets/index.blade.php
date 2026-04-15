@@ -53,7 +53,14 @@
                             </td>
                             <td>{{ $ticket->ticketType->event->title ?? 'N/A' }}</td>
                             <td>{{ $ticket->order->user->name ?? 'N/A' }}</td>
-                            <td>{{ $ticket->ticketType->name ?? 'N/A' }}</td>
+                            <td>
+                                <div>{{ $ticket->ticketType->name ?? 'N/A' }}</div>
+                                @if(isset($ticket->ticketType->batch_number))
+                                    <span class="badge bg-dark text-crimson border-crimson mt-1" style="font-size: 9px; color: #dc143c; border: 1px solid rgba(220,20,60,0.3);">
+                                        BATCH {{ $ticket->ticketType->batch_number }}
+                                    </span>
+                                @endif
+                            </td>
                             <td class="ticket-status-col">
                                 @if($ticket->ticket_status === 'Active')
                                     <span class="badge bg-success">ACTIVE</span>
