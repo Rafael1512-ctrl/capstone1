@@ -444,14 +444,6 @@
                     @endforeach
                 </div>
 
-                <div class="row mt-5">
-                    <div class="col-12 text-center">
-                        <p><a href="#" class="btn px-4 py-3"
-                            style="border-radius: 50px; border: 2px solid #dc143c; color: #dc143c; font-weight: 600; transition: all 0.3s ease;"
-                            onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
-                            onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">More Upcoming Events</a></p>
-                    </div>
-                </div>
             </div>
 
             <script>
@@ -542,10 +534,6 @@
                         from a transaction into an unforgettable experience. We believe every seat deserves to be
                         extraordinary.
                     </p>
-                    <p><a href="#" class="btn px-4 py-2"
-                        style="border-radius: 50px; border: 1.5px solid #dc143c; color: #dc143c; transition: all 0.3s ease;"
-                        onmouseover="this.style.background='#dc143c'; this.style.color='#fff';"
-                        onmouseout="this.style.background='transparent'; this.style.color='#dc143c';">Learn More About TIXLY</a></p>
                 </div>
             </div>
         </div>
@@ -553,40 +541,6 @@
 
     <div class="section pt-0">
         <div class="container">
-            <!-- User Profile Section -->
-            @auth
-                <div class="row mb-5" data-aos="fade-up" style="margin-top: 60px;">
-                    <div class="col-12">
-                        <div
-                            style="background: linear-gradient(135deg, #1a0a0a 0%, #120505 100%); border-radius: 16px; padding: 40px; border-left: 5px solid #dc143c; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h3
-                                        style="color: #fff; font-weight: 700; margin-bottom: 10px; font-family: 'DM Serif Display', serif;">
-                                        {{ Auth::user()->name }}
-                                    </h3>
-                                    <p style="color: #aaa; font-size: 0.95rem; margin-bottom: 15px;">
-                                        <i class="fa fa-envelope mr-2" style="color: #dc143c;"></i>
-                                        {{ Auth::user()->email }}
-                                    </p>
-                                    <p style="color: #666; font-size: 0.85rem; margin-bottom: 0;">
-                                        Member since
-                                        {{ Auth::user()->created_at ? Auth::user()->created_at->format('d M Y') : 'N/A' }}
-                                    </p>
-                                </div>
-                                <div class="col-md-4 text-right">
-                                    <a href="{{ route('profile.show') }}" class="btn px-4 py-2"
-                                        style="background: linear-gradient(135deg, #dc143c 0%, #8b0000 100%); color: white; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(220,20,60,0.35);"
-                                        onmouseover="this.style.boxShadow='0 6px 20px rgba(220, 20, 60, 0.55)';"
-                                        onmouseout="this.style.boxShadow='0 4px 15px rgba(220,20,60,0.35)';">
-                                        <i class="fa fa-user mr-2"></i>View Profile
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endauth
 
         </div>
 

@@ -149,7 +149,28 @@ class PublicController extends Controller
             }
         }
 
-        if (!$isWaitingListUser) {
+        if ($isWaitingListUser) {
+            // Jika membeli Batch 2 saat sesi Waiting List sedang berlangsung
+            if ($activeBatch == 1 && $ticketType->batch_number == 2) {
+                // Ambil tiket Batch 1 untuk mendapatkan kuota WL-nya
+                $batch1Ticket = \App\Models\TicketType::where('event_id', $event->event_id)
+                    ->where('batch_number', 1)
+                    ->where('name', $ticketType->name)
+                    ->first();
+                
+                if ($batch1Ticket) {
+                    $wlQuota = $batch1Ticket->waiting_list_quota ?? 0;
+                    $alreadySold = $ticketType->quantity_sold; // Tiket Batch 2 yang sudah laku terjual
+                    
+                    if ($alreadySold + $request->quantity > $wlQuota) {
+                        return response()->json([
+                            'success' => false, 
+                            'message' => 'Maaf, kuota tiket khusus Waiting List untuk kategori ini sudah habis. Silakan tunggu Batch 2 dibuka untuk umum.'
+                        ], 403);
+                    }
+                }
+            }
+        } else {
             if (!$activeBatch) {
                 return response()->json(['success' => false, 'message' => 'Penjualan tiket belum dimulai.'], 403);
             }

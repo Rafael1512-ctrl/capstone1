@@ -12,6 +12,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('concert-assets/img/favicon.png') }}">
 
     <!-- CSS here -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('concert-assets/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('concert-assets/css/font-awesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('concert-assets/css/animate.css') }}">
@@ -20,8 +21,11 @@
         body {
             background-color: #0d0d0d;
             color: #fff;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
             animation: pageFadeIn 0.4s ease forwards;
+        }
+        h1, h2, h3, h4, h5, h6, .modal-title {
+            font-family: 'DM Serif Display', serif !important;
         }
         @keyframes pageFadeIn {
             from { opacity: 0; }

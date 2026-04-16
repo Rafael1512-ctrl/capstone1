@@ -197,11 +197,11 @@
 </div>
 
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
     body {
         background: radial-gradient(circle at top right, #1a0000 0%, #000000 100%) !important;
-        font-family: 'Inter', sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
     /* Screen Styles */

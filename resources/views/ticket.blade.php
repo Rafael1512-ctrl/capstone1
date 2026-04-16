@@ -21,9 +21,17 @@
     <link rel="stylesheet" href="{{ asset('concert-assets/css/animate.css') }}">
     <link rel="stylesheet" href="{{ asset('concert-assets/css/flaticon.css') }}">
     <link rel="stylesheet" href="{{ asset('concert-assets/css/slicknav.css') }}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('concert-assets/css/style.css') }}">
     <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        h1, h2, h3, h4, h5, h6, .ticket-title {
+            font-family: 'DM Serif Display', serif !important;
+        }
         .ticket_bg {
             background-color: #0c0c0c;
             padding: 100px 0;
@@ -367,7 +375,19 @@
                                                 </ul>
                                             @endif
                                             
-                                            @if($batchNum == 1 && $remaining <= 0 && $wlInPeriod)
+                                            @if($showWLCard)
+                                                {{-- Tampilkan Sisa TIKET untuk jalur WL yang sudah terbuka --}}
+                                                @php
+                                                    // Ambil total kuota khusus WL dari inputan (waiting_list_quota)
+                                                    $wlTotalQuota = $ticketType->waiting_list_quota ?? 0;
+                                                    // Hitung sisa berdasarkan berapa yang sudah dibeli di Batch 2
+                                                    $b2Remaining = max(0, $wlTotalQuota - $batch2Ticket->quantity_sold);
+                                                @endphp
+                                                <div class="badge badge-success w-100 py-2 mt-4" style="font-size: 0.85rem; background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; white-space: normal;">
+                                                    <i class="fa fa-ticket mr-1"></i> Sisa Tiket: <strong>{{ $b2Remaining }}</strong>/{{ $wlTotalQuota }}
+                                                </div>
+                                            @elseif($batchNum == 1 && $remaining <= 0 && $wlInPeriod)
+                                                {{-- Tampilkan Sisa SLOT ANTRIAN untuk yang belum join --}}
                                                 @if($wlAvailable > 0)
                                                     <div class="badge badge-warning w-100 py-2 mt-1" style="font-size: 0.85rem; background: rgba(243, 156, 18, 0.1); border: 1px solid #f39c12; color: #f39c12; white-space: normal;">
                                                         <i class="fa fa-users mr-1"></i> Slot Waiting List: <strong>{{ $wlAvailable }}</strong>/{{ $wlQuota }}
@@ -383,7 +403,16 @@
                                         <div class="ticket-footer">
                                             @if($remaining <= 0)
                                                 @if($showWLCard)
-                                                    <a href="{{ route('public.checkout.show', [$event->event_id, $batch2Ticket->id]) }}" class="buy-btn text-white w-100" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); font-size: 13px; padding: 12px 5px;"><i class="fa fa-ticket mr-1"></i> BELI BATCH 2 (JALUR WL)</a>
+                                                    @php
+                                                        $wlTotalQuota = $ticketType->waiting_list_quota ?? 0;
+                                                        $b2RemainingForWL = max(0, $wlTotalQuota - $batch2Ticket->quantity_sold);
+                                                    @endphp
+
+                                                    @if($b2RemainingForWL > 0)
+                                                        <a href="{{ route('public.checkout.show', [$event->event_id, $batch2Ticket->id]) }}" class="buy-btn text-white w-100" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%); font-size: 13px; padding: 12px 5px;"><i class="fa fa-ticket mr-1"></i> BELI BATCH 2 (JALUR WL)</a>
+                                                    @else
+                                                        <button class="buy-btn w-100" style="background: #333; cursor: not-allowed; opacity: 0.6; font-size: 13px; padding: 12px 5px;" disabled><i class="fa fa-clock-o mr-1"></i> JATAH WL HABIS</button>
+                                                    @endif
                                                 @elseif($batchNum == 1 && $wlAvailable > 0 && $wlInPeriod)
                                                     <button class="buy-btn join-waiting-list-btn" 
                                                         data-event-id="{{ $event->event_id }}" 

@@ -12,7 +12,7 @@
 
   <link rel="icon" type="image/svg+xml" href="{{ asset('tixly-favicon.svg') }}">
 
-  <link href="https://fonts.googleapis.com/css?family=DM+Serif+Display:400,400i|Roboto+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="{{ asset('cardboard-assets/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ asset('cardboard-assets/css/animate.css') }}">
@@ -80,8 +80,13 @@
     body {
       background: var(--bg-color) !important;
       color: var(--text-color) !important;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
       transition: background 0.3s ease, color 0.3s ease;
       animation: pageFadeIn 0.4s ease forwards;
+    }
+
+    h1, h2, h3, h4, h5, h6, .display-1, .display-2, .display-3, .display-4, .section-title {
+      font-family: 'DM Serif Display', serif !important;
     }
 
     body.light-mode p, body.light-mode li, body.light-mode .text-muted {

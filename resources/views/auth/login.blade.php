@@ -7,13 +7,13 @@
     <title>Login - TIXLY | Experience the Magic</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
             min-height: 100vh;
             display: flex;
             background: #0a0a0a;
@@ -52,7 +52,7 @@
         }
 
         .brand-logo {
-            font-family: 'Playfair Display', serif;
+            font-family: 'DM Serif Display', serif;
             font-size: 2.5rem;
             font-weight: 800;
             background: linear-gradient(90deg, #dc143c, #ff6b6b);
@@ -66,7 +66,7 @@
         }
 
         .left-headline {
-            font-family: 'Playfair Display', serif;
+            font-family: 'DM Serif Display', serif;
             font-size: 3.2rem;
             font-weight: 800;
             line-height: 1.15;
@@ -135,7 +135,7 @@
             font-size: 1.9rem;
             font-weight: 800;
             color: #ffffff;
-            font-family: 'Playfair Display', serif;
+            font-family: 'DM Serif Display', serif;
             margin-bottom: 8px;
         }
 
@@ -208,7 +208,7 @@
             padding: 13px 16px 13px 44px;
             color: #fff;
             font-size: 0.95rem;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             outline: none;
             transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
         }
@@ -273,7 +273,7 @@
             color: #fff;
             border: none;
             border-radius: 10px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 0.95rem;
             font-weight: 700;
             letter-spacing: 0.5px;
