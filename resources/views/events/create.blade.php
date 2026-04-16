@@ -108,6 +108,17 @@
                                                 <img id="previewImg"
                                                     style="max-height: 160px; max-width: 100%; border-radius: 4px; display: none;">
                                             </div>
+
+                                            <div class="mt-3">
+                                                <label for="banner_url_link">Atau Gunakan Link Banner (Google Drive, dll)</label>
+                                                <input type="text" class="form-control @error('banner_url_link') is-invalid @enderror"
+                                                    id="banner_url_link" name="banner_url_link"
+                                                    placeholder="https://drive.google.com/..."
+                                                    value="{{ old('banner_url_link') }}">
+                                                @error('banner_url_link')
+                                                    <small class="text-danger d-block mt-2">{{ $message }}</small>
+                                                @enderror
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -210,16 +221,16 @@
                                     <div class="col-md-12 mb-4">
                                         <div class="card bg-dark text-white border-primary">
                                             <div class="card-header border-primary d-flex justify-content-between align-items-center">
-                                                <div class="card-title text-primary">Batch 1 - Pengaturan Waktu</div>
+                                                <div class="card-title text-primary">Batch 1 - Waktu Penjualan</div>
                                                 <div class="d-flex align-items-center gap-3">
                                                     <div class="form-group mb-0">
-                                                        <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
-                                                        <input type="datetime-local" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
+                                                        <label class="mb-0 text-white">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                        <input type="datetime-local" id="batch1_start_at" name="batch1_start_at" class="form-control form-control-sm @error('batch1_start_at') is-invalid @enderror" 
                                                             required value="{{ old('batch1_start_at') }}">
                                                     </div>
                                                     <div class="form-group mb-0">
-                                                        <label class="mb-0">Selesai Penjualan</label>
-                                                        <input type="datetime-local" name="batch1_ended_at" class="form-control form-control-sm @error('batch1_ended_at') is-invalid @enderror" 
+                                                        <label class="mb-0 text-white">Selesai Penjualan</label>
+                                                        <input type="datetime-local" id="batch1_ended_at" name="batch1_ended_at" class="form-control form-control-sm @error('batch1_ended_at') is-invalid @enderror" 
                                                             value="{{ old('batch1_ended_at') }}">
                                                     </div>
                                                 </div>
@@ -297,16 +308,16 @@
                                     <div class="col-md-12 mb-4">
                                         <div class="card bg-dark text-white border-info">
                                             <div class="card-header border-info d-flex justify-content-between align-items-center">
-                                                <div class="card-title text-info">Batch 2 - Pengaturan Waktu</div>
+                                                <div class="card-title text-info">Batch 2 - Waktu Penjualan</div>
                                                 <div class="d-flex align-items-center gap-3">
                                                     <div class="form-group mb-0">
-                                                        <label class="mb-0">Mulai Penjualan <span class="text-danger">*</span></label>
-                                                        <input type="datetime-local" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
+                                                        <label class="mb-0 text-white">Mulai Penjualan <span class="text-danger">*</span></label>
+                                                        <input type="datetime-local" id="batch2_start_at" name="batch2_start_at" class="form-control form-control-sm @error('batch2_start_at') is-invalid @enderror" 
                                                             required value="{{ old('batch2_start_at') }}">
                                                     </div>
                                                     <div class="form-group mb-0">
-                                                        <label class="mb-0">Selesai Penjualan</label>
-                                                        <input type="datetime-local" name="batch2_ended_at" class="form-control form-control-sm @error('batch2_ended_at') is-invalid @enderror" 
+                                                        <label class="mb-0 text-white">Selesai Penjualan</label>
+                                                        <input type="datetime-local" id="batch2_ended_at" name="batch2_ended_at" class="form-control form-control-sm @error('batch2_ended_at') is-invalid @enderror" 
                                                             value="{{ old('batch2_ended_at') }}">
                                                     </div>
                                                 </div>
@@ -380,25 +391,200 @@
         .custom-file-upload input[type="file"]:hover {
             border-color: #3B82F6;
         }
+
+        /* Styling agar icon kalender lebih terlihat di mode dark */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            background-color: #3B82F6;
+            padding: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .card-header .form-group label {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
     </style>
 
     <script>
-        // Preview banner image
-        document.getElementById('banner_url').addEventListener('change', function(e) {
+        // Preview banner image (File Upload)
+        const bannerInput = document.getElementById('banner_url');
+        const previewImg = document.getElementById('previewImg');
+        const bannerLinkInput = document.getElementById('banner_url_link');
+
+        function updatePreview(src) {
+            if (src) {
+                previewImg.src = src;
+                previewImg.style.display = 'block';
+            } else {
+                previewImg.style.display = 'none';
+            }
+        }
+
+        bannerInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    const preview = document.getElementById('previewImg');
-                    preview.src = event.target.result;
-                    preview.style.display = 'block';
+                    updatePreview(event.target.result);
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Set minimum date to today
+        // Preview banner from link
+        bannerLinkInput.addEventListener('input', function() {
+            if (!bannerInput.files.length) {
+                updatePreview(this.value);
+            }
+        });
+
+        // Set minimum dan maximum date berdasarkan jadwal event
+        const scheduleInput = document.getElementById('schedule_time');
+        const batchInputs = [
+            'batch1_start_at', 'batch1_ended_at', 
+            'batch2_start_at', 'batch2_ended_at'
+        ];
+
+        function checkBatchDate(input) {
+            const eventDate = scheduleInput.value;
+            if (eventDate && input.value && input.value > eventDate) {
+                input.value = eventDate;
+                // Visible feedback
+                input.classList.add('is-invalid');
+                setTimeout(() => input.classList.remove('is-invalid'), 2000);
+            }
+        }
+
+        function updateBatchDateConstraints() {
+            const eventDate = scheduleInput.value;
+            if (eventDate) {
+                batchInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.max = eventDate;
+                        checkBatchDate(input);
+                    }
+                });
+            }
+        }
+
+        scheduleInput.addEventListener('change', updateBatchDateConstraints);
+        
+        // Add listeners to batch inputs to prevent manual typing past max
+        batchInputs.forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('change', () => checkBatchDate(input));
+                input.addEventListener('input', () => checkBatchDate(input));
+            }
+        });
+
+        // Block submission if dates are invalid
+        const eventForm = document.getElementById('eventForm');
+        eventForm.addEventListener('submit', function(e) {
+            const eventDateStr = scheduleInput.value;
+            if (!eventDateStr) return;
+            
+            const eventDate = new Date(eventDateStr);
+            let hasError = false;
+            let errorMsg = '';
+            
+            batchInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input && input.value) {
+                    const batchDate = new Date(input.value);
+                    if (batchDate > eventDate) {
+                        hasError = true;
+                        errorMsg = 'Waktu Batch tidak boleh melebihi jadwal Event!';
+                        input.classList.add('is-invalid');
+                    }
+                }
+            });
+
+            if (hasError) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Waktu Tidak Valid',
+                    text: errorMsg,
+                    background: '#1a0a0f',
+                    color: '#fff',
+                    confirmButtonColor: '#dc143c',
+                    confirmButtonText: 'Perbaiki Sekarang'
+                });
+                return false;
+            }
+            
+            // Clear draft on success
+            localStorage.removeItem(storageKey);
+        });
+        
+        // Initial set (misal saat load draft)
         const todayDate = new Date().toISOString().slice(0, 16);
-        document.getElementById('schedule_time').min = todayDate;
-    </script>
+        scheduleInput.min = todayDate;
+        updateBatchDateConstraints();
+
+        // --- Auto-save Form Draft ---
+        const storageKey = 'luxtix_create_event_draft';
+
+        // Function to save form data to localStorage
+        function saveDraft() {
+            const formData = new FormData(eventForm);
+            const data = {};
+            formData.forEach((value, key) => {
+                // Don't save files or CSRF token
+                if (!(value instanceof File) && key !== '_token') {
+                    data[key] = value;
+                }
+            });
+            localStorage.setItem(storageKey, JSON.stringify(data));
+        }
+
+        // Function to load data from localStorage
+        function loadDraft() {
+            const savedData = localStorage.getItem(storageKey);
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    Object.keys(data).forEach(key => {
+                        const elements = eventForm.elements[key];
+                        if (elements) {
+                            // Handle multiple elements (like radio buttons) if any, or single ones
+                            if (elements instanceof NodeList || elements instanceof HTMLCollection) {
+                                // For now we don't have radios, but for robustness:
+                                Array.from(elements).forEach(el => {
+                                    if (el.type === 'checkbox' || el.type === 'radio') {
+                                        el.checked = (el.value === data[key]);
+                                    } else {
+                                        el.value = data[key];
+                                    }
+                                });
+                            } else {
+                                if (elements.type !== 'file') {
+                                    elements.value = data[key];
+                                }
+                            }
+                        }
+
+                        // Trigger banner preview if link exists
+                        if (key === 'banner_url_link' && data[key]) {
+                            updatePreview(data[key]);
+                        }
+                    });
+                    console.log('Draft loaded successfully');
+                } catch (e) {
+                    console.error('Error loading draft:', e);
+                }
+            }
+        }
+
+        // Save draft on every input change
+        eventForm.addEventListener('input', saveDraft);
+        eventForm.addEventListener('change', saveDraft);
+
+        // Initialize draft on page load
+        document.addEventListener('DOMContentLoaded', loadDraft);
 @endsection

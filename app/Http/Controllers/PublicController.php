@@ -24,7 +24,7 @@ class PublicController extends Controller
         $banners = \App\Models\Banner::where('is_active', true)->orderBy('sort_order', 'asc')->get();
         $categories = \Illuminate\Support\Facades\DB::table('kategori_acara')->get();
         
-        $query = Event::active()->orderBy('schedule_time', 'desc');
+        $query = Event::active()->orderBy('schedule_time', 'asc');
 
         if ($request->has('category') && $request->category) {
             $query->where('category_id', $request->category);

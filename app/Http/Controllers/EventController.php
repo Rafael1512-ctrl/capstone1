@@ -21,7 +21,7 @@ class EventController extends Controller
         
         $events = Event::active()
             ->with(['organizer', 'category', 'ticketTypes'])
-            ->orderBy('schedule_time', 'desc')
+            ->orderBy('schedule_time', 'asc')
             ->paginate(15);
 
         return view('events.index', compact('events'));
@@ -68,10 +68,11 @@ class EventController extends Controller
             'maps_url'          => ['nullable', 'string', 'max:1000'],
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'banner_url_link'   => ['nullable', 'string', 'max:1000'],
             'organizer_id'      => ['nullable', 'exists:users,user_id'],
             
-            'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i'],
-            'batch1_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
+            'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'date', 'before_or_equal:schedule_time'],
+            'batch1_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at', 'date', 'before_or_equal:schedule_time'],
             'batch1_regular_quota' => ['required', 'integer', 'min:0'],
             'batch1_regular_price' => ['required', 'numeric', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -81,18 +82,39 @@ class EventController extends Controller
             'batch1_vip_waiting_quota'    => ['required', 'integer', 'min:0'],
             'batch1_vvip_waiting_quota'   => ['required', 'integer', 'min:0'],
  
-            'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
-            'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at'],
+            'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at', 'date', 'before_or_equal:schedule_time'],
+            'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at', 'date', 'before_or_equal:schedule_time'],
             'batch2_regular_quota' => ['required', 'integer', 'min:0'],
             'batch2_regular_price' => ['required', 'numeric', 'min:0'],
             'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
             'batch2_vip_price'    => ['required', 'numeric', 'min:0'],
             'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch2_vvip_price'   => ['required', 'numeric', 'min:0'],
+        ], [
+            'batch1_start_at.before_or_equal' => 'Waktu mulai Batch 1 tidak boleh melebihi jadwal Event.',
+            'batch1_ended_at.before_or_equal' => 'Waktu berakhir Batch 1 tidak boleh melebihi jadwal Event.',
+            'batch2_start_at.before_or_equal' => 'Waktu mulai Batch 2 tidak boleh melebihi jadwal Event.',
+            'batch2_ended_at.before_or_equal' => 'Waktu berakhir Batch 2 tidak boleh melebihi jadwal Event.',
         ]);
 
         $data = $validated;
         
+        // --- MANUAL FAIL-SAFE VALIDATION ---
+        $eventTs = strtotime($request->schedule_time);
+        if ($request->filled('batch1_start_at') && strtotime($request->batch1_start_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch1_start_at' => 'Waktu mulai Batch 1 tidak boleh melebihi jadwal Event.']);
+        }
+        if ($request->filled('batch1_ended_at') && strtotime($request->batch1_ended_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch1_ended_at' => 'Waktu berakhir Batch 1 tidak boleh melebihi jadwal Event.']);
+        }
+        if ($request->filled('batch2_start_at') && strtotime($request->batch2_start_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch2_start_at' => 'Waktu mulai Batch 2 tidak boleh melebihi jadwal Event.']);
+        }
+        if ($request->filled('batch2_ended_at') && strtotime($request->batch2_ended_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch2_ended_at' => 'Waktu berakhir Batch 2 tidak boleh melebihi jadwal Event.']);
+        }
+        // ------------------------------------
+
         // Logic for organizer_id
         if (Auth::user()->isAdmin() && $request->filled('organizer_id')) {
             $data['organizer_id'] = $request->organizer_id;
@@ -102,10 +124,12 @@ class EventController extends Controller
         
         $data['status'] = 'Non-Active';
 
-        // Handle banner upload
+        // Handle banner upload or link
         if ($request->hasFile('banner_url')) {
             $path = $request->file('banner_url')->store('events/' . date('Y/m'), 'public');
             $data['banner_url'] = '/storage/' . $path;
+        } elseif ($request->filled('banner_url_link')) {
+            $data['banner_url'] = $request->banner_url_link;
         } else {
             $data['banner_url'] = null;
         }
@@ -210,10 +234,11 @@ class EventController extends Controller
             'ticket_quota'      => ['required', 'integer', 'min:1', 'max:999999'],
             'status'            => ['required', 'in:draft,published,cancelled,Non-Active,Active'],
             'banner_url'        => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
+            'banner_url_link'   => ['nullable', 'string', 'max:1000'],
             'organizer_id'      => ['nullable', 'exists:users,user_id'],
             
-            'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i'],
-            'batch1_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
+            'batch1_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'date', 'before_or_equal:schedule_time'],
+            'batch1_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at', 'date', 'before_or_equal:schedule_time'],
             'batch1_regular_quota' => ['required', 'integer', 'min:0'],
             'batch1_regular_price' => ['required', 'numeric', 'min:0'],
             'batch1_vip_quota'    => ['required', 'integer', 'min:0'],
@@ -224,35 +249,63 @@ class EventController extends Controller
             'batch1_vip_waiting_quota'    => ['required', 'integer', 'min:0'],
             'batch1_vvip_waiting_quota'   => ['required', 'integer', 'min:0'],
 
-            'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at'],
-            'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at'],
+            'batch2_start_at'   => ['required', 'date_format:Y-m-d\TH:i', 'after:batch1_start_at', 'date', 'before_or_equal:schedule_time'],
+            'batch2_ended_at'   => ['nullable', 'date_format:Y-m-d\TH:i', 'after:batch2_start_at', 'date', 'before_or_equal:schedule_time'],
             'batch2_regular_quota' => ['required', 'integer', 'min:0'],
             'batch2_regular_price' => ['required', 'numeric', 'min:0'],
             'batch2_vip_quota'    => ['required', 'integer', 'min:0'],
             'batch2_vip_price'    => ['required', 'numeric', 'min:0'],
             'batch2_vvip_quota'   => ['required', 'integer', 'min:0'],
             'batch2_vvip_price'   => ['required', 'numeric', 'min:0'],
+        ], [
+            'batch1_start_at.before_or_equal' => 'Waktu mulai Batch 1 tidak boleh melebihi jadwal Event.',
+            'batch1_ended_at.before_or_equal' => 'Waktu berakhir Batch 1 tidak boleh melebihi jadwal Event.',
+            'batch2_start_at.before_or_equal' => 'Waktu mulai Batch 2 tidak boleh melebihi jadwal Event.',
+            'batch2_ended_at.before_or_equal' => 'Waktu berakhir Batch 2 tidak boleh melebihi jadwal Event.',
         ]);
 
         $data = $validated;
+
+        // --- MANUAL FAIL-SAFE VALIDATION ---
+        $eventTs = strtotime($request->schedule_time);
+        if ($request->filled('batch1_start_at') && strtotime($request->batch1_start_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch1_start_at' => 'Waktu mulai Batch 1 tidak boleh melebihi jadwal Event.']);
+        }
+        if ($request->filled('batch1_ended_at') && strtotime($request->batch1_ended_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch1_ended_at' => 'Waktu berakhir Batch 1 tidak boleh melebihi jadwal Event.']);
+        }
+        if ($request->filled('batch2_start_at') && strtotime($request->batch2_start_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch2_start_at' => 'Waktu mulai Batch 2 tidak boleh melebihi jadwal Event.']);
+        }
+        if ($request->filled('batch2_ended_at') && strtotime($request->batch2_ended_at) > $eventTs) {
+            return back()->withInput()->withErrors(['batch2_ended_at' => 'Waktu berakhir Batch 2 tidak boleh melebihi jadwal Event.']);
+        }
+        // ------------------------------------
 
         // Only admins can change the organizer
         if (!Auth::user()->isAdmin() || !$request->filled('organizer_id')) {
             unset($data['organizer_id']);
         }
 
-        // Handle banner upload
+        // Handle banner upload or link
         if ($request->hasFile('banner_url')) {
-            // Hapus banner lama jika ada
-            if ($event->banner_url) {
+            // Hapus banner lama jika itu file lokal
+            if ($event->banner_url && !filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
                 $oldPath = str_replace('/storage/', '', $event->banner_url);
                 Storage::disk('public')->delete($oldPath);
             }
             // Upload banner baru
             $path = $request->file('banner_url')->store('events/' . date('Y/m'), 'public');
             $data['banner_url'] = '/storage/' . $path;
+        } elseif ($request->filled('banner_url_link')) {
+            // Hapus banner lama jika berupa file lokal sebelum ganti ke link
+            if ($event->banner_url && !filter_var($event->banner_url, FILTER_VALIDATE_URL)) {
+                $oldPath = str_replace('/storage/', '', $event->banner_url);
+                Storage::disk('public')->delete($oldPath);
+            }
+            $data['banner_url'] = $request->banner_url_link;
         } else {
-            // Jika tidak ada file baru, pertahankan yang lama
+            // Jika tidak ada upload baru dan tidak ada link baru, pertahankan yang lama
             $data['banner_url'] = $event->banner_url;
         }
 

@@ -269,6 +269,17 @@ class TicketController extends Controller
             ]);
         }
 
+        // --- NEW: Organizer Ownership Check ---
+        // Organizer can only scan tickets for their own event. Admins can scan everything.
+        if ($user->isOrganizer() && ($ticket->ticketType->event->organizer_id ?? null) !== $user->user_id) {
+            return view('tickets.scan-result', [
+                'success' => false,
+                'message' => 'Unauthorized: This ticket belongs to an event organized by someone else.',
+                'ticket' => $ticket
+            ]);
+        }
+        // --------------------------------------
+
         if (!$ticket->isActive()) {
             return view('tickets.scan-result', [
                 'success' => false,
