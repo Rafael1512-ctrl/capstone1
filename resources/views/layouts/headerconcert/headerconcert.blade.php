@@ -63,7 +63,7 @@
                                 <div class="buy_tkt">
                                     <div class="book_btn">
                                         @auth
-                                            <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isOrganizer() ? route('organizer.dashboard') : route('dashboard')) }}" class="boxed-btn3">Dashboard</a>
+                                            {{-- Dashboard button removed per user request --}}
                                         @else
                                             <a href="{{ route('login') }}" class="boxed-btn3">Login</a>
                                         @endauth
